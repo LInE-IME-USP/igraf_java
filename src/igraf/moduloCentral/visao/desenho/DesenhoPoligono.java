@@ -1,0 +1,259 @@
+/*
+ * iGraf - Interactive Graphics on the Internet: http://www.matematica.br/igraf
+ * 
+ * Free interactive solutions to teach and learn
+ * 
+ * iMath Project: http://www.matematica.br
+ * LInE           http://line.ime.usp.br
+ *
+ * @author RP, LOB
+ *
+ * @version
+ * @date   16/05/2006
+ * 
+ * @description Class that helps to draw lines (graphics of functions)
+ * 
+ * @see igraf/moduloCentral/visao/menu/IgrafMenu.java
+ * @see igraf/moduloCentral/visao/menu/Menu*.java
+ *  
+ * @credits
+ * This source is free and provided by iMath Project (University of São Paulo - Brazil). In order to contribute, please
+ * contact the iMath coordinator Leônidas O. Brandão.
+ *
+ * O código fonte deste programa é livre e desenvolvido pelo projeto iMática (Universidade de São Paulo). Para contribuir,
+ * por favor contate o coordenador do projeto iMatica, professor Leônidas O. Brandão. 
+ * 
+ */
+
+package igraf.moduloCentral.visao.desenho;
+
+import igraf.basico.io.ResourceReader;
+import igraf.moduloCentral.visao.plotter.Plotter;
+
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Polygon;
+import java.util.StringTokenizer;
+import java.util.Vector;
+
+public class DesenhoPoligono extends Desenho {
+
+ protected Polygon p;
+ private double [] px, py;
+ private int x, y, polygonType, vertexMode = 0;
+ protected String vertices; 
+ private boolean preencher = false;
+
+ private int destak = -1;
+ private Color c;
+ Color fillColor = Color.magenta; // color to highlith area (integral)
+ private int r = 6;
+
+
+ public DesenhoPoligono (Plotter plotter, String vertices, int colorIndex, boolean paintMode, int vertexMode) {
+  super(plotter, colorIndex);
+  ok = defineVertices(vertices);
+  preencher = paintMode;
+  this.vertexMode = vertexMode;
+  }
+ 
+ public DesenhoPoligono (Plotter plotter, String vertices, int colorIndex, int polygonType) {
+  super(plotter, colorIndex);
+  ok = defineVertices(vertices);
+  this.polygonType = polygonType;
+  }
+ 
+ public DesenhoPoligono (Plotter plotter, String vertices, String strRGBFillColor, String strRGBBorderColor, int polygonType, int fillMode, int vertexMode) {
+  super(plotter, 0);
+  ok = defineVertices(vertices);
+  this.polygonType = polygonType;
+  preencher = fillMode > 0 ? true : false;
+  fillColor = getColor(strRGBFillColor);
+  this.vertexMode = vertexMode;
+  }
+ 
+ public DesenhoPoligono (DesenhoPoligono dp) {
+  this(dp.plotter, dp.toString(), dp.getFillColorToStringRGB(), dp.getLineColorToStringRGB(), dp.getPolygonType(), (dp.isFilledPolygon() ? 1 : 0), 0);
+  }
+
+
+ // Recebe uma string vertices que contém um conjunto grande de pares ordenados.
+ // Cada um desses pares ordenados é usado para definir os vértices do polígono
+ protected boolean defineVertices (String vertices) {
+  Vector v = new Vector();
+  String aux = vertices.substring(1, vertices.length()-1);
+  StringTokenizer st = new StringTokenizer(aux, "(,) ", false);
+
+  while (st.hasMoreTokens())
+   v.addElement(st.nextToken());
+
+  if (v.size() % 2 != 0)
+   return false;
+
+  p = new Polygon();
+  int size = v.size()/2;
+
+  px = new double[size];
+  py = new double[size];
+
+  for (int i = 0; i < v.size(); i+=1) {
+   String s = (String)v.elementAt(i);
+   double d = Double.valueOf(s).doubleValue();
+   if (i % 2 == 0)
+    px[i/2] = vertexMode == 0 ? d : Math.round(d);
+   else
+    py[i/2] = vertexMode == 0 ? d : Math.round(d);
+   }
+  
+  for (int i = 0; i < px.length; i++) {
+   x = (int)(px[i] * getEscala());
+   y = (int)(py[i] * getEscala() * -1);
+   p.addPoint(x, y);
+   }
+  
+  if (p.npoints > 2) { // fecha o polígono
+   x = (int) (px[0] * getEscala());
+   y = (int) (py[0] * getEscala() * -1);
+   p.addPoint(x, y);
+   }
+  this.vertices = vertices;
+  return true;
+  }
+
+
+ public boolean editaGrafico (String vertices, Color cor) {
+  setColor(cor);
+  if (vertices.equals(this.vertices))
+   return false;
+  return defineVertices(vertices);
+  }
+
+
+ public void atualizaDesenho (Graphics2D gr) {
+  // @see Desenho.java: protected Polygon polygonToBeDrawn
+  defineVertices(vertices);
+  if (polygonToBeDrawn.npoints == 1)
+   desenhaPonto(gr);
+  else {
+   if (preencher)
+    preencher(gr);
+   renderiza(polygonToBeDrawn, gr);
+   int sizeOf = polygonToBeDrawn.npoints;
+   int finalSizeOf = sizeOf-(sizeOf > 2 ? 1 : 0);
+   for (int i = 0; i < finalSizeOf; i++) {
+    desenhaPonto (gr, polygonToBeDrawn.xpoints[i], polygonToBeDrawn.ypoints[i], i);
+    }
+   } // else if
+  }
+
+
+ protected void desenhaPonto (Graphics g) {
+  desenhaPonto(g, x, y, 0);
+  }
+ 
+
+ protected void desenhaPonto (Graphics g, int x, int y, int i) {
+  int raio = destak != i ? 5 : 7;
+  int dpx = destak != i ? -1 : -2;
+  int dpy = destak != i ? -6 : -7;
+  c = g.getColor();
+  g.setColor(destak != i ? Color.green : Color.yellow);
+  g.fillOval(plotter.normalizaX(x-1)+dpx, plotter.normalizaY(-y-4)+dpy, raio, raio);
+  g.setColor(Color.black);
+  g.drawOval(plotter.normalizaX(x-1)+dpx, plotter.normalizaY(-y-4)+dpy, raio, raio);
+  g.setColor(c);
+  }
+
+
+ public Polygon getPolygon () {
+  return p;
+  }
+
+
+ public int getPolygonType () {
+  return polygonType;
+  }
+
+
+ public String toString () {
+  return vertices;
+  }
+
+
+ public String getFuncaoAtual () {
+  return ResourceReader.msg("POLIGONO") + " " + vertices;
+  }
+
+
+ public void insereVertice (float x, float y) {
+  int i = vertices.length()-1;
+  vertices = vertices.substring(0, i) + "("+ x +","+ y +")]";
+  }
+
+
+ public void changeVertex (float x, float y) {
+  StringTokenizer st = new StringTokenizer(vertices, "(");
+  StringBuffer sb = new StringBuffer(); int k = 0;
+  
+  String aux = st.nextToken();
+  sb.append(aux);  
+  
+  while (st.hasMoreTokens()) {
+   aux = st.nextToken();    
+   if (k++ == destak)
+    aux = x + ", " + y +")";   
+   sb.append("(" + aux);
+   }
+  vertices = sb.toString();
+  //T System.out.println("d: " + vertices + "\n");
+  }
+
+
+ private void preencher (Graphics g) {
+  Polygon aux = normaliza(p);
+  g.setColor(fillColor);  
+  g.fillPolygon(aux);
+  }
+
+
+ private Polygon normaliza (Polygon p) {
+  Polygon aux = new Polygon(p.xpoints, p.ypoints, p.npoints);
+  for (int i = 0; i < p.npoints; i++) {
+   aux.xpoints[i] = plotter.normalizaX(p.xpoints[i])+1;
+   aux.ypoints[i] = plotter.normalizaY(-p.ypoints[i]-1);
+   } 
+  return aux;
+  }
+
+
+ public boolean mouseOverVertex (float x, float y) {  
+  for (int i = 0; i < p.npoints-(p.npoints > 2 ? 1 : 0); i++) {
+   if (p.xpoints[i] < (int)(x*getEscala()+r)  && p.xpoints[i] > (int)(x*getEscala()-r) &&
+       p.ypoints[i] < (int)(-y*getEscala()+r) && p.ypoints[i] > (int)(-y*getEscala()-r)) {
+    destak = i;
+
+    return true;
+    }
+   destak = -1;
+   //T System.out.println(p.xpoints[i]  + " " + p.ypoints[i]);
+   //T System.out.println(x*getEscala() + " " + -y*getEscala() + "\n");
+   }
+  return false;
+  }
+
+
+ // implementar get e set color para linha e preenchmento
+ public String getLineColorToStringRGB () {
+  return getColorToStringRGB(Color.blue);
+  }
+
+ public String getFillColorToStringRGB () {
+  return getColorToStringRGB(Color.magenta);
+  }
+
+ public boolean isFilledPolygon () {
+  return preencher;
+  }
+
+ }

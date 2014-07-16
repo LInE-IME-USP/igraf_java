@@ -1,0 +1,32 @@
+
+
+package igraf.moduloAjuda.eventos;
+
+
+import igraf.moduloAjuda.modelo.JPanelBasisTopic;
+import igraf.moduloAjuda.visao.navegador.NavigatorPanel;
+
+import java.util.EventObject;
+
+
+
+
+public class NavigatorPanelEvent extends EventObject {
+
+ JPanelBasisTopic ta;
+ NavigatorPanel np;
+
+ public NavigatorPanelEvent (NavigatorPanel source) {
+  super(source);
+  np = source;
+  }
+
+ public JPanelBasisTopic getSelectedText () {
+  return np.getConteudoSelecionado();
+  }
+ 
+ public int getSelectedTextIndex () {
+  return np.getTextIndex();
+  }
+
+ }

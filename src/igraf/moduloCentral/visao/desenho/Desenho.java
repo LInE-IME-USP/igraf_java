@@ -1,0 +1,289 @@
+/*
+ * iGraf - Interactive Graphics on the Internet: http://www.matematica.br/igraf
+ * 
+ * Free interactive solutions to teach and learn
+ * 
+ * iMath Project: http://www.matematica.br
+ * LInE           http://line.ime.usp.br
+ *
+ * @author RP, LOB
+ *
+ * @description Draw lines (function graphics)
+ * 
+ * @see
+ *  
+ * @credits
+ * This source is free and provided by iMath Project (University of São Paulo - Brazil). In order to contribute, please
+ * contact the iMath coordinator Leônidas O. Brandão.
+ *
+ * O código fonte deste programa é livre e desenvolvido pelo projeto iMática (Universidade de São Paulo). Para contribuir,
+ * por favor contate o coordenador do projeto iMatica, professor Leônidas O. Brandão. 
+ * 
+ */
+
+package igraf.moduloCentral.visao.desenho;
+
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Polygon;
+import java.awt.RenderingHints;
+import java.util.StringTokenizer;
+
+import igraf.IGraf;
+import igraf.basico.io.ResourceReader;
+import igraf.basico.util.EsquemaVisual;
+import igraf.moduloCentral.visao.plotter.Plotter;
+
+import moduloColor.ColorEvent;
+
+
+public abstract class Desenho implements Comparable {
+
+ // Used to define function name: staring from the first letter in ASCII table
+ private static int id = 65;
+ private static String prefix = "";
+ protected static String getNewId () {
+  if (id == 91) { // last letter => add a prefix to the function name
+   id = 65;
+   prefix += "F";
+   return prefix + 'A';
+   }
+  return prefix + (char)id++;
+  } // changed in 'DesenhoFuncao.getFunctionName()'
+
+ public boolean ok = false;
+
+ // Color to draw graphics' functions - also in 'igraf/moduloCentral/visao/plotter/Plotter.java'
+ private static final Color laranja = EsquemaVisual.COLOR_laranja; // new Color(170,  40, 245)
+ private static final Color roxo    = EsquemaVisual.COLOR_roxo;    // new Color(255, 140,   0)
+ private static final Color bordo   = EsquemaVisual.COLOR_bordo;   // new Color(185,  55, 160)
+ private static final Color marinho = EsquemaVisual.COLOR_marinho; // new Color( 30, 125, 210)
+ private static final Color marrom  = EsquemaVisual.COLOR_marrom;  // new Color(150,  90,  90)
+
+ protected Color corAtual;
+ protected static final Color [] colorList = {Color.blue, Color.black, marinho, Color.red, 
+                                             laranja, roxo, Color.darkGray, bordo, marrom};
+
+ protected static final String [] colorNames = { "azul", "preto", "marinho", "vermelho", "laranja", "roxo", "cinza-escuro", "azul-claro", "marrom" };
+
+ private int colorIndex, ordem;
+ protected Polygon polygonToBeDrawn; // in DesenhoFuncao, DesenhoTangente, DesenhoAnimacao, DesenhoIntegral
+
+ protected Plotter plotter;  // GraphPlotter
+
+ private String comentario, descricao = "";
+
+ private int stroke = EsquemaVisual.STROKE_DEFAULT; // default thickness to lines
+
+ // Called by: igraf.moduloCentral.visao.desenho.DesenhoRegiaoIntegral
+ public Desenho (Plotter plotter, int colorIndex) {
+  //D if (id==11) igraf.basico.util.Utilitarios.rastrearError();
+  //D System.err.println(this.getClass().getName() + ": tipo de Plotter: " + plotter.getClass().getName());
+  setColorIndex(colorIndex);
+  this.plotter = plotter;
+  setOrdem(colorIndex);
+  this.polygonToBeDrawn = new Polygon();
+  }
+ 
+ private void setOrdem (int ordem) {
+  this.ordem = ordem;
+  }
+ 
+ public int getOrdem () {
+  return ordem;
+  }
+ 
+ void setComments (String s) {
+  comentario = s;
+  }
+
+ public String getComment () {
+  return comentario;
+  }
+
+ //IMPORTANT: to draw functions in scale e right position
+ protected int getXMax () {
+  return plotter.getXMax();
+  }
+ protected int getXMin () {
+  return plotter.getXMin();
+  }
+ protected int getEscala () {
+  return plotter.getEscala();
+  }
+
+
+ /**
+  * Modifica as variáveis de controle, caso existam, e faz o desenho
+  * propriamente dito no objeto graphics.
+  * @param g
+  */
+ public abstract void atualizaDesenho (Graphics2D gr);
+
+ protected void renderiza (Polygon poligonInstance, Graphics2D gr) {
+  gr.setColor(getColor(colorIndex));
+  gr.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+  gr.setStroke(new BasicStroke(stroke));
+
+  int x1, y1, x2, y2;
+  int xp1, yp1, xp2, yp2;
+
+  x1 = poligonInstance.xpoints[0];
+  y1 = poligonInstance.ypoints[0];
+
+  for (int i = 1; i < poligonInstance.npoints; i++) {
+     x2 = poligonInstance.xpoints[i];
+     y2 = poligonInstance.ypoints[i];
+     if (Math.abs(y2 - y1) < 1000) try { // elimina o problema das assíntotas
+        xp1 = plotter.normalizaX(x1); yp1 = plotter.normalizaY(-y1);
+        xp2 = plotter.normalizaX(x2); yp2 = plotter.normalizaY(-y2);
+        gr.drawLine(xp1, yp1, xp2, yp2); // thick line
+        } catch (Exception e) {
+          // possible error caused by 'asymptote': sun.dc.pr.PRException: endPath: bad path
+	  if (IGraf.IS_DEBUG) System.err.println("Desenho.java: renderiza: i=" + i + ": " + e.toString());
+        }
+     else return; // try to avoid 'sun.dc.pr.PRException: endPath: bad path'
+     x1 = x2;
+     y1 = y2;
+     }
+  stroke = EsquemaVisual.STROKE_DEFAULT; // default thickness to lines
+  } // protected void renderiza(Polygon poligonInstance, Graphics2D gr)
+
+
+ public void setColor (Color cor) {
+  try {
+   setColorIndex(getColorIndex(cor));
+  } catch (Exception e) {
+   this.corAtual = cor;
+   }
+  }
+ 
+ public Color getColor (String strRGB) {
+  StringTokenizer st = new StringTokenizer(strRGB, "rgb:");
+  int r = 0, g = 0, b = 0;
+
+  try {
+   r = Integer.parseInt(st.nextToken().trim());
+   g = Integer.parseInt(st.nextToken().trim());
+   b = Integer.parseInt(st.nextToken().trim());
+  } catch (Exception e) {
+   e.printStackTrace();
+   }
+  return new Color(r,g,b);
+  }
+
+ public void setColorIndex (int colorIndex) {
+  this.colorIndex = colorIndex % colorList.length;
+  this.corAtual = colorList[this.colorIndex];
+  }
+
+ public Color getColor () {
+  return corAtual;
+  }
+
+ public String getColorToStringRGB (Color cor) {
+  return "r:" + cor.getRed() + " " + "g:" + cor.getGreen() + " " + "b:" + cor.getBlue();
+  }
+ 
+ public static Color getColor (int colorIndex) { 
+  // if (colorIndex == -1) return getColor();
+  return colorList[colorIndex];
+  }
+
+ public static String [] getColorNames () {
+  String [] colorNames = {
+     ResourceReader.msg("AZUL"),
+     ResourceReader.msg("PRETO"), 
+     ResourceReader.msg("MARINHO"), 
+     ResourceReader.msg("VERMELHO"), 
+     ResourceReader.msg("LARANJA"), 
+     ResourceReader.msg("ROXO"), 
+     ResourceReader.msg("CINZA_ESCURO"), 
+     ResourceReader.msg("BORDO"), 
+     ResourceReader.msg("MARROM")
+     };
+  return colorNames;
+  }
+
+ public Polygon getPolygon () {
+  return this.polygonToBeDrawn;
+  }
+
+ public void setPolygon (Polygon pol) {
+  if (pol==null) {
+   System.err.println("\nError: tentando atribuir poligono vazio a "+id);
+   // igraf.basico.util.Utilitarios.rastrearError();
+   return;
+   }
+  this.polygonToBeDrawn = pol;
+  }
+
+ /**
+  * Devolve o índice que uma cor ocupa na lista de cores predefinidas 
+  * para desenhos de gráficos.   Devolve -1 se <b>cor</b> não estiver na lista. 
+  * @param cor
+  * @return
+  */
+ public static int getColorIndex (Color cor) {
+  for (int i = 0; i < colorList.length; i++)
+   if (coresIguais(cor, colorList[i]))
+    return i;
+  return -1;
+  }
+
+ public int getColorIndex () {
+  return colorIndex;
+  }
+ 
+ private static boolean coresIguais (Color cor1, Color cor2) {
+  if (cor1.getRed() == cor2.getRed() && cor1.getGreen() == cor2.getGreen() && cor1.getBlue() == cor2.getBlue())
+   return true;
+  return false;
+  }
+ 
+ public String getDescricao () {
+  return descricao;
+  }
+ 
+
+ public void setDescricao (String descricao) {
+  this.descricao = descricao;
+  }
+ 
+ // distância máxima para que ocorra a detecção do mouse sobre uma curva
+ private final int eps = 3;
+ 
+ /**
+  * Verifica se as coordenadas (x, y) estão contidas no polígono p.
+  * Devolve true caso isso ocorra.
+  * @param x, y
+  * @return
+  */
+ public boolean matchCoordinates (int x, int y) {
+  try {
+   Polygon polygon = this.polygonToBeDrawn;
+   for (int i = 0; i < polygon.npoints; i++) {
+    if (polygon.xpoints[i] < x+eps && polygon.xpoints[i] > x-eps)
+     if (polygon.ypoints[i] < y+eps && polygon.ypoints[i] > y-eps) {
+      stroke = EsquemaVisual.STROKE_THICK; // thicker line
+      return true;
+      }
+     }
+  } catch (Exception e) {
+   System.err.println("Error: in drawing, do not match coordinates("+x+","+y+"): "+id+": "+e);
+   // e.printStackTrace();
+   }
+  return false;
+  }
+
+ abstract public String getFuncaoAtual ();
+ public void insereVertice (float x, float y) {}
+ public void setDominio (String dominio) {} // String dominio: used to set function domain (optional): "x [-1,2]" will set 'dominio="[-1,2]"'
+
+ public int compareTo (Object obj) {
+  Desenho d = (Desenho)obj;
+  return this.getOrdem() - d.getOrdem();
+  }
+
+ }

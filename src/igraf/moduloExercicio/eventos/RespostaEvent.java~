@@ -1,0 +1,88 @@
+/*
+ * iGraf - Interactive Graphics on the Internet: http://www.matematica.br/igraf
+ * 
+ * Free interactive solutions to teach and learn
+ * 
+ * iMath Project: http://www.matematica.br
+ * LInE           http://line.ime.usp.br
+ *
+ * @author RP, LOB
+ *
+ * @description Module to deal with exercises.
+ * 
+ * @see 
+ *  
+ * @credits
+ * This source is free and provided by iMath Project (University of São Paulo - Brazil). In order to contribute, please
+ * contact the iMath coordinator Leônidas O. Brandão.
+ *
+ * O código fonte deste programa é livre e desenvolvido pelo projeto iMática (Universidade de São Paulo). Para contribuir,
+ * por favor contate o coordenador do projeto iMatica, professor Leônidas O. Brandão. 
+ * 
+ */
+/*
+ * iGraf - Interactive Graphics on the Internet:  http://www.matematica.br/igraf
+ * iMath Project: http://www.matematica.br
+ * LInE           http://line.ime.usp.br
+ *
+ * @description
+ *
+ * @see 
+ *
+ * 
+ * @author RP, LOB
+ *
+ * @credits
+ * This source code must be credited to iMath Project. In order to contribute, please
+ * contact the iMath coordinator Leônidas O. Brandão.
+ *
+ * O código fonte deste programa deve ser creditado ao projeto iMática. Para contribuir,
+ * por favor contate o coordenador do projeto iMatica, professor Leônidas O. Brandão.
+ *
+ */
+
+package igraf.moduloExercicio.eventos;
+
+import difusor.evento.CommunicationEvent;
+
+import igraf.basico.io.ResourceReader;
+import igraf.moduloArquivo.eventos.EventoRegistravel;
+import igraf.moduloCentral.eventos.ModuloCentralDisseminavelEvent;
+import igraf.moduloCentral.modelo.Acao;
+
+public abstract class RespostaEvent extends CommunicationEvent implements ModuloExercicioDisseminavelEvent, ModuloCentralDisseminavelEvent, EventoRegistravel {
+
+ private String arg = "";
+
+ public static final String WRITE_ANSWER  = "write exercise";
+ public static final String READ_EXERCISE = "read exercise";
+ public static final String EVAL_ANSWER   = "eval answer";
+
+
+ public RespostaEvent (Object source) {
+  super(source);
+  }
+
+ public RespostaEvent (Object source, String arg) {
+  super(source);
+  this.arg = arg;
+  }
+ 
+ public abstract String getRespostaGabarito();
+
+ public String getArgumento () {
+  return arg;
+  }
+
+ public int getCodigoAcao () {
+  if (getCommand().equals(EVAL_ANSWER))
+   return Acao.habilitarVisaoResposta;
+  
+  return Acao.habilitarEnvioResposta;
+  }
+
+ public String getDescription () {
+  return objetivo(ResourceReader.msg("msgInternalIsExerc")); // "notificar o sistema sobre a existência, ou não, de exercício em uma sessão do iGraf"
+  }
+
+ }

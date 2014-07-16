@@ -1,0 +1,3 @@
+package igraf.moduloCentral.eventos;
+
+public interface ModuloCentralDisseminavelEvent {}

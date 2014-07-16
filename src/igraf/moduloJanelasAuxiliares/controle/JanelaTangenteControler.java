@@ -1,0 +1,59 @@
+/**
+ * iGraf - Interactive Graphics on the Internet:  http://www.matematica.br/igraf
+ * iMath Project: http://www.matematica.br
+ * LInE           http://line.ime.usp.br
+ * 
+ * @author RP, LOB
+ *
+ * @description
+ *
+ * @see 
+ *
+ * @credits
+ * This source code must be credited to iMath Project. In order to contribute, please
+ * contact the iMath coordinator Leônidas O. Brandão.
+ *
+ * O código fonte deste programa deve ser creditado ao projeto iMática. Para contribuir,
+ * por favor contate o coordenador do projeto iMatica, professor Leônidas O. Brandão.
+ *
+ **/
+
+package igraf.moduloJanelasAuxiliares.controle;
+
+import igraf.basico.event.ChangeLanguageEvent;
+import igraf.basico.io.ResourceReader;
+import igraf.moduloCentral.eventos.DesenhoTangenteEvent;
+import igraf.moduloCentral.eventos.GraphicOnScreenChangedEvent;
+import igraf.moduloJanelasAuxiliares.visao.tangente.JanelaTangente;
+import difusor.CommunicationFacade;
+import difusor.evento.CommunicationEvent;
+
+public class JanelaTangenteControler extends JanelaController {
+
+ private JanelaTangente jt;
+
+ public JanelaTangenteControler (CommunicationFacade module, boolean getEvents) {
+  super(module, getEvents);
+  }
+
+
+ public void tratarEventoRecebido (CommunicationEvent ie) {
+  super.tratarEventoRecebido(ie);
+
+  if (ie instanceof ChangeLanguageEvent) {
+   if (jt != null) jt.updateLabels();
+   }
+  else
+  if (ie.getCommand().equals(ResourceReader.msg("mcTgVer"))) {
+   jt = new JanelaTangente(this);
+   preencheChoiceFuncoes(jt.getChoice());
+   }
+  else
+  if (ie instanceof DesenhoTangenteEvent && jt != null)
+   jt.atualizaLabels((DesenhoTangenteEvent)ie);
+  else
+  if (ie instanceof GraphicOnScreenChangedEvent && jt != null)
+   preencheChoiceFuncoes(jt.getChoice());
+  }
+
+ }

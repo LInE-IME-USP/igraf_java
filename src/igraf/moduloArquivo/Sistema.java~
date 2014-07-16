@@ -1,0 +1,581 @@
+/*
+ * iGraf - Interactive Graphics on the Internet: http://www.matematica.br/igraf
+ * 
+ * Free interactive solutions to teach and learn
+ * 
+ * iMath Project: http://www.matematica.br
+ * LInE           http://line.ime.usp.br
+ *
+ * @author Leo^nidas OB, RP
+ *
+ * @version first version from 06/05/2005
+ * 
+ * @description
+ * Classe que trata dos eventos relacionados com a gravação
+ * e a recuperação  de gráficos produzidos no sistema iGraf.
+ *
+ * @see igraf/moduloArquivo/Arquivo.java
+ *  
+ * @credits
+ * This source is free and provided by iMath Project (University of São Paulo - Brazil). In order to contribute, please
+ * contact the iMath coordinator Leônidas O. Brandão.
+ *
+ * O código fonte deste programa é livre e desenvolvido pelo projeto iMática (Universidade de São Paulo). Para contribuir,
+ * por favor contate o coordenador do projeto iMatica, professor Leônidas O. Brandão. 
+ * 
+ */
+
+package igraf.moduloArquivo;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
+import java.net.URLConnection;
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.StringTokenizer;
+import java.util.Vector;
+import javax.swing.filechooser.FileFilter;
+
+public class Sistema {
+
+  private static final String INPUT_ENC = "ISO-8859-1"; // "UTF-8" "ISO8859-1"
+
+  // Fixa padrão
+  public static final Character.UnicodeBlock UNICODE = Character.UnicodeBlock.BASIC_LATIN;
+
+  public static final String EXERCICIO_WEB = "exercise: web"; // marca para indicar tratar-se de arquivo com exercício criptografado
+
+  private static String plataforma;
+  private static String sep;
+  private static String vmVendedor;
+  private static String vmVersao;
+  private static String mrjVersao;
+
+  private static boolean determinaSerPossivelCriarArquivos = false;
+  private static boolean determinaSerPossivelExecutarArquivos = false;
+  private static boolean determinaSerPossivelLerPropriedadesSistema = false;
+  private static boolean possivelCriarArquivos = false;
+  private static boolean possivelExecutarArquivos = false;
+  private static boolean possivelLerPropriedadesSistema = false;
+  private static boolean possivelSerSU = false;
+  private static boolean pathChecked = false;
+  private static boolean checkPathResult = false;
+
+
+  // ----------------------------------------
+  // Converte caractere: inicio
+
+  // Table to Unicode
+  //_   0: á -> 00e1
+  //_   1: à -> 00e0
+  //_   2: â -> 00e2
+  //_   3: ã -> 00e3
+  //_   4: é -> 00e9
+  //_   5: ê -> 00ea
+  //_   6: í -> 00ed
+  //_   7: ó -> 00f3
+  //_   8: õ -> 00f5
+  //_   9: ô -> 00f4
+  //_  10: ú -> 00fa
+  //_  11: ç -> 00e7
+  //_  12: Á -> 00c1
+  //_  13: À -> 00c0
+  //_  14: Â -> 00c2
+  //_  15: Ã -> 00c3
+  //_  16: É -> 00c9
+  //_  17: Ê -> 00ca
+  //_  18: Í -> 00cd
+  //_  19: Ó -> 00d3
+  //_  20: Ô -> 00d4
+  //_  21: Ô -> 00d4
+  //_  22: Ú -> 00da
+  //_  23: Ç -> 00c7
+
+  private static char [] tabelaLatin =
+    { 'á',       'à',       'â',       'ã',       'é',       'ê',       'í',       'ó',       'õ',       'ô',       'ú',       'ç',
+      'Á',       'À',       'Â',       'Ã',       'É',       'Ê',       'Í',       'Ó',       'Ô',       'Ô',       'Ú',       'Ç'   };
+
+  private static String [] tabelaISO =
+    { "\u00e1", "\u00e0", "\u00e2", "\u00e3", "\u00e9", "\u00ea", "\u00ed", "\u00f3", "\u00f5", "\u00f4", "\u00fa", "\u00e7",
+      "\u00c1", "\u00c0", "\u00c2", "\u00c3", "\u00c9", "\u00ca", "\u00cd", "\u00d3", "\u00d4", "\u00d4", "\u00da", "\u00c7"   };
+
+  public static String trocaCaractere (char ch) {
+    if (!Character.isLetter(ch)) return ch+"";
+    for (int i=0; i<tabelaLatin.length; i++)
+      if (ch==tabelaLatin[i]) {
+        return tabelaISO[i];
+        }
+    return ch+"";
+    }
+
+  // Converte arquivo texto, internacionalizando-o
+  public static String converteInternacionaliza (String str) {
+    String strFinal = "";
+    int tam = str.length();
+    if (str==null || tam==0) return str;
+    for (int i=0; i<tam; i++) {
+      strFinal += trocaCaractere(str.charAt(i));
+      }
+    return strFinal;
+    }
+
+  // Converte caractere: fim
+  // ----------------------------------------
+
+
+  // ----
+  // Codifica/decodifica: para exercícios
+
+  // igraf/sessao/Sessao.java:
+  // . void refazGrafico (int key, String arg): case Acao.habilitarEnvioResposta: mf.buttonPanel.me.menuExercicio(); break;
+
+  private static final String PADRAO = "ISO8859_1"; // descriptografa(...): "str = new String(saida,0,saida.length,PADRAO);"
+  private static char [] vetorHexa = { '0' , '1' , '2' , '3' ,'4' , '5' , '6' , '7' , '8' , '9' , 'a' , 'b' ,'c' , 'd' , 'e' , 'f' };
+
+
+  private static int valorByte (char c) {
+    try {
+      if ('0' <= c && c <= '9') {
+        return c - '0' ;
+        }
+      else if ( 'a' <= c && c <= 'f') {
+        return c - 'a' + 0xa ;
+        }
+      else if ( 'A' <= c && c <= 'F') {
+        return c - 'A' + 0xa ;
+        }
+      else { // eliminei o "throw" para não encher a tela c/ msg de erro!
+        //  throw new IllegalArgumentException("Caractere HEXA inválido: "+c);
+        System.err.println("Erro: caractere HEXA inválido: "+c); //"Invalid hex character: " + c );
+        return -1; //
+        }
+      } catch (java.lang.Exception e) { // para não "matar" o applet
+      System.err.println("Erro: caractere HEXA inválido: "+c+": "+e);
+      return -1; //
+      }
+    }
+
+  public static byte[] converteHexaParaByte (String s) {
+    int stringLength = s.length() ;
+    try {
+      if ( (stringLength & 0x1) != 0 ) {
+        //  throw new IllegalArgumentException("converteHexaParaByte precisa de um número ímpar de números de caracteres hexadecimais" );
+        System.err.println("Erro: converte Hexa para Byte precisa de um número ímpar de números de caracteres hexadecimais" );
+        }
+      } catch (java.lang.Exception e) {
+      System.err.println("Erro: em criptografia, precisa de um número ímpar de números de caracteres hexadecimais: "+e);
+      }
+    byte [] b = new byte[ stringLength / 2 ];
+    int i=0, j, cont_erros = 0;
+    boolean erro;
+    String erro_str1 = "";
+    try {
+      for (i=0, j=0; i<stringLength; i+=2, j++) try  {
+        erro = false;
+        int high= valorByte(s.charAt(i  ));
+        int low = valorByte(s.charAt(i+1));
+        if (high==-1) { int i1 = s.charAt(i);   erro=true; if (cont_erros++==0) erro_str1="(1: "+i+","+i1+") = ["+i1+","+s.charAt(i+1)+"]";   }
+        if (low ==-1) { int i2 = s.charAt(i+1); erro=true; if (cont_erros++==0) erro_str1="(2: "+i+","+i2+") = ["+s.charAt(i)+","+i2+"]";   }
+        // System.err.println("Erro na conversão de HEXA para BYTE: ("+i2+","+(i+1)+")");
+        if (!erro)
+          b[j] = (byte) ( ( high << 4 ) | low );
+        } catch (java.lang.Exception e) {
+        // if (cont_erros==1) e.printStackTrace();
+        }
+      } catch (java.lang.Exception e) {
+      System.err.println("Erro: na conversão de HEXA para BYTE (1): "+e+" na posição "+(i+1));
+      // e.printStackTrace();
+      return b;
+      }
+    if (cont_erros>0)  System.err.println("Erro: na conversão de HEXA para BYTE: "+cont_erros+"!\nPrimeiro erro em: "+erro_str1);
+    return b;
+    }
+
+  // Codifica
+  public static String criaHexa (byte[] b) {
+    StringBuffer sb = new StringBuffer( b.length * 2 );
+    for (int i=0; i<b.length; i++) {
+      sb.append( vetorHexa [ ( b[ i] & 0xf0 ) >>> 4 ] ) ;
+      sb.append( vetorHexa [ b[ i] & 0x0f ] ) ;
+      }
+    return sb.toString();
+    }
+
+  // sem uso
+  public static void testa () {
+    String teste = "abcd-áéíóú-ç", str0 = "", str1;
+    char c, c0, c1;
+    System.out.println("Testa: "+teste+" ");
+    // Pega o formato Unicode de "\\u00"+i (a primeira '\' não existe, é que sem ela dá erro, pois não existe o unicode "00" apenas)
+
+    // - Codifica -
+    try { // tentar converter utilizando algum PADRAO de codificacao: "ISO8859_1", "UTF-8"
+      str0 = criaHexa(teste.getBytes(PADRAO)); // codifica
+      }
+    catch (java.io.UnsupportedEncodingException e) {
+      System.err.println("Erro: criptografa: nao foi possivel STRING para BYTES[] com padrao "+PADRAO+": "+e);
+      }
+
+    // - Decodifica -
+    byte [] saida = converteHexaParaByte(str0);
+    str1 = new String(saida);
+    try { // tentar converter utilizando algum PADRAO de codificacao: "ISO8859_1", "UTF-8"
+      str1 = new String(saida,0,saida.length,PADRAO);
+      }
+    catch (Exception e) {
+      System.err.println("Erro: descriptografa: nao foi possivel converter BYTES[] para STRING com padrao "+PADRAO+": "+e);
+      }
+    System.out.println(teste+": código="+str0+" -> decodificado="+str1);
+    // for (int i=0; i<teste.length(); i++) { c = teste.charAt(i); System.out.println(i+": "+teste.charAt(i)+" -> "+str0+" -> "+str1);  }
+    }
+
+  // Codifica/decodifica: para exercícios - final
+  // ----
+
+
+  // 
+  public static Character.UnicodeBlock getUnicodeBlock (String arquivo_str) {
+    // UnicodeBlock.of() áéíóú
+    if (arquivo_str==null || arquivo_str=="")
+      return UNICODE;
+    return Character.UnicodeBlock.of(arquivo_str.charAt(0));
+    }
+
+
+  /*
+   * Private class to provides filter to read/register files
+   * Usage:
+   * - FileFilterIGraf filter = new ExtensionFileFilterIGraf("jpg, jpeg", new String[] { "JPG", "JPEG" });
+   * - fileChooser.addChoosableFileFilter(filter); // JFileChooser fileChooser
+   */
+  public static FileFilterIGraf getFileFilterIGraf (String description, String extensions) {
+    return new FileFilterIGraf(description, extensions);
+    }
+  public static FileFilterIGraf getFileFilterIGraf (String description, String extensions []) {
+    return new FileFilterIGraf(description, extensions);
+    }
+
+
+  // gravar arquivo
+  public static void gravar (String nome, String arquivo_str, String msg_org) 
+  throws IOException{
+    // System.out.println("Sistema: "+nome);
+    // para não dar problema de acento ISO -> UTF...
+      FileOutputStream fos = new FileOutputStream(nome);
+      Writer out = new OutputStreamWriter(fos, "ISO8859_1"); // OutputStreamWriter(fos, "UTF8");
+      out.write(arquivo_str);
+      out.close();
+    }
+
+  // ler arquivo
+
+  // Verifica se "nome" descreve um arquivo válido, "legível"
+  public static boolean isFile (String nome) {
+    File arq;
+    try {
+      arq = new File(nome);
+      return arq.isFile();
+      } catch (Exception e) {
+      return false;
+      }
+    }
+
+  public static String [] readFileFromHDlines (String nome, String msg_org) {
+    return readFileFromHDgeneral(nome,msg_org,true);
+    }
+
+  // Chamada: 
+  // - igraf/IGraf.java     : main(...) -> igraf.io.Sistema.leConteudoArquivo(...)
+  // - igraf/io/Arquivo.java: void loadFile(): arquivoModel.refazSessao(Sistema.readFileFromHD(nomeArquivo,ResourceReader.msg("msgAbrirArq")))
+  public static String readFileFromHD (String nome, String msg_org) {
+    String [] str = readFileFromHDgeneral(nome,msg_org,false);
+    return str!=null ? str[0] : null;
+    }
+
+  // igraf.IGraf.main(IGraf.java:243)
+  public static String [] readFileFromHDgeneral (String nome, String msg_org, boolean devolve_linhas) {
+    String str_arq = "", linha;
+    Vector vet_linhas = null;
+    String [] str_linhas = null;
+    int cont_linhas = 0;
+    if (devolve_linhas) vet_linhas = new Vector();
+    //try {String str=""; System.err.println(str.charAt(3));   } catch(Exception e) {e.printStackTrace();   }
+
+    try {
+      BufferedReader buffer = new BufferedReader(new InputStreamReader(new FileInputStream(nome), INPUT_ENC));
+      while (( (linha = buffer.readLine())!=null)) { //
+        cont_linhas++;
+        if (str_arq!="") str_arq += "\n";
+        if (devolve_linhas)
+          vet_linhas.addElement(linha);
+        else
+          str_arq += linha;
+        // System.out.println(" - "+linha); //
+        }
+      buffer.close();
+    } catch (Exception e) {
+      System.err.println("Erro: na leitura do arquivo " + nome + " " + msg_org + ": " + e.toString());
+      return null;
+      }
+    if (devolve_linhas) try {
+      str_linhas = new String[cont_linhas];
+      for (int i=0; i<cont_linhas; i++)
+        str_linhas[i] = (String)vet_linhas.elementAt(i);
+      return str_linhas;
+      } catch (Exception e) { e.printStackTrace(); return str_linhas;   }
+    str_linhas = new String[1];
+    str_linhas[0] = str_arq;
+    return str_linhas;
+    }
+  // ----------------------------------------
+
+
+  public static String sep () {
+    if (getPlataforma().equals("win")) sep = "\\";
+    else sep = "/";
+    return sep;
+    }
+
+  // Devolve apenas o último nome do arquivo.
+  // Se digitou "java igeom.IGeom ../temp/exerc6-2b.geo", limpaNomeArquivo("../temp/exerc6-2b.geo") devolve "exerc6-2b.geo"
+  public static String limpaNomeArquivo (String nome) {
+    String // vetNomes []  = new String[2], 
+    sep, token = "";
+    boolean lista = false;
+    if (getPlataforma().equals("win")) sep = "\\";
+    else sep = "/";
+    if (lista) System.out.println("Sistema.limpaNomeArquivo(String nome) nome="+nome+", sep=<"+sep+">");
+    StringTokenizer st = new StringTokenizer(nome, sep);
+    while (st.hasMoreTokens()) {
+      if (lista) System.out.println(" "+token);
+      token = st.nextToken();
+      }
+    return token;
+    }
+
+
+  // Devolve apenas o "path" do arquivo
+  // Se "/home/leo/projetos/paginas/geom/igeom/novo/./../temp/exerc6-2b.geo/exerc6-2b.geo" 
+  // devolve "/home/leo/projetos/paginas/geom/igeom/novo/"
+  // Chamado em: IGeom.main(String[]), usado em "GravadorLeitor.leia(String,String)" p/ acertar "path" e nome de arquivo,
+  public static String [] limpaNomeDiretorioArquivo (String nomeC) { 
+    boolean lista = false; //true; // 
+    String  vetNomes []  = new String[2], 
+    sep, token = "", tokenAnt = "", dir = "", nomeArq;
+    if (getPlataforma().equals("win")) sep = "\\";
+    else sep = "/";
+    Sistema.sep = sep;
+    if (lista) System.out.println("Sistema.limpaNomeDiretorioArquivo(String nome) nomeC="+nomeC+", sep=<"+sep+">");
+    //HH nomeArq = limpaNomeArquivo(nomeC);
+    nomeArq = vetNomes[0] = limpaNomeArquivo(nomeC); // pega apenas o nome "final" do arquivo, sem caminho
+    StringTokenizer st = new StringTokenizer(nomeC, sep);
+    while (st.hasMoreTokens()) {
+      if (lista) System.out.print(" token="+token);
+      if (!token.equals("")) {
+
+        if (token.equals(".")) {
+          // tokenAnt = token;
+          if (lista) System.out.println(" 1: dir="+dir);
+          }
+        else
+          if (token.equals("..")) {  //&& (dir.length()-tokenAnt.length())>0) // elimine o token anterior
+            if (dir.length()>1) {
+              dir = dir.substring(0,dir.length()-tokenAnt.length()-1); // desconte o tamanho do token anterior somado ao tam. do separador
+              if (lista) System.out.println("tokenAnt="+tokenAnt+" 2.a: dir="+dir);
+              }
+            else { dir = sep + token;
+            if (lista) System.out.println("token==\"..\")="+(token.equals(".."))+"? 2.b: dir="+dir);
+              }
+            }
+          else
+            if (!token.equals(".") && !token.equals(nomeArq)) {
+              dir += sep + token;
+              tokenAnt = token;
+              if (lista) System.out.println(" 3: dir="+dir);
+              }
+            else
+              if (lista) System.out.println(" 4: dir="+dir);
+        }
+
+      token = st.nextToken();
+      }
+    // dir = dir.substring(0,dir.length()-1); // eliminar o "sep"
+    vetNomes[1] = dir; // pega apenas o nome "final" do arquivo, sem caminho
+    //    return dir;
+    return vetNomes; // devolve nome do arquivo [0] e diretório [1]
+    }
+
+
+  public  static String getMVVersao () {
+    if (vmVersao == null)
+      try {
+        vmVersao = System.getProperty("java.version").toLowerCase();
+      } catch (Exception e) {
+        }
+    return vmVersao;
+    }
+
+  public  static String getMRJVersion () {
+    if (mrjVersao == null)
+      try {
+        mrjVersao = System.getProperty("mrj.version").toLowerCase();
+      } catch (Exception e) {
+        }
+    return mrjVersao;
+    }
+
+  public  static String getPlataforma () {
+    if (plataforma == null) {
+      String osName = System.getProperty("os.name").toLowerCase();
+      plataforma = osName;
+      }
+    return plataforma;
+    }
+
+
+  public static String dadosUsuario () {
+    String dados_str = ""; //"[applet]"+MARCALNH+"\n"; // se for applet dará erro de "sun.applet.AppletSecurityException: checkpropsaccess.key"
+    String str1, str2, str3;
+    try {
+      str1 = System.getProperty("user.dir")+"; ";
+      } catch (java.lang.Exception e) {
+      str1 = "";
+      }
+    try {
+      str2 = System.getProperty("user.home")+"; ";
+      } catch (java.lang.Exception e) {
+      str2 = "";
+      }
+    try {
+      str3 = System.getProperty("java.home")+"; ";
+      } catch (java.lang.Exception e) {
+      str3 = "";
+      }
+    if (str1!="" || str2!="" || str3!="") { 
+      str1  = "[ "+str1;
+      str3 += " ]\n";
+      }
+    try {
+      dados_str = "[" + DateFormat.getDateTimeInstance().format(new Date(System.currentTimeMillis()));
+      //InetAddress inetaddress; // se quiser pegar também a máquina de quem gravou
+      //try {
+      //     inetaddress = InetAddress.getLocalHost();
+      //   } catch (java.net.UnknownHostException unknownhostexception) {
+      //     inetaddress = null;
+      //   }
+      dados_str +=  "; "+ System.getProperty("user.name") // + "@" + inetaddress);
+      +   "]\n";
+      } catch (java.lang.Exception e) {
+      dados_str += "]\n";
+      //System.out.println("GL: "+e);
+      }
+    return dados_str + str1 + str2 + str3;
+    }
+
+  public  static String homeUsuario () {
+    String test = "";
+    try {
+      test = System.getProperty("user.home");
+      possivelLerPropriedadesSistema = true;
+      } catch (Throwable e) {
+        System.err.println("Error: in property user.home");
+        }
+    return test;
+    }
+
+  public  static boolean ehPossivelLerPropriedadesSistema () {
+    if (determinaSerPossivelLerPropriedadesSistema) try {
+      //L PrivilegeManager.enablePrivilege("UniversalPropertyAccess");
+      possivelLerPropriedadesSistema = true;
+      } catch(Exception e) {
+        possivelLerPropriedadesSistema = false;
+        }
+    return possivelLerPropriedadesSistema;
+    }
+
+
+  public static boolean ehPossivelCriarArquivos () {
+    if (!determinaSerPossivelCriarArquivos) try {
+      possivelCriarArquivos = true;
+      } catch (Exception e) {
+        possivelCriarArquivos = false;
+        }
+    else try {
+        String test = System.getProperty("user.home");
+        possivelCriarArquivos = true;
+        } catch (Throwable e) {
+          possivelCriarArquivos = false;
+          }
+    return possivelCriarArquivos;
+    }
+
+  public  static boolean ehPossivelExecutarArquivos () {
+    if (!determinaSerPossivelExecutarArquivos) try {
+       possivelExecutarArquivos = true;
+       } catch(Exception e) {
+         possivelExecutarArquivos = false;
+         }
+    else try {
+      String test = System.getProperty("user.home");
+      possivelExecutarArquivos = true;
+      } catch (Throwable e) {
+        possivelExecutarArquivos = false;
+        }
+    return possivelExecutarArquivos;
+    }
+
+  // sem uso
+  // Comunicação via HTTP
+  // Lista 'getDate()', 'getContentType()', 'getExpiration()', 'getLastModified()', 'getContentLength()'
+  public static void URLConn_Lista (URLConnection urlConn) {
+    try {
+      //Sistema.URL_lista(urlConn);
+      System.out.println("  -> Data       : "+urlConn.getDate());
+      System.out.println("  -> Tipo       : "+urlConn.getContentType());
+      System.out.println("  -> Expira em  : "+urlConn.getExpiration());
+      System.out.println("  -> Últ. Mod.  : "+urlConn.getLastModified());
+      System.out.println("  -> Comprimento:"+urlConn.getContentLength());
+    } catch (Exception e) {
+      System.out.println("[Sistema!URLConn_lista] Erro: "+e);
+      }
+    }
+
+
+  // sem uso
+  // URL não pode ter parâmetro para GET
+  // P.e., "http://143.107.44.107/~leo/i/Resposta.php&id=2931465" dá erro
+  public static String URLConn_Leia (URLConnection urlConn) {
+    String str = ""; int c;
+    InputStream input = null;
+    try {
+      try {
+        input = urlConn.getInputStream();
+      } catch (java.io.FileNotFoundException e) {
+        System.out.println("[Sistema!URLConn_Leia] Erro na abertura de urlConn: "+urlConn.getURL());
+        return "";
+        }
+     int i, j = 0;
+     // o PHP tem que fornecer tudo em uma só linha!
+     i = urlConn.getContentLength();
+     System.out.println("[Sistema!URLConn_Leia] urlConn.getContentLength()="+i);
+     while (((c=input.read())!=-1) && (--i>0)) {
+       System.out.println((char)c);
+       str += c;
+       }
+    } catch (Exception e) {
+      System.out.println("[Sistema!URLConn_Leia] Erro: "+e);
+      }
+    return str;
+    }
+
+
+  }

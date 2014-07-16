@@ -1,0 +1,400 @@
+/*
+ * iGraf - Interactive Graphics on the Internet: http://www.matematica.br/igraf
+ * 
+ * Free interactive solutions to teach and learn
+ * 
+ * iMath Project: http://www.matematica.br
+ * LInE           http://line.ime.usp.br
+ *
+ * @author Leo^nidas OB, RP
+ *
+ * @version first version from 03/11/2006
+ * 
+ * @description
+ * Classe que trata dos eventos relacionados com a gravação
+ * e a recuperação  de gráficos produzidos no sistema iGraf.
+ *
+ * @see igraf/moduloArquivo/modelo/ArquivoModel.java:
+ *  
+ * @credits
+ * This source is free and provided by iMath Project (University of São Paulo - Brazil). In order to contribute, please
+ * contact the iMath coordinator Leônidas O. Brandão.
+ *
+ * O código fonte deste programa é livre e desenvolvido pelo projeto iMática (Universidade de São Paulo). Para contribuir,
+ * por favor contate o coordenador do projeto iMatica, professor Leônidas O. Brandão. 
+ * 
+ */
+
+package igraf.moduloArquivo;
+
+//import java.awt.FileDialog; //javax/swing/JFileChooser - new java.awt.FileDialog((java.awt.Frame) null).setVisible(true);
+//import java.awt.Frame;
+import java.lang.System;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Date;
+import javax.swing.JOptionPane;
+import javax.swing.JFrame;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
+
+import igraf.IGraf;
+import igraf.basico.io.ResourceReader;
+import igraf.basico.util.Configuracoes;
+import igraf.moduloArquivo.controle.ArquivoController;
+import igraf.moduloArquivo.modelo.ArquivoModel;
+
+
+public class Arquivo {
+
+ //DEBUG: if IGraf.IS_DEBUG get a complete path of this class
+ public static final String IGCLASSPATH = "igraf/moduloArquivo/Arquivo.java";
+
+ //DEBUG:
+ private static String errorLog = ""; // in case of internal error of iGraf: register it to debug
+ public static void addLogError (String source, String msg) {
+   errorLog += "[" + source + " :: " + msg + "], ";
+   }
+
+ private ArquivoModel arquivoModel = new ArquivoModel();
+ private static final String IGRAF = "iGraf.jar";
+
+
+ private JFileChooser fileChooser = null; // dialog window to load/register GRF file when application; applet => always null
+ private String nomeArquivo = null;
+ private String currentPath = "";// java.home, user.dir, user.name, user.home
+ private JFrame frame;
+
+
+ public Arquivo (ArquivoController ac) {
+  frame = new JFrame(".: iGraf: www.matematica.br/igraf :.");
+  //r fileChooser = new JFileChooser(frame);
+  String strUserDir = "";
+  if (IGraf.ehApplet)
+    strUserDir = IGraf.getInstanceIGraf().getCodeBase() + ""; // file:/home/leo/projetos/iMA/iMA0/igraf/novo/
+  else {
+    strUserDir = System.getProperty("user.dir");
+    fileChooser = new JFileChooser(strUserDir);
+    }
+  //T System.out.println("src/igraf/moduloArquivo/Arquivo.java: Arquivo(...): user.dir=" + strUserDir);
+  this.currentPath = strUserDir;
+  }
+
+
+ public ArquivoModel getModel () {
+  return arquivoModel;
+  }
+
+
+ /**
+  * Gravar em arquivo GRF a construção que está na aba ativa do iGraf / Store in GRF file all information in active tab of iGraf
+  * Chamado com a opção "Gravar" / Called with option "Save"
+  * @return
+  */
+ public boolean gravarGrafico () {
+  //T System.out.println(IGraf.debugErrorMsg(IGCLASSPATH) + IGraf.getInstanceIGraf().getLanguage());
+  if (naoGravado()) // se o arquivo nunca foi gravado, solicita um nome
+   return gravarComo(ResourceReader.msg("msgTipoArq")); // Arquivo
+  else {
+   registerCurrentTabContent(); // se já tem nome, grava sem perguntar nada
+   return true;
+   }
+  }
+
+
+ /**
+  * Exibe um JFileChooser para que o usuário escolha o nome com que deseja gravar um arquivo do iGraf.
+  * From: igraf/moduloArquivo/controle/ArquivoController.java: tratarEventoRecebido(CommunicationEvent ie)
+  * Devolve true caso a gravação tenha sido realizada
+  * @param String nomeArquivo
+  */
+ public boolean gravarComo (String tipoArq) { // tipoArq = File ("arquivo")
+
+  String [] strValor1 = { tipoArq };
+  String strTitle = ResourceReader.msgComVar("msgGravarTipoArq","OBJ",strValor1);
+  nomeArquivo = dialogNomeArquivo("grf", tipoArq, strTitle); // open dialog and get the file name chose (if valid)
+  if (nomeArquivo==null) {
+    System.err.println(IGraf.debugErrorMsg(IGCLASSPATH) + "File " + nomeArquivo);
+    return false; // error or canceled
+    }
+
+  //T
+System.out.println("src/igraf/moduloArquivo/Arquivo.java: gravarComo(" + tipoArq + "): nomeArquivo=" + nomeArquivo);
+
+  if (nomeArquivo!=null && !nomeArquivo.equalsIgnoreCase("null")) {
+   registerCurrentTabContent();
+   return true;
+   }
+  else {
+   nomeArquivo = null;
+   return false;
+   }
+  } // public boolean gravarComo(String tipoArq)
+
+
+ //setDialogType(int): OPEN_DIALOG; SAVE_DIALOG; CUSTOM_DIALOG  //JFileChooser.APPROVE_OPTION
+ //OPEN_DIALOG=0; SAVE_DIALOG=1; CUSTOM_DIALOG=2
+
+ // From: boolean gravarComo(String tipoArq)
+ // From: void gerarHTML()
+ private String dialogNomeArquivo (String ext, String tipoArq, String strTitle) { // tipoArq is {'File', ''}
+  String strTitleG = "iGraf - " + strTitle;
+
+  //http://java.sun.com/docs/books/tutorial/uiswing/components/filechooser.html
+  // path in 'this.currentPath'
+  fileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
+  fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+  //fileChooser.setDialogTitle(String)
+
+  FileFilter filter = Sistema.getFileFilterIGraf(ext, new String[] { ext });
+  fileChooser.addChoosableFileFilter(filter);
+
+  //return: CANCEL_OPTION=1; APPROVE_OPTION=0; ERROR_OPTION=-1
+  int returnVal = fileChooser.showDialog(frame, strTitleG);
+  if (returnVal==JFileChooser.CANCEL_OPTION || returnVal==JFileChooser.ERROR_OPTION) {
+    if (returnVal==JFileChooser.ERROR_OPTION)
+      System.err.println(IGraf.debugErrorMsg(IGCLASSPATH) + "Error: something wrong with file choosen!");
+    else
+      System.err.println(IGraf.debugErrorMsg(IGCLASSPATH) + "Register canceled!");
+    return null;
+    }
+
+  if (returnVal==JFileChooser.APPROVE_OPTION) { // String getName(File f); String getDescription(File f); String getTypeDescription(File f)
+    File file = fileChooser.getSelectedFile();
+    nomeArquivo = fileChooser.getName(file);
+    // String strName = fileChooser.getName(file), strDescription = fileChooser.getDescription(file), strTypeDescription = fileChooser.getTypeDescription(file);
+    // System.out.println("src/igraf/moduloArquivo/Arquivo.java: dialogNomeArquivo(" + tipoArq + "): depois: strName="+strName+", strDescription="+strDescription+ ", strTypeDescription="+strTypeDescription);
+    }
+  String str = verificaExtensao(nomeArquivo, ext);
+  // System.out.println(IGCLASSPATH + "dialogNomeArquivo(" + tipoArq + "): depois: nomeArquivo=" + nomeArquivo + ", returnVal="+returnVal+": " + str);  
+
+  return currentPath + "/" + str;
+  } // private String dialogNomeArquivo(String ext, String tipoArq, String strTitle)
+
+
+ public void gerarHTML () {
+  nomeArquivo = dialogNomeArquivo("html", "HTML", ResourceReader.msg("msgExportaPagWeb"));
+System.out.println("src/igraf/moduloArquivo/Arquivo.java: gerarHTML(): nomeArquivo=" + nomeArquivo);
+  gravarHTML();
+  }
+
+ private void gravarHTML () {
+  String texto = cabecalhoHTML() + codigoApplet() + rodapeHTML(); //L  
+  try {
+   Sistema.gravar(nomeArquivo, texto, ResourceReader.msg("arquivo")); // "Arquivo"
+   } catch (Exception e) { } //- IOException e
+  }
+
+
+ // From: dialogNomeArquivo(String tipoArq) <- gravarComo(String tipoArq) <- igraf.moduloArquivo.controle.ArquivoController.tratarEventoRecebido(ArquivoController)
+ private String verificaExtensao (String nomeArq, String extensao) {
+  //DEBUG: try{String srtA=""; System.out.print(srtA.charAt(3));}catch(Exception e) {e.printStackTrace(); }
+  int dotIndex = nomeArq.lastIndexOf('.');
+  String preliminarName = nomeArq.substring(dotIndex+1);
+//System.out.println("src/igraf/moduloArquivo/Arquivo.java: verificaExtensao");
+
+  if (dotIndex > 0 && preliminarName.equals(extensao)) {
+   return nomeArq;
+   }
+  if (dotIndex == -1 && nomeArq.length() > 0) {
+   return nomeArq + "." + extensao;
+   }
+
+  System.err.println("Error: this is an invalid iGraf file name! I will use 'ArquivoDoIGraf." + extensao + "'");
+  return "ArquivoDoIGraf." + extensao;
+  }
+
+
+ /*
+  * Também usado para montar sessão e envia via Web: chamado em 'igraf/V/PainelBotoesExercicio.java
+  */
+ public String constroiArquivo () { 
+  return cabecalho() + "\r\n" + arquivoModel.getListaSessaoAsString();
+  }
+
+
+ /**
+  * Method to start the register processo of the current tab as a text information under iGraf standart
+  */
+ private void registerCurrentTabContent () {
+  String texto = constroiArquivo(); //L
+  try {
+   Sistema.gravar(nomeArquivo, texto, "Arquivo");
+  } catch (Exception e) {
+   System.err.println("Error: when I try to save the file under the name '"+nomeArquivo+"'");
+   e.printStackTrace();
+   }
+  }
+
+
+ /**
+  * Exibe um JFileChooser para que o usuário escolha o arquivo que deseja carregar para o sistema iGraf
+  * @see igraf/moduloSuperior/visao/MenuFile.java: define button "File" and its sub menu
+  * @param nomeArquivo
+  */
+ private void selecionaArquivo () { // LOAD == 0
+  //T System.out.println("src/igraf/moduloArquivo/Arquivo.java: selecionaArquivo()");
+  fileChooser.setDialogType(JFileChooser.OPEN_DIALOG); // javax.swing.JFileChooser
+  fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+  fileChooser.setDialogTitle("grf");
+
+  FileFilter filter = Sistema.getFileFilterIGraf("grf", new String[] { "grf" });
+  fileChooser.addChoosableFileFilter(filter);
+
+  //return: CANCEL_OPTION=1; APPROVE_OPTION=0; ERROR_OPTION=-1
+  int returnVal = fileChooser.showDialog(frame, ResourceReader.msg("msgCarga")); // button load
+  if (returnVal==JFileChooser.CANCEL_OPTION || returnVal==JFileChooser.ERROR_OPTION) {
+    if (returnVal==JFileChooser.ERROR_OPTION)
+      System.err.println(IGraf.debugErrorMsg(IGCLASSPATH) + "Error: something wrong with open file choosen!");
+    else
+      System.err.println(IGraf.debugErrorMsg(IGCLASSPATH) + "Open canceled!");
+    return ;
+    }
+
+  if (returnVal==JFileChooser.APPROVE_OPTION) { // String getName(File f); String getDescription(File f); String getTypeDescription(File f)
+    File file = fileChooser.getSelectedFile();
+    nomeArquivo = fileChooser.getName(file);
+    // String strName = fileChooser.getName(file), strDescription = fileChooser.getDescription(file), strTypeDescription = fileChooser.getTypeDescription(file);
+    // System.out.println("src/igraf/moduloArquivo/Arquivo.java: dialogNomeArquivo(" + tipoArq + "): depois: strName="+strName+", strDescription="+strDescription+ ", strTypeDescription="+strTypeDescription);
+    }
+  String str = verificaExtensao(nomeArquivo, "grf");
+  // System.out.println(IGCLASSPATH + "selecionaArquivo(): depois: nomeArquivo=" + nomeArquivo + ", returnVal="+returnVal+": " + str);  
+  }
+
+
+ public void loadFile () {
+  selecionaArquivo();
+  if (nomeArquivo != null) {
+   arquivoModel.reset();
+   arquivoModel.refazSessao(Sistema.readFileFromHD(nomeArquivo, ResourceReader.msg("msgAbrirArq"))); // msgAbrirArq=Abrir arquivo iGraf
+   arquivoModel.sessionChanged(false);
+   }
+  }
+
+
+ /**
+  * Devolve true se o gráfico que está na tela nunca foi gravado e
+  * false em caso contrário.   Se baseia na idéia de que se o
+  * gráfico já tivesse sido gravado teria um nome armazenado no sistema.
+  * @return true se o gráfico já foi gravado alguma vez.
+  */
+ public boolean naoGravado () {
+  if (nomeArquivo == null) {
+   return true;
+   }
+  return false;
+  }
+
+ 
+ public int desejaGravarAlteracao () {
+  return JOptionPane.showConfirmDialog(null, ResourceReader.msg("msgDesejaGravarSes"), ResourceReader.msg("msgGravarSes"), JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+  }
+
+
+ public void reset () {
+  nomeArquivo = null;
+  }
+
+ private void copiaArquivoJarPara (String destino) {
+  File inputFile = new File(IGRAF);
+  File outputFile = new File(destino + IGRAF);
+  try {
+   FileInputStream in = new FileInputStream(inputFile);
+   FileOutputStream out = new FileOutputStream(outputFile);
+   int c;
+   while ((c = in.read()) != -1)
+    out.write(c);
+   in.close();
+   out.close();
+   } catch (FileNotFoundException e) { }
+  catch (IOException e) { }
+  }
+
+ private boolean existeIgrafJar (String dir) {
+  File file = new File(dir);
+  String [] arqs = file.list();
+  for (int i=0; i < arqs.length; i++)
+   if (arqs[i].equals(IGRAF))
+    return true;  
+  return false;
+  }
+ 
+ // Gera cabeçalho padrão para iGraf
+ public static String cabecalho () {
+  String strU = "<applet>";
+  // If it is not applet, get some user information to register in file GRF
+  if (!IGraf.ehApplet) try { // 'try' for security...
+    strU = System.getProperty("user.name");
+  } catch (Exception e) { } // para evitar erro em 'System.getProperty("user.name")' qdo 'applet'
+
+  String str = "", s_e = "";
+  str = Configuracoes.MARCA_IGRAF + "\r\n" + // "# iGraf: http://www.matematica.br\r\n"   
+        "# iGraf: version " + Configuracoes.getVersion() + "\r\n"+ s_e +
+        "# unicodeblock: " + Sistema.UNICODE + "\r\n" +
+        "# user: " + strU+ "\r\n" +
+        "# last modified: "+ new Date().toString() + "\r\n";
+
+  if (errorLog!=null && errorLog!="") { //DEBUG: message to the developers get information about special errors
+    //TODO: in case of application => better to use a special log file
+    //TODO: in case of applet => better to decompose in several lines
+    str += "# log: " + errorLog + "\r\n";
+    }
+
+  return str;
+  }
+
+ // Export to web page: header
+ private String cabecalhoHTML () {
+  String strHead = "<html>\r\n" +
+  "<head>\r\n" +
+  " <title>.: iGraf :: " + ResourceReader.msg("igraf") + " :.</title>\r\n" +
+  "</head>\r\n\r\n" +
+  "<body>\r\n" +
+  " <h1>" + ResourceReader.msg("igraf") + "</h1><br/>\r\n" +
+  " <b>" + ResourceReader.msg("msgAFmsg6") + "</b><br/>\r\n" + // \ Free interactive solutions to teach and learn\n
+  " <a href=\"http://www.matematica.br/igraf\" title=\"iGraf home page\">iGraf : http://www.matematica.br/igraf</a><br/>\r\n\r\n";
+  return "<!-- \r\n" + cabecalho() + "\r\n-->\r\n" + strHead;
+  }
+
+ // IGraf: getAnswer(): JanelaExercicioController.showAnswerDialog(): igraf.moduloArquivo.controle.ArquivoController.getSessao(): arquivoModel.getListaSessaoAsString()
+
+ // Export to web page: the iGraf insertion into the HTML
+ private String codigoApplet () {
+  // igraf.moduloArquivo.modelo.ArquivoModel arquivoModel
+  String strApplet =
+  " <p align = \"center\">\r\n" +
+  " <applet codebase=\".\" code=\"igraf.IGraf.class\" archive=\"iGraf.jar\" width=832 height=564>\r\n" +
+  "  <param name=\"lang\" value=\"pt\"> <!-- in order to use iGraf with English version, change 'pt' to 'en' -->\r\n" +
+  "  <param name=\"MA_PARAM_Proposition\" value=\"" + arquivoModel.getListaSessaoAsString() + "\">\r\n" +
+  " </applet></p>\r\n";
+  //T System.out.println("src/igraf/moduloArquivo/Arquivo.java: codigoApplet(): " + arquivoModel.getListaSessaoAsString());
+  return strApplet;
+  }
+
+ // Export to web page: footer
+ private String rodapeHTML () {
+  String strFooter = "<p align = \"left\">\r\n<hr size=1\\>" +
+  " <h2><a href=\"http://www.matematica.br/igraf\" title=\"clique aqui para ir para a página oficial do iGraf\" style = \"text-decoration: none\">" +
+  " Confira a última versão do iGraf</a></h2>\r\n\r\n <p>\r\n" +
+  " <font face=\"Arial, Helvetica, sans-serif\" size=1>&nbsp;Página gerada automaticamente pelo\r\n" +
+  " <a href=\"http://www.matematica.br/igraf\">iGraf</a><br>\r\n" +
+  " &nbsp;Coordenação/Desenvolvimento:  Prof. Dr. <a href=\"http://www.ime.usp.br/~leo\"> Leônidas O. Brandão</a><br> \r\n" +
+  " &nbsp;Desenvolvimento: Prof. Ms. <a href=\"http://www.ime.usp.br/~rprado\">Reginaldo do Prado</a></font><br>" +
+  " <hr noshade size=1\\>\r\n" +
+
+  " <table border=\"0\" width=\"100%\">\r\n" +
+  "  <tr><td align=\"left\">\r\n" +
+  "    <font face=\"Arial, Helvetica, sans-serif\" size=\"-1\">\r\n" +
+  "    <a href=\"http://www.ime.usp.br\">Instituto de Matemática e Estatística</a><br>\r\n" +
+  "    <a href=\"http://www.usp.br\">Universidade de São Paulo</a></font></td>\r\n" +
+  " <td align=\"right\"><font face=\"Arial, Helvetica, sans-serif\" size=\"-1\">" +
+  "    <a href=\"http://www.matematica.br\">iMática</a> <br>\r\n" +
+  "    Mate<i>mática</i> <i>I</i>nterativa </td></tr>" +
+  " </table>\r\n</font>\r\n</body>\r\n</html>\r\n";
+  return strFooter;
+  }
+
+ }

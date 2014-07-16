@@ -1,0 +1,87 @@
+/*
+ * iGraf - Interactive Graphics on the Internet: http://www.matematica.br/igraf
+ * 
+ * Free interactive solutions to teach and learn
+ * 
+ * iMath Project: http://www.matematica.br
+ * LInE           http://line.ime.usp.br
+ *
+ * @author RP, LOB
+ * 
+ * @description Help integrated to iGraf. Here is a list with all topics of this manual.
+ * 
+ * @see igraf/moduloAjuda/modelo/ListaTextoAjuda.java: static class with all the manual text
+ * @see igraf/moduloAjuda/visao/componentesDoTexto.java: base JPanel to Topico (with title of explanation) and Paragrafo (with each paragraph)
+ * @see igraf/moduloAjuda/modelo/JPanelBasisTopic.java: 
+ *
+ * @credits
+ * This source is free and provided by iMath Project (University of São Paulo - Brazil). In order to contribute, please
+ * contact the iMath coordinator Leônidas O. Brandão.
+ *
+ * O código fonte deste programa é livre e desenvolvido pelo projeto iMática (Universidade de São Paulo). Para contribuir,
+ * por favor contate o coordenador do projeto iMatica, professor Leônidas O. Brandão. 
+ * 
+ */
+
+package igraf.moduloAjuda.visao.navegador;
+
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import javax.swing.JPanel;
+
+
+import igraf.IGraf;
+import igraf.basico.util.EsquemaVisual;
+import igraf.moduloAjuda.eventos.NavigatorPanelEvent;
+import igraf.moduloAjuda.eventos.NavigatorPanelListener;
+import igraf.moduloAjuda.modelo.ListaTextoAjuda;
+import igraf.moduloAjuda.modelo.JPanelBasisTopic;
+
+
+public class PainelConteudo extends JPanel implements NavigatorPanelListener {
+
+ //DEBUG: if IGraf.IS_DEBUG get a complete path of this class
+ public static final String IGCLASSPATH = "igraf/moduloAjuda/visao/navegador/PainelConteudo.java";
+ // System.err.println(IGraf.debugErrorMsg(IGCLASSPATH)+"Erro: " ...);
+ // IGraf.launchStackTrace()
+
+ private CardLayout cardLayout;
+ private JPanel cardLayoutJPanel;
+
+ public PainelConteudo () {
+  //T System.out.println("PainelConteudo.java: inicio: " + ListaTextoAjuda.getTexto(0));
+  cardLayout = new CardLayout();
+  cardLayoutJPanel = new JPanel(cardLayout);
+  cardLayoutJPanel.setBackground(EsquemaVisual.corFundoParagrafos); // ensure the same background color
+  this.add(cardLayoutJPanel);
+  this.setBackground(EsquemaVisual.corFundoParagrafos); // same in 'igraf/moduloAjuda/visao/componentesDoTexto/Paragrafo.java'
+
+  boolean error = false;
+  String strError = "";
+  JPanelBasisTopic basicTopic; // igraf.moduloAjuda.modelo.JPanelBasisTopic: LinearNavigator
+
+  // Put in this panel all information about this topic
+  for (int i = 0; i < ListaTextoAjuda.numTopicos; i++) try {
+
+    basicTopic = ListaTextoAjuda.getTexto(i);
+    cardLayoutJPanel.add(basicTopic.getRootNameOfTopic(), basicTopic); // add(Container, "string index")
+
+    //T System.out.println(" - " + i + ": '" + basicTopic.getRootNameOfTopic() + "': " + basicTopic);
+  } catch (Exception except) { error = true; strError += " - i=" + i +": " + except.toString() + "\n"; }
+  if (error)
+    System.err.println(IGraf.debugErrorMsg(IGCLASSPATH)+"Error in PainelConteudo: " + strError);
+
+//cardLayoutJPanel.
+//  basicTopic = ListaTextoAjuda.getTexto(0);  cardLayout.show(cardLayoutJPanel, basicTopic.getRootNameOfTopic()); //
+//  cardLayout.show(this, basicTopic.getRootNameOfTopic()); //
+
+  }
+
+
+ public void mudouItemSelecionado (NavigatorPanelEvent npe) {
+  JPanelBasisTopic jPanelBasisTopic = npe.getSelectedText();
+System.out.println("PainelConteudo.java: mudouItemSelecionado: " + jPanelBasisTopic);
+  cardLayout.show(cardLayoutJPanel, jPanelBasisTopic.getRootNameOfTopic());
+  }
+
+ }

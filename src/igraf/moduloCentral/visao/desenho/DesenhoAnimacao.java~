@@ -1,0 +1,255 @@
+/*
+ * iGraf - Interactive Graphics on the Internet: http://www.matematica.br/igraf
+ * 
+ * Free interactive solutions to teach and learn
+ * 
+ * iMath Project: http://www.matematica.br
+ * LInE           http://line.ime.usp.br
+ *
+ * @author RP, LOB
+ *
+ * @description Draws animation to functions with parameters
+ * 
+ * @see igraf/moduloCentral/visao/menu/MenuAnimacao.java                     : draw animation
+ * @see igraf/moduloCentral/controle/desenho/DesenhoAnimacaoController.java  : draw animation
+ * @see igraf/moduloJanelasAuxiliares/controle/JanelaAnimacaoController.java : animation window to select functions
+ * @see igraf/moduloJanelasAuxiliares/visao/animacao/JanelaAnimacao.java     : animation window to select functions
+ *  
+ * @credits
+ * This source is free and provided by iMath Project (University of São Paulo - Brazil). In order to contribute, please
+ * contact the iMath coordinator Leônidas O. Brandão.
+ *
+ * O código fonte deste programa é livre e desenvolvido pelo projeto iMática (Universidade de São Paulo). Para contribuir,
+ * por favor contate o coordenador do projeto iMatica, professor Leônidas O. Brandão. 
+ * 
+ */
+
+package igraf.moduloCentral.visao.desenho;
+
+import java.awt.Color;
+import java.awt.Graphics2D;
+
+import igraf.IGraf;
+import igraf.basico.io.ResourceReader;
+import igraf.basico.util.GeraPoligono;
+import igraf.moduloCentral.visao.plotter.GraphPlotter;
+import igraf.moduloSuperior.controle.entrada.Analisa;
+
+
+public class DesenhoAnimacao extends DesenhoFuncao {
+
+ //DEBUG: if IGraf.IS_DEBUG get a complete path of this class
+ public static final String IGCLASSPATH = "igraf/moduloCentral/visao/desenho/DesenhoAnimacao.java";
+ //System.err.println(IGraf.debugErrorMsg(IGCLASSPATH)+"Erro: " ...);
+ //IGraf.launchStackTrace()
+
+
+ public static boolean tracking;
+ 
+ // Variável que indica quando uma animação deve permanecer estática independente do movimento de outras
+ private boolean animando = false;
+ 
+ private String funcao_temporaria, dominio = "";
+ private boolean dominioDefinido = false;
+ int xa , xb;
+ 
+ // String que contém a função atual com os parâmetros de animação substituídos pelos caracteres de listaChar
+ private String string;
+
+ private char [] listaChar = {'@', '#', '$', '?', '&', '!'};
+
+ private GraphPlotter gp;
+
+ public DesenhoAnimacao (GraphPlotter gp, String funcao, int colorIndex) {
+  super(gp, funcao, colorIndex);
+  this.gp = gp;
+  string = funcao;
+  this.funcaoAtual = verificaFuncao(funcao);
+  if (this.funcaoAtual != null) {
+   //atualizaLimites();
+   funcao_temporaria = changeSymbol(this.funcaoAtual);
+   animate(true);
+   }
+  //RR setDescricao(nomeFuncao() + "(a,x) = " + funcao);
+  // 'DesenhoFuncao.getFunctionName()' will return 'DesenhoFuncao.functionID' that is defined in DesenhoFuncao constructor usind 'Desenho.getNewId()'
+  setDescricao(getFunctionName() + "(a,x) = " + funcao);
+  }
+
+ public void setFuncaoAtual (String funcaoT) {
+  this.funcao_temporaria = changeSymbol(verificaFuncao(funcaoT)); 
+  }
+
+ private String verificaFuncao (String funcao) {
+  int j = funcao.indexOf('[');
+
+  if (j > -1) {
+   try {
+    setDominio(funcao.substring(j)); // Set function domain (optional): "x [-1,2]" will set 'dominio="[-1,2]"'
+   } catch (RuntimeException e) {
+    //mf.setMessage(ResourceReader.msg("daErroDominio")); // "Sintaxe incorreta na definição do domínio"
+    dominioDefinido = false;
+    dominio = "";
+    return null;
+    }
+   funcao = funcao.substring(0, j); 
+   }
+  else dominioDefinido = false;
+
+  if (!Analisa.sintaxeCorreta(funcao)) {
+   //mf.setMessage(Analisa.getErrorMessage());
+   throw new IllegalArgumentException(ResourceReader.msg("daErroOperador")); // Função com operador ou operando inválido
+   }
+  return Analisa.getResult();
+  }
+
+
+ public boolean editaGrafico (String funcao, Color cor) {
+  try {
+   setColor(cor);
+   } catch (Exception e) { }
+
+  String aux = verificaFuncao(funcao);
+
+  if (aux != null & !aux.equals(funcaoAtual)) {
+   funcaoAtual = aux;
+   return true;
+   }
+
+  if (aux.equals(funcaoAtual) & dominioDefinido) // para edição apenas do domínio
+   return true;
+
+  return false;
+  }
+
+
+
+ /**
+  * Método que inicia ou interrompe a animação contínua de uma das animações da tela.
+  * Entenda-se como animação contínua a animação que ocorre quando o usuário aciona o botão 'animate'
+  * no painel de botões relacionados com a animação.<br>
+  * 
+  * @see igraf.moduloCentral.visao.plotter.GraphPlotter.insereDesenho(GraphPlotter.java:174): when loaded from file or enter by keyboard
+  * @see igraf.moduloCentral.controle.desenho.DesenhoAnimacaoController.mudaEstadoTodos(DesenhoAnimacaoController.java:166): when the function status is changed
+  * 
+  * @param boolean isAnimate
+  */
+ public void animate (boolean isAnimate) {
+  animando = isAnimate;
+  igraf.moduloCentral.visao.AreaDesenho areaDesenho = this.gp.getAreaDesenho();
+  } //  public void animate(boolean isAnimate)
+
+  //T System.err.println("\n"+IGCLASSPATH+": DesenhoAnimacao.java: animate("+isAnimate+"): animando=" + isAnimate);
+  //T try { String srtA=""; System.out.print(srtA.charAt(3)); } catch(Exception e) { e.printStackTrace(); }
+
+
+ /**
+  * This method change the individual status of a function with parameters considering its animation.
+  * It is one-2-one with each function with parameters.
+  * 
+  * @see igraf/moduloJanelasAuxiliares/visao/animacao/JanelaAnimacao.java: through 'LabelAnimacao.itemStateChanged(ItemEvent)' reach this point ('desenhoAnimacao.animate(checked);')
+  * @see igraf/moduloCentral/controle/desenho/DesenhoAnimacaoController.java: also used to change animation of a function
+  *                 . changeAnimationState
+  *                 . trataEvento(CommunicationEvent ie): if (strCommand.equals(IgrafMenuAnimacaoEvent.CHANGE_ANIMATION_STATE)) mudaEstadoAnimacao(imae.getFuncaoOriginal());
+  * @see igraf/moduloCentral/eventos/menu/IgrafMenuAnimacaoEvent.java: CHANGE_ANIMATION_STATE = "changeAnimationState"
+  */
+ public void mudaEstadoAnimacao () {
+  // igraf.moduloCentral.visao.AreaDesenho areaDesenho = this.gp.getAreaDesenho();
+  animando = !animando;
+  if (IGraf.IS_DEBUG)
+   System.err.println("\n" + IGCLASSPATH + ": DesenhoAnimacao.java: mudaEstadoAnimacao(): animando=" + animando + " - this melhod is suppossed to be turned off!");
+  }
+
+
+ public void atualizaDesenho (Graphics2D gr) {
+  if (animando) nextDraw();
+  polygonToBeDrawn = GeraPoligono.getGrafico(funcao_temporaria, getXMin(), getXMax(), getEscala());
+  renderiza(polygonToBeDrawn, gr); // @see Desenho.java: protected Polygon polygonToBeDrawn
+  }
+
+
+ public void nextDraw () { 
+  funcao_temporaria = changeSymbol(funcaoAtual); // 'funcao_temporaria' é da forma" (0.450..03)*x"
+  }
+
+ /**
+  * Recebe a string <b>s</b> que é a expressão sobre a qual será
+  * feita a animação e o double <b>k</b> que é o valor atual assumido
+  * pelo parâmetro de animação 'a'.
+  * Substitui o caracter 'a' pelo valor k convertido para string.<br>
+  * Por exemplo, a chamada: changeSymbol("a*x", -3) gera a saída: (-3.0)*x
+  * 
+  * @param s - a string na qual o valor k será incluído
+  * @param k - o valor real a ser incluído em s
+  * @return String s com o parâmetro 'a' substituído pelo valor k
+  */
+ private String changeSymbol (String s) {  
+  char c;
+  int k;
+  for (int i = 0; i < s.length(); i++) {
+   c = s.charAt(i);
+   k = lookChar(c);
+   if (k != -1) {
+    s = change(s, c, k);
+    continue;
+    }
+   }
+  return s;
+  }
+ 
+
+ private int lookChar (char c) {
+  for (int i = 0; i < listaChar.length; i++) {
+   if (listaChar[i] == c)
+    return i;
+   }
+  return -1;
+  }
+ 
+ 
+ private String change (String s, char c, int key) {
+  switch (key) {
+   case 0: s = replaceAll(s, c, gp.getValorA()); break; // @ - a 
+   case 1: s = replaceAll(s, c, gp.getValorB()); break; // # - b
+   case 2: s = replaceAll(s, c, gp.getValorC()); break; // $ - c
+   case 3: s = replaceAll(s, c, gp.getValorK()); break; // ? - k
+   case 4: s = replaceAll(s, c, gp.getValorM()); break; // & - m
+   case 5: s = replaceAll(s, c, gp.getValorN()); break; // ! - n
+   }
+  return s;
+  }
+ 
+ /**
+  * Recebe a string s, substitui todos os caracteres c pelo valor double k e retorna
+  * a nova expressão na forma de string.  A string s é uma expressão matemática que contém
+  * os caracteres parâmetros de animação
+  * @param s
+  * @param c
+  * @param k
+  * @return a expressão matemática sem os parâmetros de animação
+  */
+ private String replaceAll (String s, char c, double k) {
+  String sub = "("+new Double(k).toString()+")";
+  int i, f;
+  while (s.indexOf(c) != -1) {
+   i = s.indexOf(c);
+   f = i + 1;
+   s = s.substring(0, i) + sub + s.substring(f, s.length());
+   }
+  return s;
+  }
+
+ public String getFuncaoAtual () {
+  return string; //funcao_temporaria
+  }
+
+ public void mudaFuncao (String novaFuncao) {
+  string = novaFuncao;
+  funcaoAtual = verificaFuncao(novaFuncao);
+  setDescricao("f(a,x) = " + novaFuncao);
+  }
+ 
+ public String toString () {
+  return string;
+  }
+
+ }

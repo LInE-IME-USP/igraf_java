@@ -1,0 +1,46 @@
+
+/*
+ * iGraf : interactive Graphics in the Internet
+ * LInE - line.ime.usp.br
+ *
+ * Free interactive solutions to teach and learn
+ * http://www.matematica.br
+ * 
+ * @author RP, LOB
+ *
+ * @description
+ * 
+ * @see difusor/Broadcaster.java: Broadcaster implements ModuleEventListener
+ * @see difusor/evento/CommunicationEvent.java
+ * @see difusor/CommunicationFacade.java: public void disseminarEventoExternamente(CommunicationEvent ie): ModuleEventListener iel=...; iel.disseminarEvento(CommunicationEvent ie);
+ *
+ * @credits
+ * This source code must be credited to iMath Project. In order to contribute, please
+ * contact the iMath coordinator Leônidas O. Brandão.
+ *
+ * O código fonte deste programa deve ser creditado ao projeto iMática. Para contribuir,
+ * por favor contate o coordenador do projeto iMatica, professor Leônidas O. Brandão.
+ *
+ */
+
+package difusor.evento;
+
+import java.util.EventListener;
+
+/**
+ * Interface implementada pelo broadcaster para que possa ouvir eventos saindo dos
+ * módulos, capturá-los e os retransmitir a todos os módulos, incluindo aquele que
+ * gerou o evento. 
+ */
+
+public interface ModuleEventListener extends EventListener {
+
+ /**
+  * Método chamado de dentro do módulo para notificar ao broadcaster que ocorreu
+  * um evento que precisa ser disseminado pelo sistema.  Recebe um objeto IgrafEvent 
+  * e o redistribui a todos os módulos do programa.
+  * @param e
+  */
+ public void disseminarEvento (CommunicationEvent e);
+
+ }

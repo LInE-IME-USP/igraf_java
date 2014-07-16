@@ -1,0 +1,61 @@
+/*
+ * iGraf - Interactive Graphics on the Internet: http://www.matematica.br/igraf
+ * 
+ * Free interactive solutions to teach and learn
+ * 
+ * iMath Project: http://www.matematica.br
+ * LInE           http://line.ime.usp.br
+ *
+ * @author RP, LOB
+ *
+ * @description Repaint the drawing area
+ * 
+ * @see igraf/moduloCentral/visao/TabbedViewer.java
+ * @see igraf/moduloCentral/controle/AreaDesenhoController.java
+ * @see igraf/moduloCentral/visao/AreaDesenho.java
+ *  
+ * @credits
+ * This source is free and provided by iMath Project (University of São Paulo - Brazil). In order to contribute, please
+ * contact the iMath coordinator Leônidas O. Brandão.
+ *
+ * O código fonte deste programa é livre e desenvolvido pelo projeto iMática (Universidade de São Paulo). Para contribuir,
+ * por favor contate o coordenador do projeto iMatica, professor Leônidas O. Brandão. 
+ * 
+ */
+
+
+package igraf.moduloCentral.eventos;
+
+import java.util.Vector;
+
+import igraf.basico.io.ResourceReader;
+import igraf.moduloCentral.visao.AreaDesenho;
+import igraf.moduloCentral.visao.plotter.GraphPlotter;
+
+import difusor.evento.CommunicationEvent;
+
+
+public class AreaDesenhoEvent extends CommunicationEvent {
+
+ private GraphPlotter graphPlotter;
+ private AreaDesenho areaDesenho;
+ 
+ public AreaDesenhoEvent (Object ad, Object p) {
+  super(p);
+  this.graphPlotter = (GraphPlotter)p;
+  this.areaDesenho = (AreaDesenho)ad;
+  }
+ 
+ public Vector getListaDesenhoVisivel () {
+  return graphPlotter.getListaFuncaoVisivel();
+  }
+
+ public AreaDesenho getAreaDesenho () {
+  return areaDesenho;
+  }
+
+ public String getDescription () {
+  return objetivo(ResourceReader.msg("msgInternalChangeADD")); // "notificar o sistema sobre alterações ocorridas na área de desenho do iGraf."
+  }
+
+ }

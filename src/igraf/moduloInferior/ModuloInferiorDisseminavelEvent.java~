@@ -1,0 +1,3 @@
+package igraf.moduloInferior;
+
+public interface ModuloInferiorDisseminavelEvent {}

@@ -1,0 +1,126 @@
+/*
+ * iGraf - Interactive Graphics on the Internet: http://www.matematica.br/igraf
+ * 
+ * Free interactive solutions to teach and learn
+ * 
+ * iMath Project: http://www.matematica.br
+ * LInE           http://line.ime.usp.br
+ *
+ * @author RP, LOB
+ *
+ * @description Help integrated to iGraf. Component to explain a menu item: Animation
+ * 
+ * @see 
+ *
+ * @credits
+ * This source is free and provided by iMath Project (University of São Paulo - Brazil). In order to contribute, please
+ * contact the iMath coordinator Leônidas O. Brandão.
+ *
+ * O código fonte deste programa é livre e desenvolvido pelo projeto iMática (Universidade de São Paulo). Para contribuir,
+ * por favor contate o coordenador do projeto iMatica, professor Leônidas O. Brandão. 
+ * 
+ */
+
+package igraf.moduloAjuda.modelo;
+
+import igraf.basico.io.ResourceReader;
+
+public class TextoAnimacao extends JPanelBasisTopic {
+
+
+//manualStTextAnim = 
+
+ public TextoAnimacao () {
+  super("manualStTextAnimTitle"); // ResourceReader.msg("manualStTextAnimTitle")); // "3   Animação"
+
+  // 
+  // import igraf.moduloAjuda.visao.componentesDoTexto.Topico;
+  // 
+  // insereSubTitulo: insereTopico: igraf/moduloAjuda/visao/componentesDoTexto/Topico.java
+  // insereParagrafo:               igraf/moduloAjuda/visao/componentesDoTexto/Paragrafo.java
+
+  insereParagrafo("manualStTextAnim_I_1");
+  insereParagrafo("manualStTextAnim_I_2");
+  insereParagrafo("manualStTextAnim_I_3");
+
+  insereSubTitulo("manualStTextAnim_1"); // 3.1   Parar / Animar
+  insereParagrafo("manualStTextAnim_1_1");
+  insereParagrafo("manualStTextAnim_1_2");
+
+  insereSubTitulo("manualStTextAnim_2"); // 3.2   Exibir Painel de Controle
+  insereParagrafo("manualStTextAnim_2_1");
+
+  insereSubTitulo("manualStTextAnim_3"); // 3.3   Exibir controle deslizante
+  insereParagrafo("manualStTextAnim_3_1");
+  insereParagrafo("manualStTextAnim_3_2");
+  insereParagrafo("manualStTextAnim_3_3");
+
+  insereSubTitulo("manualStTextAnim_4"); // 3.4   Iniciar rastro de função
+
+  insereParagrafo("manualStTextAnim_4_1");
+
+  insereSubTitulo("manualStTextAnim_5"); // 3.5   Aumentar e Diminuir velocidade
+
+  insereParagrafo("manualStTextAnim_5_1");
+
+/*
+  insereParagrafo("No iGraf, uma animação para a função f(x) no intervalo [m, n] " +
+            "é o desenho contínuo de vários gráficos de f(a), sendo 'a' o " +
+            "parâmetro de animação, ou seja, 'a' assume valores de m a n em " +
+            "passos de 0.1 e a cada valor de 'a' um gráfico é exibido. ");
+
+  insereParagrafo("Para iniciar uma animação basta digitar na área de edição uma " +
+            "expressão que contenha um parâmetro de animação como a.x^2 ou c.x + m.   " +
+            "A primeira expressão começa a executar a animação imediatamente após " +
+            "o comando para desenhar.   Por padrão, o parâmetro 'a' varia no intervalo " +
+            "[-1, 1].  A segunda expressão, no entanto, só funcionará quando o usuário " +
+            "habilitar o uso dos parâmetros 'c' e 'm'; esses parâmetros, por padrão " +
+            "têm valor fixo igual a 1.");
+
+  insereParagrafo("Os parâmetros de animação usados pelo iGraf são:  a, b, c, k, m e n.   " +
+            "Clique com o botão direito do mouse na área de desenho para alterar o valor " +
+            "de cada parâmetro individualmente");
+
+  insereSubTitulo("3.1   Parar / Animar");
+
+  insereParagrafo("Pára ou reinicia todas as animações editadas até o momento.   As " +
+            "animações que estiverem ocultas também obedecerão a esse comando.");
+
+  insereParagrafo("Toda animação, por padrão, será executada por tempo indefinido.   " +
+            "Cabe ao usuário interferir nesse comportamento através dessa opção, " +
+            "parando ou reiniciando o movimento.");
+
+  insereSubTitulo("3.2   Exibir Painel de Controle");
+
+  insereParagrafo("Quando estão ocorrendo várias animações na tela o visual fica muito " +
+            "\"carregado\" e pode ser desejável parar algumas delas... ou, até mesmo, " +
+            "parar todas.   O iGraf oferece um painel de controle através do qual é " +
+            "possível selecionar as animações que podem ou não ser executadas em um " +
+            "dado momento.   Esta opção exibe, ou oculta, esse painel. ");
+
+  insereSubTitulo("3.3   Exibir controle deslizante");
+
+  insereParagrafo("É possível, ao usuário, fazer com que uma animação seja executada " +
+            "passo a passo.   Para isso, basta parar a animação e selecionar esta " +
+            "opção.   Será exibido um controle deslizante que permitirá a interação " +
+            "com o desenho dinamicamente.");
+
+  insereParagrafo("Esse controle permite ao usuário interagir com o desenho usando o mouse " +
+            "(clicando no botão deslizante), clicando nas setas direcionais (à direita " +
+            "e à esquerda) ou ainda, inserindo valores diretamente no campo de texto à direita.");
+
+  insereParagrafo("É importante destacar que essa opção só funciona se a animação estiver parada.");
+
+  insereSubTitulo("3.4   Iniciar rastro de função");
+
+  insereParagrafo("Permite ao usuário escolher entre visualizar todos os gráficos gerados durante a " +
+            "animação ou apenas o último.  Por padrão, fica na tela apenas o último gráfico.  ");
+
+  insereSubTitulo("3.5   Aumentar e Diminuir velocidade");
+
+  insereParagrafo("Opções que permitem ao usuário variar a velocidade de execução da animação.");
+*/
+  }
+
+
+ }

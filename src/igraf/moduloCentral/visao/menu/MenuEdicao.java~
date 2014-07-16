@@ -1,0 +1,173 @@
+/*
+ * iGraf - Interactive Graphics on the Internet: http://www.matematica.br/igraf
+ * 
+ * Free interactive solutions to teach and learn
+ * 
+ * iMath Project: http://www.matematica.br
+ * LInE           http://line.ime.usp.br
+ *
+ * @author RP, LOB
+ *
+ * @see igraf/moduloSuperior/visao/PainelBotoes.java: creates JButton
+ * @see igraf/moduloSuperior/controle/PainelBotoesController.java: starting class to send events to special menu controller (from menus): IgrafMenuAjudaController; ... IgrafMenuPoligonoController
+ * @see igraf/moduloCentral/controle/PainelCentralController.java: controls all events generates in central panel (igraf/moduloCentral/*)
+ * @see igraf/moduloCentral/controle/menu/IgrafMenuGraficoController.java: it starts this class with 'mg = new' para 'MenuGrafico(this, index)'
+ * 
+ * @credits
+ * This source is free and provided by iMath Project (University of São Paulo - Brazil). In order to contribute, please
+ * contact the iMath coordinator Leônidas O. Brandão.
+ *
+ * O código fonte deste programa é livre e desenvolvido pelo projeto iMática (Universidade de São Paulo). Para contribuir,
+ * por favor contate o coordenador do projeto iMatica, professor Leônidas O. Brandão.
+ * 
+ */
+
+package igraf.moduloCentral.visao.menu;
+
+
+import igraf.basico.io.ResourceReader;
+import igraf.moduloCentral.controle.menu.IgrafMenuController;
+
+import java.awt.Rectangle;
+
+import difusor.i18N.LanguageUpdatable;
+
+
+public class MenuEdicao extends IgrafMenu implements LanguageUpdatable {
+
+ private static final String STR_MENU_NAME = "menuEdicao";
+
+ // Devido à necessidade de gravação dos menus desabilitados pelo professor
+ // foi criada uma lista numérica para identificá-los de modo unívoco.
+ // Novos menus devem ser acrescentados a esta lista de modo a não substituir
+ // valores previamente utilizados, para que seja mantida a compatibilidade
+ // com arquivos antigos. Todos os itens deste menu começam com '5'.
+ public static final int ZOOM_DEFAULT = 500;
+ public static final int INCR_ZOOM    = 501;
+ public static final int DECR_ZOOM    = 502;
+ public static final int TEXT_INSERT  = 503;
+ public static final int TEXT_EDIT    = 504;
+ public static final int TEXT_REMOVE  = 505;
+ public static final int TOGGLE_AXES  = 506;
+ public static final int TOGGLE_SCALE = 507;
+ public static final int TOGGLE_GRID  = 508;
+ public static final int LANGUAGE     = 509;
+
+ public static final int SUBMENUINDEX = 12; // considering the separators
+
+ public static final int commandNumberStar = 500; // 'igraf/moduloExercicio/visao/menuSelector/MenuSelectorFrame.java'
+
+ // Menu itens name
+ // See: igraf/moduloSuperior/visao/PainelBotoes.java: use 'menuItensName' to build all menus
+ private static final String [] menuItensName = {
+   "madZoomPadrao",        //  0: Zoom Padrão
+   "madZoomAmpliar",       //  1: Aumentar Zoom
+   "madZoomDiminuir", SEP, //  2: Diminuir Zoom
+   "madTextoInserir",      //  4: Inserir Texto
+   "madTextoEditar",       //  5: Editar Texto
+   "madTextoRemover", SEP, //  6: Remover Texto
+   "madEixosRemover",      //  8: Remover Eixos
+   "madEscalaRemover",     //  9: Remover Escala
+   "madGradeRemover", SEP, // 10: Exibir Grade
+   "madLang"               // 12: Idioma
+   };
+ // To all Menu(*) return their options name - used in 'igraf/moduloSuperior/visao/PainelBotoes.java'
+ public String [] getMenuItensNames () { return menuItensName; } // root name of each item before 'ResourceReader.msg(...)' 
+ // public static String [] getMenuItensName () { return menuItensName; }
+ public String [] getMenuItensText () { return listaOpcoes; }
+ public String [] getMenuItensDescription () { return descricao; }
+
+ // Description to tooltips: in 'PainelBotoes' and 'igraf/moduloExercicio/visao/menuSelector/MenuSelectorFrame.java'
+ private static final String [] menuItemsTooltips = {
+    "madOpcaoPCPadrao",           //  0: Zoom Padrão
+    "madOpcaoGrafAmpPrec",        //  1: Aumentar Zoom
+    "madOpcaoGrafDimPrec", null,  //  2: Diminuir Zoom
+    "madOpcaoTextoJanela",        //  4: Inserir Texto
+    "madOpcaoTextoEditar",        //  5: Editar Texto
+    "madOpcaoTextoRemover", null, //  6: Remover Texto
+    "madOpcaoEixosInv",           //  8: Remover Eixos
+    "madOpcaoEscalaInv",          //  9: Remover Escala
+    "madOpcaoGradeInv", null,     // 10: Exibir Grade
+    "madOpcaoLang"                // 12: idioma  
+    };
+ public static String [] getMenuItemsTooltips () { return menuItemsTooltips; }
+
+
+ SubMenuIdioma smi = new SubMenuIdioma(imc, 3); // see bellow: 'IgrafMenuEdicaoController' is number 4
+ public SubMenuIdioma getSubMenuIdioma () { return smi; }
+ // public String [] getSubMenuItensText () {  return smi.getMenuItensText(); } // 'PainelBotoes.updateLabels(IgrafMenu,JMenuItem [])' pegar 'smi.getMenuItensText()'
+ // public String [] getSubMenuItensDescription () { return smi.getMenuItensDescription(); } // 'PainelBotoes.updateLabels(IgrafMenu, JMenuItem [])' pegar 'smi.getMenuItensDescription()'
+
+ // Constructor in: igraf/moduloCentral/ModuloCentral.java
+ // It define order: {IgrafMenuGraficoController, IgrafMenuCalculoController, IgrafMenuAnimacaoController, IgrafMenuEdicaoController, IgrafMenuExercicioController, IgrafMenuPoligonoController, IgrafMenuAjudaController }
+ //   0: IgrafMenuGraficoController
+ //   1: IgrafMenuCalculoController
+ //   2: IgrafMenuAnimacaoController
+ //   3: IgrafMenuEdicaoController
+ //   4: IgrafMenuExercicioController
+ //   5: IgrafMenuPoligonoController
+ //   6: IgrafMenuAjudaController
+ public MenuEdicao (IgrafMenuController imc, int index) {
+  super(imc, index, true);
+  super.setName(STR_MENU_NAME);
+  //T System.out.println("\n\nsrc/igraf/moduloCentral/visao/menu/MenuEdicao.java: MenuEdicao: hasSubMenu=" + super.hasSubMenu());
+
+  updateLabels(); //04/2013: define at the first time 'String [] listaOpcoes, descricao'
+
+  //leo setListaItens(listaOpcoes, descricao);
+  //leo r = new Rectangle(420, -1, 130, listaOpcoes.length*20);
+  //leo setBounds(r);
+  //leo setEnabledMenuItem(ResourceReader.msg("madTextoEditar"), false); -> 'completeAfterButtonsPanel()'
+  //leo setEnabledMenuItem(ResourceReader.msg("madTextoRemover"), false); -> 'completeAfterButtonsPanel()'
+
+  setSubMenu(smi, SUBMENUINDEX);
+
+  }
+
+ // Called by: igraf/moduloSuperior/visao/PainelBotoes.java: IgrafMenu.setPainelBotoes(PainelBotoes,JMenuItem[])
+ public void completeAfterButtonsPanel () {
+  setEnabledMenuItem(ResourceReader.msg("madTextoEditar"), false);
+  setEnabledMenuItem(ResourceReader.msg("madTextoRemover"), false);
+  }
+
+ public void updateLabels () {
+  //T System.out.println("src/igraf/moduloCentral/visao/menu/MenuEdicao.java: updateLabels()");
+  String[] labels = {
+    ResourceReader.msg("madZoomPadrao"   ),      //  0: Zoom Padrão
+    ResourceReader.msg("madZoomAmpliar"  ),      //  1: Aumentar Zoom
+    ResourceReader.msg("madZoomDiminuir" ), SEP, //  2: Diminuir Zoom
+    ResourceReader.msg("madTextoInserir" ),      //  4: Inserir Texto
+    ResourceReader.msg("madTextoEditar"  ),      //  5: Editar Texto
+    ResourceReader.msg("madTextoRemover" ), SEP, //  6: Remover Texto
+    ResourceReader.msg("madEixosRemover" ),      //  8: Remover Eixos
+    ResourceReader.msg("madEscalaRemover"),      //  9: Remover Escala
+    ResourceReader.msg("madGradeRemover" ), SEP, // 10: Exibir Grade
+    ResourceReader.msg("madLang")                // 12: Idioma           - in PainelBotoes it is 'Vector vecSecListEdicao[9]' (do not consider SEP)
+    };
+  
+  String[] help = {
+    ResourceReader.msg("madOpcaoPCPadrao"),           //  0: Zoom Padrão
+    ResourceReader.msg("madOpcaoGrafAmpPrec"),        //  1: Aumentar Zoom
+    ResourceReader.msg("madOpcaoGrafDimPrec"), null,  //  2: Diminuir Zoom
+    ResourceReader.msg("madOpcaoTextoJanela"),        //  4: Inserir Texto
+    ResourceReader.msg("madOpcaoTextoEditar"),        //  5: Editar Texto
+    ResourceReader.msg("madOpcaoTextoRemover"), null, //  6: Remover Texto
+    ResourceReader.msg("madOpcaoEixosInv"),           //  8: Remover Eixos
+    ResourceReader.msg("madOpcaoEscalaInv"),          //  9: Remover Escala
+    ResourceReader.msg("madOpcaoGradeInv"), null,     // 10: Exibir Grade
+    ResourceReader.msg("madOpcaoLang")                // 12: idioma  
+    };
+
+  //R 04/2013: redefine 'String [] listaOpcoes' and 'String [] descricao'
+  updateLabels(labels, help);  
+  }
+
+ public IgrafMenu getMenuIdioma () {
+  return smi;
+  }
+
+ public String toString () {
+  return ResourceReader.msg(STR_MENU_NAME);
+  }
+
+ }

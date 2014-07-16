@@ -1,0 +1,93 @@
+/*
+ * iGraf - Interactive Graphics on the Internet: http://www.matematica.br/igraf
+ * 
+ * Free interactive solutions to teach and learn
+ * 
+ * iMath Project: http://www.matematica.br
+ * LInE           http://line.ime.usp.br
+ *
+ * @author RP, LOB
+ *
+ * @description Classe que mantém informações sobre o estado do sistema associado a cada aba.
+ * Algumas destas informações podem estar replicadas no objeto sessão... não há
+ * problemas, o importante aqui é a separação de responsabilidades; o EstadoIgraf
+ * só deve ser usado para registrar informações necessárias à mudança de abas.
+ * 
+ * @see 
+ *  
+ * @credits
+ * This source is free and provided by iMath Project (University of São Paulo - Brazil). In order to contribute, please
+ * contact the iMath coordinator Leônidas O. Brandão.
+ *
+ * O código fonte deste programa é livre e desenvolvido pelo projeto iMática (Universidade de São Paulo). Para contribuir,
+ * por favor contate o coordenador do projeto iMatica, professor Leônidas O. Brandão. 
+ * 
+ */
+
+package igraf.moduloCentral.modelo;
+
+import igraf.moduloCentral.eventos.IgrafTabUpdateEvent;
+
+import java.util.Vector;
+
+
+public class EstadoIgraf {
+
+ // para monitorar o valor atual do combo box (entrada de expressões)
+ private String conteudoEntradaExpressao = "";
+ 
+ // listas para atualização de janelas auxiliares
+ private Vector listaAnimacao = new Vector();
+ private Vector listaFuncao = new Vector();
+ 
+ // monitora o valor do slider para cada aba
+ // setar este valor assim que o slider for exibido pela primeira vez
+ private double valorSlider;
+ 
+ public boolean temAnimacao () {
+  return listaAnimacao.size() > 0;
+  }
+ 
+ public boolean temFuncao () {
+  return listaFuncao.size() > 0;
+  }
+ 
+ public double getValorSlider () {
+  return valorSlider;
+  }
+ 
+ public String getConteudoEntradaExpressao () {
+  return conteudoEntradaExpressao;
+  }
+
+ //D private static int count=0;
+ //D if(count++==2) try{String srtA=""; System.out.print(srtA.charAt(3));}catch(Exception e1) {e1.printStackTrace(); }
+
+ public void atualizaEstadoIgraf (IgrafTabUpdateEvent iue) {
+  // System.out.println("src/igraf/moduloCentral/modelo/EstadoIgraf.java: atualizaEstadoIgraf: " + iue.getClass().getName());
+  String strCommand = iue.getCommand();
+  if (strCommand.equals(IgrafTabUpdateEvent.FUNCTION_LIST_CHANGED))
+   listaFuncao = iue.getFunctionList();
+  else
+  if (strCommand.equals(IgrafTabUpdateEvent.ANIMATION_LIST_CHANGED))
+   listaAnimacao = iue.getAnimationList();
+  else
+  if (strCommand.equals(IgrafTabUpdateEvent.EXPRESSION_CHANGED))
+   conteudoEntradaExpressao = iue.getExpression();
+  else
+  if (strCommand.equals(IgrafTabUpdateEvent.SLIDER_VALUE_CHANGED))
+   valorSlider = iue.getSliderValue();
+  
+  //printState();
+  }
+
+
+ private void printState () {
+  System.out.println("valor slider: " + valorSlider);
+  System.out.println("lista função: " + listaFuncao);
+  System.out.println("lista animação: " + listaAnimacao);
+  System.out.println("conteudo entrada: " + conteudoEntradaExpressao);
+  System.out.println();
+  }
+
+ }

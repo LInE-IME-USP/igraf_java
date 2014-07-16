@@ -1,0 +1,190 @@
+/*
+ * iGraf - Interactive Graphics on the Internet: http://www.matematica.br/igraf
+ *
+ * Free interactive solutions to teach and learn
+ *
+ * iMath Project: http://www.matematica.br
+ * LInE           http://line.ime.usp.br
+ *
+ * @author RP, LOB
+ *
+ * @description iGraf session.
+ * Classe que encapsula uma lista de ações realizadas pelo usuário durante uma sessão de uso do iGraf.
+ * Note que a sessão está associada à aba em uso. Assim, se houver N abas em uso, haverá N sessões independentes.
+ *
+ * @see
+ *
+ * @credits
+ * This source is free and provided by iMath Project (University of São Paulo - Brazil). In order to contribute, please
+ * contact the iMath coordinator Leônidas O. Brandão.
+ *
+ * O código fonte deste programa é livre e desenvolvido pelo projeto iMática (Universidade de São Paulo). Para contribuir,
+ * por favor contate o coordenador do projeto iMatica, professor Leônidas O. Brandão.
+ *
+ */
+
+package igraf.moduloCentral.modelo;
+
+import java.util.Iterator;
+import java.util.Vector;
+
+import difusor.evento.CommunicationEvent;
+
+import igraf.moduloArquivo.eventos.EventoRegistravel;
+import igraf.moduloCentral.eventos.DesenhoTextoEvent;
+import igraf.moduloExercicio.eventos.RespostaEvent;
+
+
+public class Sessao implements Comparable {
+
+ private Vector listaAcao = new Vector();
+ private boolean isItExercise;
+ private int tabIndex;
+
+ private String lastParam = "";
+
+ public Sessao (int tabIndex) {
+  this.tabIndex = tabIndex;
+  }
+
+ /**
+  * Método que indica a que aba pertence a sessão atual.
+  * @return o índice desta sessão
+  */
+ public int getTabIndex () {
+  return tabIndex;
+  }
+
+
+ /**
+  * Recebe o número inteiro <b>codigoAcao</b> correspondente a uma ação definida
+  * na classe Ação e uma string (lista de parâmetros) <b>param</b>. Insere a ação
+  * correspondente a <b>codigoAcao</b> na lista de ações realizadas na sessão atual.<br>
+  * @see igraf.moduloCentral.modelo.Acao
+  */
+ public boolean registraEvento (CommunicationEvent communicationEvent) {
+  EventoRegistravel er = (EventoRegistravel)communicationEvent;
+  if (atualizaTexto(er)) return true;
+
+  String param = er.getArgumento();
+  int code = er.getCodigoAcao();
+  if (code == -1) return false;
+  if (code == 3 & er.getArgumento().length() == 0) return false;
+  if (code >= 300 & code <= 303 & param.length() == 0) return false;
+  if (code == 600 & communicationEvent.getCommand().equals(RespostaEvent.READ_EXERCISE))
+   isItExercise = true;
+
+  if (!impedeRepeticao(code, param))
+   listaAcao.addElement(new Acao(code, param));
+  return true;
+  }
+
+ private boolean impedeRepeticao (int code, String param) {
+  //System.out.println("Sessao.iR: " + code + " " + param);
+  if (code == 0 | (code >= Acao.mudaPlanoCartesiano & code <= Acao.zoomPadrao ) |
+     code == 500 | (code >= Acao.habilitarEnvioResposta & code <= Acao.inserirComentarioAluno)) {
+   if (!param.equals(lastParam)) {
+    lastParam = param;
+    return false;
+    }
+   return true;
+   }
+
+  if (code == Acao.editarTexto) return true;
+
+  if (code == Acao.atualizarPosicaoTexto) {
+   for (int ii_0 = 0; ii_0<listaAcao.size(); ii_0++) {
+    Acao acao = (Acao)listaAcao.get(ii_0);
+
+    if (acao.getCodigoAcao() == Acao.inserirTexto) {
+     int m = param.indexOf("texto:")+6;
+     String texto1 = param.substring(m);
+     int n = acao.getListaArg().indexOf("texto:")+6;
+     String texto2 = acao.getListaArg().substring(n);
+
+     if (texto1.equals(texto2)) {
+      listaAcao.set(ii_0, new Acao(Acao.inserirTexto, param));
+      return true;
+      }
+     }
+    }
+   }
+  return false;
+  }
+
+ // arrumar este pensamento: editar ou atualizar abaixo
+ private boolean atualizaTexto (EventoRegistravel er) {
+  Acao acao;
+
+  int code = er.getCodigoAcao();
+  if (code == Acao.inserirTexto) return false;
+  if (code == Acao.editarTexto | code == Acao.apagarTexto) {
+   DesenhoTextoEvent dte = (DesenhoTextoEvent)er;
+   String param = er.getArgumento();
+
+   for (int ii_0 = 0; ii_0<listaAcao.size(); ii_0++) {
+    acao = (Acao)listaAcao.get(ii_0);
+    if (acao.getCodigoAcao() == Acao.inserirTexto) {
+     String str = acao.getListaArg();
+     int k = str.indexOf("texto:") + 6;
+     String texto1 = (str.substring(k)).trim();
+
+     k = param.indexOf("texto:") + 6;
+     String texto2 = dte.getTextoOriginal().trim();
+
+     if (texto1.equals(texto2)) {
+      if (code == Acao.apagarTexto) {
+       listaAcao.remove(ii_0);
+       return true;
+       }
+      acao.setListaArg(param); // o novo texto está em param
+      listaAcao.setElementAt(acao, ii_0);
+      return false;
+      }
+     }
+    }
+   }
+  return false;
+  }
+
+ /**
+  * Devolve a lista de ações realizadas na sessão atual.  A lista referida corresponde às
+  * ações realizadas sobre uma área de desenho específica.  Abas distintas têm listas de
+  * açôes diferentes.
+  * @return listaAcao (Vector)
+  */
+ public Vector getListaAcao () {
+  return listaAcao;
+  }
+
+ public String toString () {
+  return  "Sessao - aba:" + String.valueOf(getTabIndex()) + "  code + args: "  + listaAcao.toString();
+  }
+
+ public int compareTo (Object obj) {
+  Sessao s = (Sessao)obj;
+  return getTabIndex() - s.getTabIndex();
+  }
+
+ public String getSessaoAsString () {
+  String aux = "";
+
+  for (int ii_0 = 0; ii_0<listaAcao.size(); ii_0++) {
+   Acao acao = (Acao) listaAcao.elementAt(ii_0);
+   aux += acao.getAcaoAsString();
+   }
+  return aux;
+  }
+
+ public void reset () {
+  listaAcao =  new Vector();
+  isItExercise = false;
+  lastParam = "";
+  tabIndex = 0;
+  }
+
+ public boolean isItExercise () {
+  return isItExercise;
+  }
+
+ }

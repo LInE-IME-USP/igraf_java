@@ -1,0 +1,166 @@
+/*
+ * iGraf - Interactive Graphics on the Internet: http://www.matematica.br/igraf
+ * 
+ * Free interactive solutions to teach and learn
+ * 
+ * iMath Project: http://www.matematica.br
+ * LInE           http://line.ime.usp.br
+ *
+ * @author RP, LOB
+ *
+ * @description It implements the menu controller to "Poligons"
+ * 
+ * @see igraf/moduloCentral/controle/menu/IgrafMenuController.java - extends this 'abstract class'
+ * @see igraf/moduloCentral/visao/menu/MenuGrafico.java
+ *  
+ * @credits
+ * This source is free and provided by iMath Project (University of São Paulo - Brazil). In order to contribute, please
+ * contact the iMath coordinator Leônidas O. Brandão.
+ *
+ * O código fonte deste programa é livre e desenvolvido pelo projeto iMática (Universidade de São Paulo). Para contribuir,
+ * por favor contate o coordenador do projeto iMatica, professor Leônidas O. Brandão. 
+ * 
+ */
+
+package igraf.moduloCentral.controle.menu;
+
+import igraf.basico.event.ChangeLanguageEvent;
+import igraf.basico.io.ResourceReader;
+import igraf.moduloCentral.eventos.IgrafTabUpdateEvent;
+import igraf.moduloCentral.eventos.menu.IgrafMenuGraficoEvent;
+import igraf.moduloCentral.visao.menu.IgrafMenu;
+import igraf.moduloCentral.visao.menu.MenuGrafico;
+import igraf.moduloExercicio.visao.menuSelector.DisableMenuEvent;
+import difusor.CommunicationFacade;
+import difusor.evento.CommunicationEvent;
+
+
+public class IgrafMenuGraficoController extends IgrafMenuController {
+
+ private IgrafMenuGraficoEvent igrafMenuGraficoEvent;
+ private MenuGrafico menuGrafico;
+
+ private boolean temAnimacao, temAnimacaoOculta,
+                 temFuncao, temFuncaoOculta,
+                 temPoligono, temPoligonoOculto;
+
+ //CAUTION: to 'igraf/moduloCentral/visao/menu/IgrafMenu.java'
+ // Constructor in: igraf/moduloCentral/ModuloCentral.java
+ // It define order: {IgrafMenuGraficoController, IgrafMenuCalculoController, IgrafMenuAnimacaoController, IgrafMenuEdicaoController, IgrafMenuExercicioController, IgrafMenuPoligonoController, IgrafMenuAjudaController }
+ // Attention to: 'IgrafMenu.IgrafMenu(IgrafMenuController imc, int index)' uses this order 0=>IgrafMenuGraficoController; ...
+ //   0: IgrafMenuGraficoController
+ //   1: IgrafMenuCalculoController
+ //   2: IgrafMenuAnimacaoController
+ //   3: IgrafMenuEdicaoController
+ //   4: IgrafMenuExercicioController
+ //   5: IgrafMenuPoligonoController
+ //   6: IgrafMenuAjudaController
+ public IgrafMenuGraficoController (CommunicationFacade module, boolean getEvents, int index) {
+  super(module, getEvents, index);
+  menuGrafico = new MenuGrafico(this, index);
+  }
+
+
+ public IgrafMenu getMenu () {
+  return menuGrafico;
+  }
+
+
+ // habilitar o menuItem 'desenhar' apenas quando houver funcao na lista
+
+ public void enviarEventoAcao (String cmd) {
+  // igrafMenuGraficoEvent =  new IgrafMenuGraficoEvent(this);
+  // igrafMenuGraficoEvent.setCommand(cmd);
+  igrafMenuGraficoEvent =  new IgrafMenuGraficoEvent(this, cmd);
+  enviarEvento(igrafMenuGraficoEvent);
+  }
+
+
+ public void tratarEventoRecebido (CommunicationEvent communicationEvent) {
+
+   //TM1 System.out.println("src/igraf/moduloCentral/controle/menu/IgrafMenuGraficoController.java: tratarEventoRecebido(CommunicationEvent "+communicationEvent.getClass().getName());
+
+
+  if (communicationEvent instanceof DisableMenuEvent) {
+   removeDisabledMenuItens(communicationEvent);
+   return;
+   }
+
+  if (communicationEvent instanceof ChangeLanguageEvent) {
+   menuGrafico.updateLabels();
+   return;
+   }
+
+  if (communicationEvent instanceof IgrafTabUpdateEvent) {
+   IgrafTabUpdateEvent iue = (IgrafTabUpdateEvent)communicationEvent;
+
+   if (!iue.getCommand().equals(IgrafTabUpdateEvent.FUNCTION_LIST_CHANGED) &
+       !iue.getCommand().equals(IgrafTabUpdateEvent.ANIMATION_LIST_CHANGED) &
+       !iue.getCommand().equals(IgrafTabUpdateEvent.POLYGON_LIST_CHANGED))
+    return;
+
+   if (iue.getCommand().equals(IgrafTabUpdateEvent.FUNCTION_LIST_CHANGED)) {
+    temFuncao = iue.getFunctionList().size() > 0;
+    temFuncaoOculta = iue.temDesenhoOculto();
+    }
+
+   if (iue.getCommand().equals(IgrafTabUpdateEvent.ANIMATION_LIST_CHANGED )) {
+    temAnimacao =  iue.getAnimationList().size() > 0;
+    temAnimacaoOculta = iue.temDesenhoOculto();
+    }
+
+   if (iue.getCommand().equals(IgrafTabUpdateEvent.POLYGON_LIST_CHANGED )) {
+    temPoligono =  iue.getPolygonList().size() > 0;
+    temPoligonoOculto = iue.temDesenhoOculto();
+    }
+
+   // Set all "Graphics" menu items
+   menuGrafico.setEnableAllMenuItem(temFuncao | temAnimacao | temPoligono);
+
+   // Set "Graphics" menu items enabled or disabled: New session; Draw all
+   menuGrafico.setEnabledMenuItem(ResourceReader.msg("msgMenuGrfRemoverAba"), true); // even in new tab, it can be removed
+   menuGrafico.setEnabledMenuItem(ResourceReader.msg("msgMenuGrfNovaSes"), true);
+   menuGrafico.setEnabledMenuItem(ResourceReader.msg("msgMenuGrfDesTodos"), temFuncaoOculta | temAnimacaoOculta | temPoligonoOculto);
+   return;
+
+   } // if (communicationEvent instanceof IgrafTabUpdateEvent)
+
+  if (communicationEvent.getCommand().equals(ResourceReader.msg("msgMenuGrfNovaSes")))
+   menuGrafico.setEnableAllMenuItem(false);
+
+  } // public void tratarEventoRecebido(CommunicationEvent communicationEvent)
+
+
+ private void removeDisabledMenuItens (CommunicationEvent communicationEvent) {
+  DisableMenuEvent dme = (DisableMenuEvent)communicationEvent;
+  int [] listaMenu = dme.getDisableList();
+  int sizeListaMenu = listaMenu==null ? 0 : listaMenu.length;
+  int i = 0;
+
+  try {
+  while (i<sizeListaMenu && listaMenu[i] < 199) { // 199 é o maior valor possível ao índice de um item do menu gráfico
+   // while (listaMenu[i] < 199)
+   switch (listaMenu[i++]) {
+    // let 'IgrafMenu.removeMenuItem(String)' apply 'ResourceReader.msg(...)'
+    case MenuGrafico.DRAW:        menuGrafico.removeMenuItem("msgMenuGrfDes"); break;
+    case MenuGrafico.DRAW_ALL:    menuGrafico.removeMenuItem("msgMenuGrfDesTodos"); break;
+    case MenuGrafico.EXPR_EDIT:   menuGrafico.removeMenuItem("msgMenuGrfEditaExp"); break;
+    case MenuGrafico.SHOW_LIST:   menuGrafico.removeMenuItem("msgMenuGrfExibeListaExp"); break;
+    case MenuGrafico.HIDE:        menuGrafico.removeMenuItem("msgMenuGrfEsconder"); break;
+    case MenuGrafico.HIDE_LAST:   menuGrafico.removeMenuItem("msgMenuGrfEsconderUlt"); break;
+    case MenuGrafico.HIDE_ALL:    menuGrafico.removeMenuItem("msgMenuGrfEsconderTodos"); break;
+    case MenuGrafico.REMOVE:      menuGrafico.removeMenuItem("msgMenuGrfRemoverGrafico"); break; // @see igraf.moduloCentral.controle.desenho.DesenhoFuncaoController.notificaAlteracaoEstado
+    case MenuGrafico.REMOVE_ALL:  menuGrafico.removeMenuItem("msgMenuGrfRemoverTodos"); break;
+    case MenuGrafico.NEW_TAB:     menuGrafico.removeMenuItem("msgMenuGrfNovaAba"); break;
+    case MenuGrafico.REMOVE_TAB:  menuGrafico.removeMenuItem("msgMenuGrfRemoverAba"); break;
+    case MenuGrafico.NEW_SESSION: menuGrafico.removeMenuItem("msgMenuGrfNovaSes"); break;
+    }
+   }
+  } catch (Exception e) {
+   System.err.println("Error: in 'igraf/moduloCentral/controle/menu/IgrafMenuGraficoController.java' with i="+i+": " + e.toString());
+   e.printStackTrace();
+   }
+  }
+
+
+ }

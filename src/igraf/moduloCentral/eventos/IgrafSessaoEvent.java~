@@ -1,0 +1,30 @@
+package igraf.moduloCentral.eventos;
+
+import igraf.moduloArquivo.eventos.ModuloArquivoDisseminavelEvent;
+import igraf.moduloCentral.modelo.Sessao;
+import difusor.evento.CommunicationEvent;
+
+public class IgrafSessaoEvent extends CommunicationEvent 
+implements ModuloArquivoDisseminavelEvent{
+
+	public static final String UPDATE_SESSION_DATA = "update session data";
+	public static final String REVIEW_SESSION_DATA = "review session data";
+	private	Sessao sessao;	
+	
+	public IgrafSessaoEvent(Object source, Sessao sessao) {
+		super(source, UPDATE_SESSION_DATA);
+		this.sessao = sessao;
+	}
+	
+	public IgrafSessaoEvent(Object source) {
+		super(source, REVIEW_SESSION_DATA);
+	}
+	
+	public Sessao getSessao() {
+		return sessao;
+	}
+	
+	public String getDescription() {
+		return objetivo("transportar dados da sessão atual do iGraf a outras partes do sistema.");
+	}
+}

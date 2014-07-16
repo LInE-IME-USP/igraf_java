@@ -1,0 +1,22 @@
+package igraf.moduloCentral.modelo;
+
+public class RegularPolygonModel {
+
+	private float aresta;
+	private float apotema;
+	private int numVertex;	
+	
+	public RegularPolygonModel(float apotema, int numVertex) {
+		this.apotema = apotema;
+		this.numVertex = numVertex;
+	}
+	public float getAresta() {
+		return aresta;
+	}
+	public float getApotema() {
+		return apotema;
+	}
+	public int getNumVertex() {
+		return numVertex;
+	}
+}

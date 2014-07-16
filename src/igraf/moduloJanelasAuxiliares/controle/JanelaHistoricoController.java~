@@ -1,0 +1,36 @@
+package igraf.moduloJanelasAuxiliares.controle;
+
+import igraf.basico.io.ResourceReader;
+import igraf.moduloArquivo.eventos.IgrafMenuArquivoEvent;
+import igraf.moduloCentral.eventos.IgrafSessaoEvent;
+import igraf.moduloCentral.eventos.ResetEvent;
+import igraf.moduloJanelasAuxiliares.visao.JanelaHistorico;
+import difusor.CommunicationFacade;
+import difusor.controle.CommunicationController;
+import difusor.evento.CommunicationEvent;
+
+public class JanelaHistoricoController extends JanelaController {
+
+	private JanelaHistorico jh;
+
+	public JanelaHistoricoController(CommunicationFacade module,	boolean getEvents) {
+		super(module, getEvents);
+	}
+
+	public void tratarEventoRecebido(CommunicationEvent ie) {
+		if(ie.getCommand().equals(ResourceReader.msg("mexExercHistorico"))){
+			jh = new JanelaHistorico(this);
+			iniciaHistorico();
+		}
+		
+		if (ie instanceof IgrafMenuArquivoEvent && jh != null) {
+			IgrafMenuArquivoEvent imae = (IgrafMenuArquivoEvent) ie;			
+			jh.setNextStep(imae.getCommand());
+		}
+	}
+	
+	public void iniciaHistorico(){
+		enviarEvento(new IgrafSessaoEvent(this));
+		enviarEvento(new ResetEvent(this, ResetEvent.VIEW_HISTORY));
+	}
+}

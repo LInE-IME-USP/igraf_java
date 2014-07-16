@@ -1,0 +1,63 @@
+42c42
+  <   addInternEventListener(ipc); // defined in 'difusor/CommunicationFacade.java': public void addInternEventListener(CommunicationController iel)
+---
+  >   // addInternEventListener(ipc); // defined in 'difusor/CommunicationFacade.java': public void addInternEventListener(CommunicationController/*
+ * iGraf - Interactive Graphics on the Internet: http://www.matematica.br/igraf
+ *
+ * Free interactive solutions to teach and learn
+ *
+ * iMath Project: http://www.matematica.br
+ * LInE           http://line.ime.usp.br
+ *
+ * @author RP, LOB
+ *
+ * @description 
+ * 
+ * @see ...
+ *
+ * @credits
+ * This source is free and provided by iMath Project (University of São Paulo - Brazil). In order to contribute, please
+ * contact the iMath coordinator Leônidas O. Brandão.
+ *
+ * O código fonte deste programa é livre e desenvolvido pelo projeto iMática (Universidade de São Paulo). Para contribuir,
+ * por favor contate o coordenador do projeto iMatica, professor Leônidas O. Brandão.
+ * 
+ */
+
+package igraf.moduloInferior;
+
+import igraf.moduloInferior.controle.InfoPaneController;
+import igraf.moduloInferior.eventos.IgrafDescriptionEvent;
+
+import java.awt.Component;
+
+import difusor.CommunicationFacade;
+import difusor.evento.CommunicationEvent;
+
+
+public class ModuloInferior extends CommunicationFacade {
+
+ InfoPaneController ipc = new InfoPaneController(this);
+ 
+ // From: igraf.ContentPane(): ModuloInferior mi = new ModuloInferior();
+ public ModuloInferior () {
+  // try{String str="";System.out.println(str.charAt(3)); } catch(Exception e) {e.printStackTrace();}
+  // addInternEventListener(ipc); // defined in 'difusor/CommunicationFacade.java': public void addInternEventListener(CommunicationController iel)
+  }
+
+ public Component getPane () {
+  return ipc.getPane();
+  }
+
+ public void filtrarEventoEntrada(CommunicationEvent ie) {
+  if (ie instanceof ModuloInferiorDisseminavelEvent)
+   disseminarEventoInternamente((IgrafDescriptionEvent)ie);
+  }
+
+ // método, momentaneamente, desnecessário pois o módulo inferior
+ // só recebe eventos de descrição e exibe seu conteúdo no InfoPane
+ public void filtrarEventoSaida (CommunicationEvent ie) {
+  //disseminarEventoExternamente(ie);
+  }
+
+ }

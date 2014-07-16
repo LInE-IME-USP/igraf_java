@@ -1,0 +1,289 @@
+/*
+ * iGraf - Interactive Graphics on the Internet: http://www.matematica.br/igraf
+ *
+ * Free interactive solutions to teach and learn
+ *
+ * iMath Project: http://www.matematica.br
+ * LInE           http://line.ime.usp.br
+ *
+ * @author RP, LOB
+ *
+ * @description
+ *
+ * @see igraf/moduloCentral/visao/TabbedViewer.java
+ * @see igraf/moduloCentral/controle/AreaDesenhoController.java
+ * @see igraf/moduloCentral/eventos/AreaDesenhoEvent.java
+ *
+ * @credits
+ * This source is free and provided by iMath Project (University of São Paulo - Brazil). In order to contribute, please
+ * contact the iMath coordinator Leônidas O. Brandão.
+ *
+ * O código fonte deste programa é livre e desenvolvido pelo projeto iMática (Universidade de São Paulo). Para contribuir,
+ * por favor contate o coordenador do projeto iMatica, professor Leônidas O. Brandão.
+ *
+ */
+
+package igraf.moduloCentral.visao;
+
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Transparency;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+
+import javax.swing.AbstractAction;
+import javax.swing.JComponent;
+import javax.swing.KeyStroke;
+import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.UndoManager;
+
+import igraf.IGraf;
+import igraf.moduloCentral.controle.AreaDesenhoController;
+import igraf.moduloCentral.visao.plotter.AxesPlotter;
+import igraf.moduloCentral.visao.plotter.GraphPlotter;
+import igraf.moduloCentral.visao.plotter.PolygonPlotter;
+import igraf.moduloInferior.ModuloInferior; // access to the "status bar" 'igraf/moduloInferior/visao/InfoPane.java'
+
+public class AreaDesenho extends JComponent  implements Runnable {
+
+
+ //DEBUG: if IGraf.IS_DEBUG get a complete path of this class
+ public static final String IGCLASSPATH = "igraf/moduloCentral/visao/AreaDesenho.java";
+
+ private static int count = 0; //DEBUG
+ private int ID = count++;
+ public  int getID () { return ID; }
+
+ private BufferedImage axesImage, graphImage;
+ private Graphics2D axesBuffer, graphBuffer;
+
+ public PolygonPlotter polygonPlotter = new PolygonPlotter();
+ public AxesPlotter eixos = new AxesPlotter();
+ public GraphPlotter graphPlotter;
+
+ private ModuloInferior moduloInferior; // to allow any one above ModuloCentral to access "status bar" 'igraf/moduloInferior/visao/InfoPane.java'
+
+ private int widthADD, heightADD;
+
+ private boolean deixarRastro;
+ // final private UndoManager undo = new UndoManager();
+
+
+ private boolean animando = false;
+ private Thread threadToAnimation = null;
+ private Cursor cursorSelected = new Cursor(Cursor.CROSSHAIR_CURSOR);
+ private Cursor cursorDefault = new Cursor(Cursor.DEFAULT_CURSOR);
+
+
+ public AreaDesenho (AreaDesenhoController adc, ModuloInferior moduloInferior) {
+
+  //D  public void actionPerformed(ActionEvent evt) {
+  //D   System.out.println("undo... is coming!");
+  //D   try {
+  //D    if (undo.canUndo()) { undo.undo(); }
+  //D   } catch (CannotUndoException e) { System.out.println("falta algo, mas... uau!"); }
+  //D  }
+  //D });
+  //D getInputMap().put(KeyStroke.getKeyStroke("control Z"), "Undo");
+
+  this.moduloInferior = moduloInferior;
+  graphPlotter = new GraphPlotter(this, moduloInferior);
+
+  addKeyListener(eixos);
+  addMouseListener(eixos);
+  addMouseMotionListener(eixos);
+
+  addKeyListener(graphPlotter);
+  addMouseListener(graphPlotter);
+  addMouseMotionListener(graphPlotter);
+
+  addKeyListener(polygonPlotter);
+  addMouseListener(polygonPlotter);
+  addMouseMotionListener(polygonPlotter);
+
+  polygonPlotter.setController(adc);
+  graphPlotter.setController(adc);
+  eixos.setController(adc);
+  adc.setControlledObject(this);
+
+  addKeyListener(new KeyAdapter() {
+   public void keyPressed(KeyEvent e) {
+    int keyCode = e.getKeyCode();
+    if (keyCode == 27) defaultCursor();
+    }
+   });
+
+  addMouseListener(new MouseAdapter() {
+   public void mouseClicked(MouseEvent e) {
+    if (e.getClickCount() == 2)
+     defaultCursor();
+    }
+   });
+  }
+
+
+ // evita redesenho da grade durante as animações
+ private void setAxesBuffer (int w, int h) {
+  if (axesImage==null || axesImage.getWidth() != w || axesImage.getHeight() != h || eixos.axesChanged()) {
+   axesImage = getGraphicsConfiguration().createCompatibleImage(w,h,Transparency.BITMASK);
+   axesBuffer = axesImage.createGraphics();
+   eixos.axesFixed();
+   }
+  eixos.desenha(axesBuffer, w, h);
+  }
+
+ //TODO: must be reviewed
+ // bug: some grade caso o plano seja arrastado durante a animacao
+ private void setGraphBuffer (int w, int h) {
+  if (!deixarRastro) {
+   graphImage = getGraphicsConfiguration().createCompatibleImage(w,h,Transparency.BITMASK);
+   graphBuffer = graphImage.createGraphics() ;
+   }
+  graphPlotter.desenha(graphBuffer, w, h); // igraf.moduloCentral.visao.plotter.GraphPlotter graphPlotter
+  }
+
+ // Merge the 'PolygonPlotter polygonPlotter' into this drawing area
+ private void setBuffer (int w, int h) {
+  polygonPlotter.setDrawingArea(getGraphicsConfiguration().createCompatibleImage(w,h,Transparency.BITMASK), w, h);
+  }
+
+ //DEBUG //T 
+static int tt=0;
+ //T if (tt++==0){
+ //T System.err.println(IGraf.debugErrorMsg(IGCLASSPATH)+"setBuffer: #ADD="+ID+": w="+w+", h="+h);
+ //T IGraf.launchStackTrace(); }
+
+
+ // evita a variação de velocidade da animação
+ public void repaint () {
+  super.repaint();
+  }
+
+ 
+ // Paint all objects in drawing area
+ public void paintComponent (Graphics gr) {
+  //T if (tt++%30==0) try { String srtA=""; System.out.print(srtA.charAt(3)); } catch(Exception e) { e.printStackTrace(); }
+  //System.err.print("+");
+  Graphics2D gr2D = (Graphics2D) gr;
+
+  widthADD = getBounds().width;
+  heightADD = getBounds().height;
+
+  setAxesBuffer(widthADD, heightADD);
+  setGraphBuffer(widthADD, heightADD);
+  setBuffer(widthADD, heightADD);
+
+  gr2D.drawImage(axesImage , 0, 0, null); // java.awt.image.BufferedImage
+  gr2D.drawImage(graphImage, 0, 0, null); // java.awt.image.BufferedImage
+  gr2D.drawImage(polygonPlotter.getImage(), 0, 0, null); // igraf.moduloCentral.visao.plotter.PolygonPlotter
+
+  }
+
+
+ public void mudaEstadoRastro () {
+  deixarRastro = !deixarRastro;
+  }
+
+
+ // From: 'TabbedViewer.changeControlTab(boolean isChange, int index)' or 'TabbedViewer.criaAba()': in new tab or tab change => stop animation in old one
+ private boolean suspended = false;
+
+ // From: TabbedViewer.changeControlTab(boolean isChange, int index): if the "old tab" has animation => stop them all
+ public void stopAnimation () {
+   //TA System.err.println(""+IGCLASSPATH + ": stopAnimation(): animando=" + animando + "");
+   if (animando)
+     suspended = true;
+   }
+
+ // From: TabbedViewer.changeControlTab(boolean isChange, int index): if the "new tab" has animation => start them all
+ public void startAnimation () {
+   if (animando) {
+     suspended = false;
+     animar(true);
+     }
+   }
+
+ //T static int count2=0;
+ // Control to automatic animation - AreaDesenho is runnable
+ public void run () {
+  //TA System.err.println(""+IGCLASSPATH + ": run(): animando=" + animando + "");
+  //TA count2++;
+  while (animando) {// isAlive
+   try {
+    if (suspended) {
+      //TA System.err.println("<fim>");
+      break; // from 'TabbedViewer.changeControlTab(boolean isChange, int index)' or 'TabbedViewer.criaAba()': in new tab or tab change => stop animation in old one
+      }
+    Thread.sleep(120);
+    repaint();
+    //TA System.err.print(""+ID);
+    } catch (InterruptedException except) { if (IGraf.IS_DEBUG) except.printStackTrace(); }
+   }
+  //TA System.err.println("");
+  }
+
+ // Came from:
+ // - igraf/moduloCentral/controle/AreaDesenhoController.java: iniciaAnimacao()
+ // - igraf/moduloCentral/visao/desenho/DesenhoAnimacao.java: mudaEstadoAnimacao()
+ // - src/igraf/moduloJanelasAuxiliares/visao/animacao/LabelAnimacao.java: IgrafMenuAnimacaoEvent imae = new IgrafMenuAnimacaoEvent(this, getText()); jac.enviarEvento(imae);
+ public void animar (final boolean newStatusAnimation) {
+  this.animando = newStatusAnimation;
+  //T System.err.println(""+IGCLASSPATH + ": animar(" + newStatusAnimation + ")" );
+  if (newStatusAnimation) try {
+   threadToAnimation = new Thread(this); // @see 'public void run()' above
+   threadToAnimation.start();
+   } catch (Exception except) { }
+  else try {
+   //T System.err.println(IGCLASSPATH + ": animar(" + newStatusAnimation + "): isAlive=" + threadToAnimation.isAlive());
+   threadToAnimation.suspend();
+   threadToAnimation = null;
+   } catch (Exception except) { }
+
+  //T IGraf.launchStackTrace();
+  }
+
+ public boolean animando () {
+System.err.println(""+IGCLASSPATH + ": animando(): return "+ animando + "");
+  return animando;
+  }
+
+ public void atualizaDesenho () {
+  if (!animando)
+   repaint(0);
+  }
+
+ private void clearScreen (Graphics2D g2) {
+  g2.setPaint(Color.white);
+  g2.fillRect(0, 0, getSize().width, getSize().height);
+  g2.setPaint(Color.black);
+  }
+
+ public void limpaRastro () {
+  if (animando)
+   clearScreen(graphBuffer);
+  }
+
+ public void changeCursor () {
+  requestFocus();
+  setCursor(cursorSelected);
+  }
+
+ public void defaultCursor () {
+  setCursor(cursorDefault);
+  }
+
+ //D public static void mainD (String[] args) {
+ //D  JFrame f = new JFrame("iGraf : test frame");
+ //D  f.add(new AreaDesenho(new Area-DesenhoController(0))); // eliminar o hifen se for testar...
+ //D  f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+ //D  f.setSize(new Dimension(600, 300));
+ //D  f.setVisible(true);
+ //D  }
+
+ }

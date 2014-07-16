@@ -1,0 +1,25 @@
+package igraf.moduloCentral.eventos;
+
+import java.awt.Rectangle;
+
+import difusor.evento.CommunicationEvent;
+
+public class FrameResizedEvent extends CommunicationEvent implements ModuloCentralDisseminavelEvent{
+
+	Rectangle rectangle;
+	
+	public FrameResizedEvent(Object source, Rectangle r) {
+		super(source);
+		rectangle = r;
+	}
+	
+	public Rectangle getRectangle() {
+		return rectangle;
+	}
+
+
+	public String getDescription() {
+		return objetivo("corrigir as dimensões da tela quando o iGraf usa o slider para controle manual de animação.");
+	}
+
+}

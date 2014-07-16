@@ -1,0 +1,131 @@
+/*
+ * iGraf - Interactive Graphics on the Internet: http://www.matematica.br/igraf
+ * 
+ * Free interactive solutions to teach and learn
+ * 
+ * iMath Project: http://www.matematica.br
+ * LInE           http://line.ime.usp.br
+ *
+ * @author RP, LOB
+ *
+ * @description Module to deal with exercises. Evento que transporta informações gerais geradas pelo sistema
+ * sobre o desempenho do aluno na resolução de um exercício do iGraf
+ * 
+ * @see 
+ *  
+ * @credits
+ * This source is free and provided by iMath Project (University of São Paulo - Brazil). In order to contribute, please
+ * contact the iMath coordinator Leônidas O. Brandão.
+ *
+ * O código fonte deste programa é livre e desenvolvido pelo projeto iMática (Universidade de São Paulo). Para contribuir,
+ * por favor contate o coordenador do projeto iMatica, professor Leônidas O. Brandão. 
+ * 
+ */
+
+package igraf.moduloExercicio.eventos;
+
+import difusor.evento.CommunicationEvent;
+
+import igraf.moduloArquivo.eventos.EventoRegistravel;
+import igraf.moduloArquivo.eventos.ModuloArquivoDisseminavelEvent;
+import igraf.moduloCentral.eventos.ModuloCentralDisseminavelEvent;
+import igraf.moduloCentral.modelo.Acao;
+
+
+public class DiagnosticEvent extends CommunicationEvent implements ModuloArquivoDisseminavelEvent, ModuloCentralDisseminavelEvent, ModuloExercicioDisseminavelEvent, EventoRegistravel {
+
+ public static final String SEND_SESSION = "send session";
+ public static final String SEND_RESULT = "send result";
+ public static final String LOAD_RESULT = "load result";
+ public static final String sep = ";";
+ 
+ private String resultado = null, sessao = null, tentativa="", status = "";
+ private int numAcertos = -1;
+ private int numErros = 0, acao;
+
+ // construtor usado para gravar e carregar dados das 
+ // tentativas de responder os exercícios
+ public DiagnosticEvent (Object source, String cmd, String tentativa, int acao) {
+  super(source, cmd);
+  this.tentativa = tentativa;
+  this.acao = acao;
+  
+  if (acao == Acao.respostaObjetiva) {
+   int i = tentativa.indexOf(sep);
+   status = tentativa.substring(i+1);
+   this.tentativa = tentativa.substring(0, i);
+   }
+  }
+
+ // construtor usado quando um objeto desta classe deve 
+ // transportar os dados gerais da seção
+ public DiagnosticEvent (Object source, String sessao) {
+  super(source, SEND_SESSION);
+  this.sessao = sessao;
+  acao = -1;
+  }
+ 
+ public int getNumErros () {
+  return numErros;
+  }
+
+ public int getNumAcertos () {
+  return numAcertos;
+  }
+
+ // igraf.moduloExercicio.controle.JanelaExercicioController.actionPerformed(JanelaExercicioController.java:165)
+ public void setNumErros (int numErros) {
+  this.numErros = numErros;
+  }
+
+ // igraf.moduloExercicio.controle.JanelaExercicioController.actionPerformed(JanelaExercicioController.java:165)
+ public void setNumAcertos (int numAcertos) {
+  // igraf.basico.util.Utilitarios.rastrearError();
+  // System.out.println("DiagnosticEvent.setNumAcertos(): "+this.numAcertos+" -> "+numAcertos);
+  this.numAcertos = numAcertos; // igraf.moduloExercicio.evento.DiagnosticEvent.numAcertos++
+  }
+
+ public String getDiagnostico () {
+  return resultado;
+  }
+
+ public void setResultado (String resultado) {
+  this.resultado = resultado;
+  }
+
+ public String getSessao () {
+  return sessao;
+  }
+
+ public String getAvaliacao () {
+  return getDiagnostico() + "\nNúmero de acertos = " + getNumAcertos();
+  }
+
+ public String toString () {
+  return getDiagnostico();
+  }
+
+
+ public String getDescription () {
+  return objetivo("notificar os resultados gerados pelo sistema de avaliação automática do iGraf.");
+  }
+
+ public int getCodigoAcao () { 
+  return acao;
+  }
+
+ // para gravação
+ public String getArgumento () {
+  return tentativa + sep + status;
+  }
+
+ // para leitura
+ public String getTentativa () {
+  return tentativa;
+  }
+ 
+ public String getStatus () {
+  return status;
+  }
+
+ }

@@ -1,0 +1,453 @@
+# Ações implementadas em Sessao.java
+# ----------------------------------
+
+#
+igraf = iGraf: Gráficos Interativos na Internet
+arquivo = Arquivo
+
+# GERAL
+RESET = reset
+ATUALIZAR = Atualizar
+
+# CORES PADRÃO
+AZUL = Azul
+PRETO = Preto
+MARINHO = Marinho
+VERMELHO = Vermelho
+LARANJA = Laranja
+ROXO = Roxo
+CINZA_ESCURO = Cinza escuro
+BORDO = Bordô
+MARROM = Marrom
+
+# DESENHO
+DESENHO_INDIVIDUAL = desenhar gráfico da função f(x) =
+DESENHO_MULTIPLO = desenhar todos os gráficos editados
+ESCONDER_ULTIMO_GRAFICO = ocultar o último gráfico desenhado
+ESCONDER_TODOS_GRAFICOS = ocultar todos os gráficos
+DELETAR_GRAFICO_SELECIONADO = remover gráfico da função f(x) =
+DELETAR_TODOS_GRAFICOS = deletar todos os gráficos editados
+EDITAR_FUNCAO = mudar definição de funcao
+INSERIR_ABA = inserir mais uma área de desenho
+
+# POLIGONO
+POLIGONO = criar polígono
+UNDO_POLIGONO = desfazer polígono
+REDO_POLIGONO = refazer polígono
+
+# ANIMACAO
+ANIMACAO = iniciar/parar animação
+RASTRO_NA_TELA = exibir/ocultar rastro da animação na tela
+AUMENTAR_VELOCIDADE_ANIMACAO = aumentar velocidade da animação
+DIMINUIR_VELOCIDADE_ANIMACAO = diminuir velocidade da animação
+
+# EIXOS
+EIXOS = ocultar/exibir eixos coordenados
+ESCALA = ocultar/exibir escala
+GRADE = ocultar/exibir grade
+INSERE_TEXTO = inserir texto
+EDITA_TEXTO = editar texto
+ATUALIZA_POSICAO_TEXTO = atualização da posição do texto
+APAGA_TEXTO = remove texto
+DESLOCAR_ORIGEM = deslocar origem
+
+# CALCULO
+TRACAR_DERIVADA = traçar gráfico da função derivada de f(x) =
+TRACAR_TANGENTE = desenhar reta tangente ao ponto
+CALCULAR_INTEGRAL = calcular integral definida
+INT_INDEFINIDA = traçar gráfico da antiderivada de f(x) =
+
+# ZOOM
+MAIS_ZOOM = aumentar zoom
+MENOS_ZOOM = diminuir zoom
+ZOOM_PADRAO = restaurar tela padrão
+
+# FINALIZAÇÃO
+FIM = Fim do Histórico
+
+# geral
+lamentoNImpl = Funcionalidade ainda não implementada.
+msgCancelar = Cancelar
+msgSim = Sim
+msgNao = Não
+msgCarga = Carregar arquivo do iGraf
+msgVersao = Versão
+
+# igraf/IGraf.java:
+msgErrInicioArquivo = Erro ao tentar ler arquivo
+msgErrArquivoInv = Arquivo não está no formato iGraf
+
+# igraf/Arquivo.java + igraf/menu/MenuArquivo.java (apenas o msgAbrirArq):
+msgDesejaGravarSes = Deseja gravar a sessão atual do iGraf?
+msgGravarSes = Gravar sessão do iGraf
+msgAbrirArq = Abrir arquivo iGraf
+
+# igraf/menu/MenuArquivo.java:
+arqMenuGrave = Gravar
+arqMenuComo = Gravar como
+arqMenuExerc = Gravar como exercício
+arqMenuNovo = Novo
+arqMenuAbra = Abrir
+arqMenuHTML = Gerar Página HTML
+arqMenuImprima = Imprimir
+arqMenuSaia = Sair
+arqMenuCopia = Copiar gráfico
+arqMenuExporta = Exportar como JPEG
+arqMenuImpSuc = Impresso com sucesso
+arqVersao = Versão do arquivo
+
+# igraf/moduloCentral/eventos/DesenhoTextoEvent.java
+msgTexto = texto
+
+# igraf/moduloJanelasAuxiliares/visao/JanelaEntradaTexto.java
+msgTam = tamanho
+msgIns = Inserir
+msgFonte = Fonte
+msgOK = OK
+
+# igraf/V/writer/TextInput.java
+tiInsTexto = Janela para inserção de texto
+tiPadrao = padrão
+tiOutrasCores = Outras cores
+tiPosTexto = Posição do texto em (x, y)
+tiPosTexto1 = Posição do texto
+tiPosTexto2 = em (x, y)
+textRemotionOptionPaneTitle = Remoção de texto
+textRemotionOptionPaneQuestion = Deseja realmente apagar este texto?
+
+# igraf/menu/MenuAreaDesenho
+madADD = Edições
+madADDBarra = Opções relativas a edições (textos, funções,...)
+madZoomPadrao = Zoom padrão
+madZoomAmpliar = Aumentar zoom
+madZoomDiminuir = Diminuir zoom
+madTextoInserir = Inserir texto
+madTextoEditar = Editar texto
+madTextoRemover = Remover texto
+madEixosExibir = Exibir eixos
+madEixosRemover = Remover eixos
+madEscalaExibir = Exibir escala
+madEscalaRemover = Remover escala
+madGradeExibir = Exibir grade
+madGradeRemover = Remover grade
+madLang = Idioma
+madPort = Português
+madEngl = Inglês
+
+# menu polígono
+mepPol = Polígono
+mepPonto = Ponto
+mepSegm = Segmento
+mepTri = Triângulo
+mepRet = Retângulo
+mepRetEsp = Retângulo Especial
+mepPolReg = Polígono Regular
+mepPolQqr = Polígono Qualquer
+mepPolEsp = Polígono Especial
+mepPintaGrade = Pintar Grade
+mepPintaPoli = Preencher Polígono
+mepNPintaPoli = Não Preencher Polígono
+
+mepDescPonto = Seleciona o modo de marcação de Ponto
+mepDescSegm = Seleciona o modo de criação de Segmento
+mepDescTri = Seleciona o modo de criação de Triângulo
+mepDescRet = Seleciona o modo de criação de Retângulo
+mepDescRetEsp = Seleciona o modo de criação de Retângulo Especial
+mepDescPolReg = Seleciona o modo de criação de Polígono Regular
+mepDescPolQqr = Seleciona o modo de criação de Polígono Qualquer
+mepDescPolEsp = Seleciona o modo de criação de Polígono Especial
+mepDescPintaGrade = Seleciona o modo de pintura da grade
+mepDescPintaPoli = Seleciona o modo de pintura de um polígono
+
+madOpcaoPCPadrao = Exibe o plano cartesiano padrão.
+madOpcaoGrafAmpPrec = Aumenta a precisão do gráfico.
+madOpcaoGrafDimPrec = Diminui a precisão do gráfico.
+madOpcaoTextoJanela = Exibe janela para edição/inserção de texto. Depois de digitar o texto, \"clique\" onde deve ser inserido texto e pressione \"inserir\".
+madOpcaoTextoEditar = Alterar o conteúdo de um texto presente na área de desenho.
+madOpcaoTextoRemover = Remove um texto presente na área de desenho.
+madOpcaoEixosInv = Alterna entre exibir ou não os eixos coordenados.
+madOpcaoEscalaInv = Alterna entre exibir ou não a escala numérica que complementa os eixos coordenados.
+madOpcaoGradeInv = Alterna entre exibir ou não a grade sobre o plano cartesiano.
+madOpcaoLang = Alterar o idioma
+madOpcaoPort = Exibir rótulos em português
+madOpcaoEngl = Exibir rótulos em inglês
+
+# igraf/menu/MenuAjuda
+majAjuda = Ajuda
+majAjudaBarra = Opções relativas a ajuda e informações
+majCont = Conteúdo
+majBusca = Busca
+majAtalhos = Lista de atalhos
+majSobre = Sobre
+majJanAjuda = Exibe a janela da ajuda
+majListaAtalhos = Exibe a lista dos atalhos do iGraf
+majInformes = Exibe informações sobre o do iGraf
+
+# igraf/menu/MenuAnimacao
+maAnim = Animação
+maAnimBarra = Opções relativas a animações de funções
+maParaAnima = Parar / Animar
+maMostraControle = Exibir Painel de Controle
+maMostraCDesl = Exibir Controle Deslizante
+maEscondeCDesl = Ocultar Controle Deslizante
+maRastro = Iniciar Rastro de função
+maRastroNao = Interromper Rastro de função
+maVelAmplia = Aumentar Velocidade
+maVelDiminui = Diminuir Velocidade
+maParaAnimaTodos = Interrompe ou reinicia todas as animações de funções na tela
+maMostraControleIndividual = Exibe o painel para controlar as animações individualmente
+maMostraCDeslParado = Exibe um controle deslizante para animação. Só funciona quando a função não está animada
+maRastrearAnimacao = Inicia rastreamento de animações (funções do tipo "a*x")
+maRastrearAnimacaoNao = Interromper rastreamento de animações (funções do tipo "a*x")
+maRastrearAnimacaoErro1 = Para efetuar rastreamento de animações é necessário haver algum função com parâmetro (como "a*x")
+maMostraControleIndividual = Exibe o painel para controlar as animações individualmente
+maVelAmpliaStr = Aumenta a velocidade da animação
+maVelDiminuiStr = Diminui a velocidade da animação
+
+# igraf/menu/MenuCalculo.java
+mcCalculo = Cálculo
+mcCalculoBarra = Opções relativas ao Cálculo
+mcDerVer = Visualizar Derivada
+mcTgVer = Visualizar Reta Tangente
+mcIIVer = Visualizar Integral Indefinida
+mcIICalc = Calcular Integral Definida
+mcMsgAnimIni = A animação precisa ser iniciada para que se possa aplicar o Cálculo
+mcMsgDesGrafDer = Desenha o gráfico da derivada da função que estiver na área de edição. Clique sobre uma curva para selecioná-la
+mcMsgMostraTg = Exibe o painel para estudo de tangentes. Digite um valor no campo \"x = \". Veja a equação em \"f(x) = \" e a reta correspondente na área de desenho
+mcMsgMostraInt = Desenha o gráfico da integral indefinida da função que estiver na área de edição. O programa suporá que a constante na primitiva é zero
+mcMsgMostraPII = Exibe o painel para estudo de integral definida. Selecione duas ou mais funções, digite os limites de integração nos campos \"a = \" e \"b = \".  Clique em integrar
+
+# igraf/menu/MenuGrafico.java, igraf/sessao/Sessao.java, exercicio/RespostaAlgebrica.java, igraf/V/controleDesenho/GerenciadorDesenho.java:
+mgGrf = Gráfico
+mgGrfBarra = Opções relativas ao gráfico de funções
+mgDes = Desenhar
+mgDesTodos = Desenhar Todos
+mgEditaExp = Editar Expressão
+mgExibeListaExp = Exibir Expressões
+mgOcultaListaExp = Ocultar Expressões
+mgEsconder = Esconder
+mgEsconderUlt = Esconder Último
+mgEsconderTodos = Esconder Todos
+mgRemoverGrafico = Remover gráfico
+mgRemoverTodos = Remover Todos
+mgRemoverAba = Remover Aba
+mgNovaAba = Nova Aba
+mgNovaSes = Nova Sessão
+mgErroEA = Erro na sintaxe da expressão digitada
+mgErroEAnao = Erro na sintaxe da expressão, função não inserida
+mgDigEA = Digite uma expressão algébrica na área de edição
+
+mgDesEdicao = Desenha o gráfico correspondente à função que está na área de edição
+mgDesTodosOcultos = Desenha todos os gráficos que foram escondidos pelo usuário
+mgMsgJanFun = Abre a janela para alteração das funções inseridas na sessão do iGraf
+mgMsgExibeListaExp = Exibe a lista das expressões editadas pelo usuário nesta sessão do iGraf
+mgMsgEscondeGrafEdicao = Esconde o gráfico da função que estiver na área de edição. Clique sobre uma curva para selecioná-la
+mgMsgEscondeUltDes = Esconde o último gráfico editado
+mgMsgEscondeTodos = Esconde todos os gráficos. Gráficos escondidos podem ser recuperados clicando-se em \"Desenhar todos\"
+mgMsgRemoverGrafico = Remove definitivamente o gráfico selecionado
+mgMsgRemoverTodos = Remove da tela (e da memória) todos os gráficos
+mgMsgRemoverAba = Remove a aba atualmente selecionada
+mgMsgNovaAba = Cria uma nova aba e adiciona mais uma área de desenho
+mgMsgIniNovaSes = Inicia uma nova sessão do iGraf (apaga todos os registros da sessão atual)
+
+# igraf/V/controleDesenho/GerenciadorDesenho.java
+msgErrFcVazia = Erro: função vazia, não será possivel desenhar o gráfico
+msgErrFcTela = Erro: ao tentar recuperar função na área de desenho
+msgErrFcVaziaEd = Erro: expressão vazia, não é possível edição
+msgErrFcSintEd = Erro: problema na sintaxe da expressão, não será possível editá-la
+msgErrFcSintaxe = Erro: problema na sintaxe da expressão, o gráfico não será desenhado
+
+# igraf/V/desenho/DesenhoAnimacao.java:
+daErroDominio = Sintaxe incorreta na definição do domínio
+daErroOperador = Função com operador ou operando inválido
+
+# entrada/controle/Analisa.java
+msgASerrNaoEsperado = Operador ou operando não esperado
+msgASerrParenteses = Erro em parênteses: mal formados
+msgASerrFinal = Término incorreto da expressão
+msgASerrOperInv = Operador ou operando não válido no iGraf
+
+# igraf/V/janela/JanelaSobre: Janela "sobre"
+msgAFsobre = Sobre o iGraf
+msgAFmsg0  = \ Sistema para ensino/aprendizagem\n
+msgAFmsg1  = \ relacionada a funções (Cálculo)\n
+msgAFmsg2  = \         Versão $VERSAO$\n
+msgAFmsg3  = \    http://www.matematica.br\n\n
+msgAFmsg4  = Desenvolvimento:\n
+msgAFmsg5  = Reginaldo do Prado\n\n
+msgAFmsg6  = Coordenação/desenvolvimento:\n
+msgAFmsg7  = Leônidas Oliveira Brandão - DCC - IME\n\n
+msgAFmsg8  = \ Instituto de Matemática e Estatística\n
+msgAFmsg9  = \    Universidade de São Paulo\n
+msgMem     = Memória livre
+
+# igraf/moduloJanelasAuxiliares/visao/JanelaEdicaoExpressao.java
+msgJanEFTitulo = Janela de Edição de Função
+msgJanEFvazio = No momento não existem funções para editar
+msgJanEFexiste = Escolha uma função na lista abaixo, altere-a e clique no botão \"OK\"
+msgJanEFcores = Outras Cores
+
+# igraf/moduloJanelasAuxiliares/visao/tangente
+mcTgPane = Painel Tangente
+btFxTg = Fixar Tangente
+btErTg = Apagar Tangentes
+cbVarTg = Várias Tangentes
+cbAnimTg = Animação Tangente
+chSelFun = Selecione uma função
+lbEqReta = Equação da Reta
+digValX = Digite um valor para x.
+
+# igraf.moduloJanelasAuxiliares.visao.integral
+janIntegTit = Integral Definida
+btInteg = Integrar
+btResult = resultado
+funSup = função superior
+funInf = função inferior
+intInterv = intervalo de integração
+colCB = Colorir região de integração
+intCB = Calcular integral
+areCB = Calcular área
+area = Área
+
+janAnimTit = Painel de Controle de Animações
+janParamTit = Painel de Parâmetros
+labParam = Parâmetros
+labInterv = Intervalos
+labConst = Constantes
+
+# rótulos dos botões que acionam os menus
+pbGrafico = Gráfico
+pbCalculo = Cálculo
+pbAnimacao = Animação
+pbEdicoes = Edições
+pbExercicio = Exercícios
+pbAjuda = Ajuda
+
+# igraf/V/paineis/texto/PainelEdicaoTexto.java:
+btEditar = Editar
+btRemover = Remover
+btFechar = Fechar
+selecionaTodos = Selecionar todos
+textoEdicaoVazio = Não há textos passíveis de edição
+
+# igraf/sessao/Sessao.java:
+sesExercSemCom = Não foram enviados comentários sobre este exercício
+
+# Resposta exercicio
+HABILITA_ENVIO_RESPOSTA = arquivo contendo exercício
+RESPOSTA_NUMERICA = resposta numérica
+RESPOSTA_ALGEBRICA = resposta algébrica
+RESPOSTA_PONTO = resposta par ordenado
+RESPOSTA_INTERVALO = resposta intervalo
+INSERIR_COMENTARIO = inserir comentários
+INSERIR_COMENTARIO_ALUNO = inserir comentários do aluno
+HABILITA_VISAO_RESPOSTA = arquivo contendo respostas do aluno
+RESPOSTA_OBJETIVA = resposta objetiva
+RESPOSTA_DISCURSIVA = resposta discursiva
+DESABILITA_MENU = Desabilitar Menu
+
+# igraf/menu/MenuExercicio
+mexExerc = Exercício
+mexExercBarra = Opções para autoria/avaliação de exercício
+mexExercHistorico = Histórico
+mexExercResp = Responder
+mexExercCriar = Criar Exercício
+mexExercEditar = Editar Exercício
+mexExercMenuConfig = Configurar Menus
+mexExercAjudaExibe = Exibe a janela que permite rever os passos realizados em uma sessão do iGraf
+mexExercAjudaEval = Abre a janela para o professor visualizar as respostas do aluno
+mexExercAjudaResp = Abre a janela para a resposta do aluno. Selecione o tipo da resposta e preencha o(s) campo(s) correspondente(s)
+mexExercAjudaGab = Abre a janela para respostas do gabarito. Usada na criação de exercícios
+mexExercAjudaGabEd = Abre a janela para as respostas do gabarito. Usada para alterar dados em exercícios previamente definidos
+mexExercAjudaMenuConfig = Seleciona os menus que serão exibidos ao aluno
+mexExercEval = Ver Respostas
+
+# exercicio/
+exercResp = Resposta
+exercErroTipoRespInc = tipo de resposta incompatível com o item de exercício
+
+# exercicio/PainelComentario
+exercPainelComentProfNaoComent = O professor não enviou dicas ou comentários
+exercPainelComentCriar1 = Observações sobre a criação de exercícios\n\n- Se a resposta esperada for discursiva, apenas clique em \"Confirmar Gabarito\"\n- Se o exercício está dividido em itens com respostas objetivas, selecione o tipo\nde cada resposta  na ordem em que os itens foram propostos e digite o valor esperado\n para cada um no campo correspondente.\n- Gráficos presentes na área de desenho no momento da criação do exercício poderão\n ser visualizados pelos alunos bem como os passos realizados na criação deste exercício\n- Certifique-se de ter inserido as respostas corretas e clique em \"Confirmar Gabarito\"\n
+exercPainelComentCriar2 = - Use esta área de texto para enviar dicas de resolução ou comentários ao seu aluno
+exercPainelComentResp1 = Observações sobre o envio de respostas\n\n- Se a resposta do exercício for discursiva, apenas clique em \"Responder / Enviar\" assim \n  que o gráfico (ou texto) estiver pronto.\n- Se o exercício está dividido em itens com respostas objetivas digite o valor que\n  considera correto para cada item no campo correspondente e clique em \"Responder / Enviar\"
+exercPainelComentResp2 = - Use esta área de texto para enviar justificativas ou comentários ao seu professor
+exercPainelComentRec = Comentário recebido
+exercPainelComentInsComent = Inserir comentário
+
+# exercicio/PainelSeletorTipoResposta.java:
+exercPSRespObj = Respostas objetivas
+exercPSInserirCampos = Inserir campos de resposta para os itens do exercício
+exercPSRespGrafDisc = A resposta para este exercício deve ser um gráfico ou um texto (resposta discursiva)
+exercPSSelTipoResp = Selecione o tipo da resposta
+exercPSNum = Número
+exercPSParOrd = Par Ordenado (x, y)
+exercPSInterv = Intervalo Numérico [a, b]
+exercPSEA = Expressão aritmética
+exercPSRemoveItem = Remover último item inserido
+exercPSerrAlt = Valor não permitido para atualizar altura de painel
+
+//AQUI
+# exercicio/FrameQuestaoResposta.java:
+exercFQREnvResp = Avaliar
+exercFQRLimpa = Limpar campos
+exercFQRPRAluno = Painel de respostas do aluno
+exercFQRPCGabarito = Painel de configuração do gabarito
+exercFQRCGabarito = Confirmar gabarito
+
+# exercicio/RespostaA.java:
+exercRmaisInf = Mais infinito
+exercRnumInv = Número inválido
+exercRErroAval = Erro na tentativa de avaliação
+exercRParabens = Item $OBJ$. Parabéns! A resposta \"$OBJ$\" está de acordo com o esperado
+exercRNaoAcordo = Item $OBJ$. A resposta \"$OBJ$\" não está de acordo com o esperado
+exercRItem = Item
+
+tentTotCert = Acerto Total
+tentParCert = Acerto Parcial
+tentNaoCert = Sem Acerto
+
+# exercicio/RespostaAlgebrica.java:
+exercRAErroCampoResp = Por favor, preencha o campo de resposta
+exercRAErroAnimNao = Parâmetros de animação não são permitidos neste contexto
+exercRAErroExpInv = Expressão inválida:
+
+exercRespDica = Selecione uma expressão algébrica.
+
+
+# exercicio/RespostaIntervalo.java:
+exercRIDigLimInt = Digite os limites para o intervalo
+exercRILInf = limite inferior
+exercRILSup = limite superior
+exercRIAberto = aberto
+exercRIFechado = fechado
+exercRIInterv = Intervalo
+exercRIIntDir = à direita
+exercRIIntEsq = à esquerda
+
+# exercicio/RespostaNumerica.java:
+exercRNdigR = Digite um número real (resposta esperada)
+
+# exercicio/RespostaPonto.java:
+exercRAcoofdX = coordenada x =
+exercRAcoofdY = coordenada y =
+
+# comands for IgrafEvent comparisons
+setInputExpression = definir expressão na entrada
+exercRAparOrd = Digite um par ordenado
+
+# exercicio/JanelaFeedback.java
+msgJFerrVazio = Não existe qualquer item de resposta para o exercício!
+
+# exercicio/Avaliador.java:
+msgAvalEnviaSuc = Solução enviada com sucesso
+
+# mensagens da janela de visualização de tentativas do aluno
+janVisTentTitulo = Visualizador de Tentativas do Aluno
+aluTent = Resposta do Aluno
+respEsper = Gabarito
+status = Situação
+try = Tentativa
+
+# painelCentralControler
+RESET_TABS = Aba padrão

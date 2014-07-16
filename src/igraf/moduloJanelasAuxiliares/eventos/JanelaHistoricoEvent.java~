@@ -1,0 +1,41 @@
+/*
+ * iGraf - Interactive Graphics on the Internet:  http://www.matematica.br/igraf
+ * iMath Project: http://www.matematica.br
+ * LInE           http://line.ime.usp.br
+ *
+ * @description
+ *
+ * @see
+ *
+ * 
+ * @author RP, LOB
+ *
+ * @credits
+ * This source code must be credited to iMath Project. In order to contribute, please
+ * contact the iMath coordinator Leônidas O. Brandão.
+ *
+ * O código fonte deste programa deve ser creditado ao projeto iMática. Para contribuir,
+ * por favor contate o coordenador do projeto iMatica, professor Leônidas O. Brandão.
+ *
+ */
+
+package igraf.moduloJanelasAuxiliares.eventos;
+
+import igraf.moduloArquivo.eventos.ModuloArquivoDisseminavelEvent;
+import difusor.evento.CommunicationEvent;
+
+public class JanelaHistoricoEvent extends CommunicationEvent implements ModuloArquivoDisseminavelEvent {
+
+ public static final String REDRAW_ALL = "redraw all";
+ public static final String STEP_REDRAW = "step redraw";
+
+ public JanelaHistoricoEvent (Object source, String cmd) {
+  super(source, cmd);
+  }
+
+
+ public String getDescription () {
+  return objetivo("notificar sobre alterações na janela de histórico do sistema.");
+  }
+
+ }

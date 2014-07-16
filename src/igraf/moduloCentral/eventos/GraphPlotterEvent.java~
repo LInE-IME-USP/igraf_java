@@ -1,0 +1,22 @@
+package igraf.moduloCentral.eventos;
+
+import igraf.moduloJanelasAuxiliares.eventos.ModuloJanelasDisseminavelEvent;
+import difusor.evento.CommunicationEvent;
+
+public class GraphPlotterEvent extends CommunicationEvent 
+implements ModuloJanelasDisseminavelEvent{
+
+	public GraphPlotterEvent(Object source) {
+		super(source);
+	}
+	
+	public GraphPlotterEvent(Object source, String command) {
+		super(source);
+		setCommand(command);
+	}
+
+	public String getDescription() {
+		return objetivo("notificar o sistema sobre alterações realizadas na área de desenho do iGraf.");
+	}
+	
+}

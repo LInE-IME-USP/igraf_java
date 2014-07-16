@@ -1,0 +1,355 @@
+/*
+ * iGraf - Interactive Graphics on the Internet: http://www.matematica.br/igraf
+ * 
+ * Free interactive solutions to teach and learn
+ * 
+ * iMath Project: http://www.matematica.br
+ * LInE           http://line.ime.usp.br
+ *
+ * @author RP, LOB
+ *
+ * @description janela para edição de textos
+ *
+ * @see igraf/moduloJanelasAuxiliares/controle/JanelaEntradaTextoController.java: open this text edition window
+ *  
+ * @credits
+ * This source is free and provided by iMath Project (University of São Paulo - Brazil). In order to contribute, please
+ * contact the iMath coordinator Leônidas O. Brandão.
+ *
+ * O código fonte deste programa é livre e desenvolvido pelo projeto iMática (Universidade de São Paulo). Para contribuir,
+ * por favor contate o coordenador do projeto iMatica, professor Leônidas O. Brandão. 
+ * 
+ */
+
+package igraf.moduloJanelasAuxiliares.visao;
+
+import igraf.basico.io.ResourceReader;
+import igraf.basico.util.EsquemaVisual;
+import igraf.moduloCentral.eventos.DesenhoTextoEvent;
+import igraf.moduloCentral.visao.desenho.Desenho;
+import igraf.moduloJanelasAuxiliares.controle.JanelaEntradaTextoController;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JComboBox; // Choice
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+
+import moduloColor.ColorChangeListener;
+import moduloColor.ColorEvent;
+import moduloColor.ColorFrame;
+
+import difusor.i18N.LanguageUpdatable;
+
+
+public class JanelaEntradaTexto extends JFrame implements ItemListener, LanguageUpdatable, ColorChangeListener {
+
+ private static final int WIDTHBLOCK = 240, HEIGHTBLOCK = 50; // fixed size to each blocks of "text position" and "font"
+
+ private static final Font font = new Font("Arial",Font.PLAIN,10);
+
+ JPanel southPanel, colunaDois;
+
+ JButton inserir = new JButton(ResourceReader.msg("msgOK")), // 
+ cancelar = new JButton(ResourceReader.msg("msgCancelar")); //
+
+ JComboBox colorChoice, sizeChoice;
+ Color cor = Color.blue;
+
+ JTextArea textArea;
+ JTextField tf_x, tf_y;
+
+ private int size = 12;
+ private String textAreaContent = "";
+
+ private JanelaEntradaTextoController jetc;
+
+ private JLabel
+   labelCol1Position1, // Column 1: "Text position"
+   labelCol1Position2, //           "in (x, y)"
+   labelCol2Font;      // Column 2: "Font"
+
+ public JanelaEntradaTexto (JanelaEntradaTextoController jetc) {
+  this();
+  //jetc.setControlledObject(this);
+  inserir.addActionListener(jetc);
+  cancelar.addActionListener(jetc);
+  textArea.addKeyListener(jetc);
+  this.jetc = jetc;
+  this.setFont(font);
+  setFontColor(cor);
+  //setResizable(false);
+  }
+
+ public JanelaEntradaTexto () {
+  super(ResourceReader.msg("tiInsTexto"));
+  textArea = new JTextArea(5, 80);
+  putBorder(false, textArea);
+  textArea.setBackground(EsquemaVisual.corAreaDesenho);
+  textArea.setForeground(Color.black);
+  textArea.setFont(font);
+  textArea.setText("");  
+
+  configureSouthPanel(); // Painel inferior: contém 3 colunas
+  configureColunaUm();   //  + coluna 1 do "painel inferior": para posicao (x,y)
+  configureColunaDois(); //  + coluna 1 do "painel inferior": para definir fonte e cor de texto
+  configureColunaTres(); //  + coluna 1 do "painel inferior": para botões "inserir"/"cancelar"
+
+  putBorder(false, southPanel);
+
+  addWindowListener(new WindowAdapter () { // fecha janela cancelando ação
+   public void windowClosing(WindowEvent e) {
+    jetc.cancelarEdicao();
+    }
+   });
+
+  this.getContentPane().add("North", textArea);
+  this.getContentPane().add("South", southPanel); 
+  this.pack();
+  }
+
+
+ private static void putBorder (boolean setSize, JComponent jComponent) {
+  if (jComponent instanceof JPanel)
+    ((JPanel)jComponent).setPreferredSize(new java.awt.Dimension(WIDTHBLOCK, HEIGHTBLOCK));
+  jComponent.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.black), BorderFactory.createEmptyBorder(0,1,0,1)));
+  }
+
+
+ private void configureSouthPanel () {
+  southPanel = new JPanel();/* {
+   public void paint (Graphics g) {
+    g.drawRect(1, 1, getSize().width-2, getSize().height-2);
+    }
+   };*/
+  southPanel.setBackground(EsquemaVisual.corAreaDesenho);
+  }
+
+ // coluna 1 do "painel inferior":
+ private void configureColunaUm () {
+  JPanel painelInfColUm = new JPanel(new GridLayout(2,2));
+  putBorder(true, painelInfColUm);
+  painelInfColUm.setBackground(EsquemaVisual.corAreaDesenho);
+  labelCol1Position1 = new JLabel(ResourceReader.msg("tiPosTexto1")); //, Label.RIGHT); // "Text position"
+  labelCol1Position2 = new JLabel(ResourceReader.msg("tiPosTexto2")); //, Label.RIGHT); // "in (x, y)"
+  labelCol1Position1.setFont(font); labelCol1Position2.setFont(font);
+  painelInfColUm.add(labelCol1Position1); // "Posição do texto"
+
+  JPanel px =  new JPanel(new BorderLayout()); // new Panel(); // 
+  JLabel lx = new JLabel(" x = "); // , Label.CENTER);
+  px.setBackground(EsquemaVisual.corAreaDesenho);
+  lx.setFont(font);
+  tf_x = new JTextField("0",6);
+  px.add("West", lx);   //
+  px.add("East", tf_x); //
+  painelInfColUm.add(px);
+
+  painelInfColUm.add(labelCol1Position2); // new Label(" ")); // coluna em branco - "em (x, y)"
+
+  JPanel py = new JPanel(new BorderLayout());
+  JLabel ly = new JLabel(" y = "); //, Label.CENTER);
+  py.setBackground(EsquemaVisual.corAreaDesenho);
+  ly.setFont(font);
+  tf_y = new JTextField("0",6);
+  py.add("West", ly);   //
+  py.add("East", tf_y); //
+
+  painelInfColUm.add(py);
+  southPanel.add(painelInfColUm);
+  }
+
+ // Coluna 2: font
+ private void configureColunaDois () {
+  colunaDois = new JPanel(new GridLayout(2,2));
+  colunaDois.setBackground(EsquemaVisual.corAreaDesenho);
+  putBorder(true, colunaDois);
+
+  labelCol2Font = new JLabel(ResourceReader.msg("msgFonte")); //, Label.CENTER);
+  labelCol2Font.setFont(font);
+
+  configureColorChoice();
+  configureSizeChoice();
+
+  colunaDois.add(labelCol2Font);          colunaDois.add(colorChoice);
+  colunaDois.add(new JLabel("")); colunaDois.add(sizeChoice);
+  southPanel.add(colunaDois);
+  }
+
+ private void configureSizeChoice () {
+  sizeChoice = new JComboBox();
+  sizeChoice.setFont(font);
+  sizeChoice.addItem("10");
+  sizeChoice.addItem("12");
+  sizeChoice.addItem("14");
+  sizeChoice.addItem("16");
+  sizeChoice.addItem("18");
+  sizeChoice.addItem("20");
+  sizeChoice.addItem(ResourceReader.msg("tiPadrao")); // ResourceReader.msg("tiPadrao")
+  sizeChoice.addItemListener(this);
+  }
+ private void configureColorChoice () {
+  colorChoice = new JComboBox();
+  String [] colorNameInADD = Desenho.getColorNames();
+  colorChoice.setFont(font);
+  for (int i = 0; i < colorNameInADD.length; i++) {
+   colorChoice.addItem(colorNameInADD[i]);
+   }
+  colorChoice.addItem("----------");
+  colorChoice.addItem(ResourceReader.msg("tiOutrasCores")); // 
+  colorChoice.addItemListener(this);
+  }
+ // --
+
+ private void configureColunaTres () {
+  JPanel p = new JPanel(new GridLayout(2,1,0,3));
+  p.add(inserir); 
+  p.add(cancelar);
+  southPanel.add(p);
+
+  inserir.setEnabled(false);
+
+  cancelar.setBackground(EsquemaVisual.corFundoBotoes);
+  //inserir.setBackground(EsquemaVisual.corFundoBotoes);
+  cancelar.setForeground(EsquemaVisual.corLetrasBotoes);
+  inserir.setForeground(EsquemaVisual.corLetrasBotoes);
+  }
+
+ public String getText () {
+  return textArea.getText();
+  }
+
+ public void setText (String s) {
+  textArea.setText(s);
+  setTextAreaContent(s);
+  }
+ 
+ public void setTextAreaContent (String s) {
+  textAreaContent = s;
+  inserir.setLabel(ResourceReader.msg("msgOK"));
+  inserir.setEnabled(true);
+  }
+ 
+
+ public Color getFontColor () {
+  return Desenho.getColor(colorChoice.getSelectedIndex());
+  }
+
+ private void setFontColor (Color c) {
+  cor = c;
+  textArea.setForeground(cor);
+  }
+
+ private void setFontSize (int i) {
+  textArea.setFont(new Font("Arial", Font.PLAIN, i));
+  size = i;
+  }
+ 
+ public void setChoices (Color color, int size) {
+  // System.out.println("\nsrc/igraf/moduloJanelasAuxiliares/visao/JanelaEntradaTexto.java: setChoices("+color+","+size+"): #sizeChoice=" + sizeChoice.size();)
+  //R Choice: sizeChoice.select(String.valueOf(size));
+  sizeChoice.setSelectedItem(String.valueOf(size));
+
+  setFontColor(color);
+  setFontSize(size);
+  }
+
+ public int getFontSize () {
+  //R Choice: size = Integer.parseInt(sizeChoice.getSelectedItem());
+  size = Integer.parseInt((String)sizeChoice.getSelectedItem());
+
+  return size;
+  }
+ 
+ public Font getUserSelectedFont () {
+  return new Font("Arial",Font.PLAIN, getFontSize());
+  }
+ 
+ public float getTextPositionX () {
+  if (tf_x == null) return 0;
+  return Float.parseFloat(tf_x.getText());
+  }
+
+ public float getTextPositionY () {
+  if (tf_y == null) return 0;
+  return Float.parseFloat(tf_y.getText());
+  }
+ 
+ public void setTextPositionX (float tx) {
+  tf_x.setText(String.valueOf(tx));
+  }
+
+ public void setTextPositionY (float ty) {
+  tf_y.setText(String.valueOf(ty));
+  }
+
+ public void habilitaInserir (boolean bool) {
+  inserir.setEnabled(bool);
+  if (bool)
+   inserir.setBackground(EsquemaVisual.corFundoBotoes);
+  else
+   inserir.setBackground(Color.LIGHT_GRAY);
+  }
+ 
+ public void setData (DesenhoTextoEvent dte) {  
+  setChoices(dte.getFontColor(), dte.getFontSize());
+  setText(dte.getTextoAtual());
+  setTextPositionX(dte.getTextPositionX());
+  setTextPositionY(dte.getTextPositionY());
+  habilitaInserir(true);
+  }
+
+ private void setTextAreaFont (Font font) {
+  textArea.setFont(font);  
+  }
+ 
+
+ public void itemStateChanged (ItemEvent e) {
+  JComboBox c = (JComboBox)e.getSource();
+  
+  if (c.getSelectedItem().equals(ResourceReader.msg("tiOutrasCores"))) {
+   new ColorFrame(this);
+   return;
+   }
+
+  try {
+   if (c == colorChoice)
+    setFontColor(getFontColor());
+   
+   if (c == sizeChoice)
+    setFontSize(getFontSize());
+   } catch (RuntimeException re) { }
+  
+  }
+
+ public void insereQuebra () {
+  textAreaContent +=  "\r\n"; 
+  }
+
+ public void updateLabels () {
+  setTitle(ResourceReader.msg("tiInsTexto"));
+  inserir.setLabel(ResourceReader.msg("msgOK"));
+  cancelar.setLabel(ResourceReader.msg("msgCancelar"));
+  labelCol1Position1.setText(ResourceReader.msg("tiPosTexto1")); 
+  labelCol1Position2.setText(ResourceReader.msg("tiPosTexto2"));
+  labelCol2Font.setText(ResourceReader.msg("msgFonte"));
+  }
+
+ public void updateColor (ColorEvent ce) {
+  setFontColor(ce.getColor());  
+  }
+
+ }

@@ -1,0 +1,40 @@
+package igraf.moduloCentral.eventos;
+
+import igraf.moduloJanelasAuxiliares.eventos.ModuloJanelasDisseminavelEvent;
+import difusor.evento.CommunicationEvent;
+
+public class DesenhoTangenteEvent extends CommunicationEvent 
+implements ModuloJanelasDisseminavelEvent{
+	
+	// por quê esse cara era ModuloCentralDisseminavelEvent?
+	// isso gerava um looping recursivo desnecessário!
+
+	String equacaoReta, fx, valorX;
+	
+	public DesenhoTangenteEvent(Object source, String funcao, String valorX, String fx) {
+		super(source);
+		equacaoReta = funcao;
+		this.valorX = valorX;
+		this.fx = fx;
+	}
+	
+	public String getEquacaoReta() {
+		return equacaoReta;
+	}
+	
+	public String getFx() {
+		return fx;
+	}
+	
+	public String getValorX() {
+		return valorX;
+	}
+	
+	public String toString() {
+		return "DesenhoTangenteEvent gerado por " + getSource();
+	}
+
+	public String getDescription() {
+		return "notificar sobre alterações nos desenhos de tangente.";
+	}
+}

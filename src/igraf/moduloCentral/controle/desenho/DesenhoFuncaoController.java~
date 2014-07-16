@@ -1,0 +1,149 @@
+/*
+ * iGraf - Interactive Graphics on the Internet: http://www.matematica.br/igraf
+ * 
+ * Free interactive solutions to teach and learn
+ * 
+ * iMath Project: http://www.matematica.br
+ * LInE           http://line.ime.usp.br
+ *
+ * @author RP, LOB
+ *
+ * @description 
+ * 
+ * @see 
+ *  
+ * @credits
+ * This source is free and provided by iMath Project (University of São Paulo - Brazil). In order to contribute, please
+ * contact the iMath coordinator Leônidas O. Brandão.
+ *
+ * O código fonte deste programa é livre e desenvolvido pelo projeto iMática (Universidade de São Paulo). Para contribuir,
+ * por favor contate o coordenador do projeto iMatica, professor Leônidas O. Brandão. 
+ * 
+ */
+
+package igraf.moduloCentral.controle.desenho;
+
+import igraf.moduloCentral.eventos.IgrafTabUpdateEvent;
+import igraf.moduloCentral.visao.desenho.Desenho;
+import igraf.moduloCentral.visao.plotter.GraphPlotter;
+
+import java.util.Vector;
+
+import difusor.evento.CommunicationEvent;
+
+
+public class DesenhoFuncaoController extends DesenhoController {
+
+
+ /**
+  * Lista que mantém os polígonos que estão atualmente na tela para que seja possível a detecção do mouse sobre alguma curva, bem como
+  * o redesenho usando a mesma cor com que um polígono foi desenhado pela primeira vez.
+  * Além disso, esta lista permite a recuperação de todas as expressões editadas quando não houver gráficos na tela.
+  */
+ protected Vector listaDesenhoOculto  =  new Vector();
+ // private int indexLastFunction;
+
+ public DesenhoFuncaoController (GraphPlotter plotter) {
+  super(plotter);
+  }
+
+ public void trataEvento (CommunicationEvent ie) {
+  //IgrafMenuGraficoEvent imge = (IgrafMenuGraficoEvent)ie; 
+  //String command = imge.getCommand();   
+  //notifyScreenChanged();
+  }
+
+
+ /**
+  * Recebe um desenho 'desenho' e insere na lista de desenhos visíveis, o que faz com que o gráfico associado seja exibido na área de desenho.
+  * @param funcao
+  */
+ public boolean insereDesenho (Desenho desenho) {
+  int indexLastFunction = indexOfFunctionOffScreen(desenho.toString());
+
+  if (indexLastFunction > -1 & ehDesenhoVisivel(desenho.toString()))
+   return false;
+
+  if (indexLastFunction < 0) { // error...
+   listaDesenhoOculto.addElement(desenho);
+   listaDesenho.add(desenho);
+   }
+  else // expression not been showed
+   if (!ehDesenhoVisivel(desenho.getFuncaoAtual())) {
+    desenho.setColorIndex(indexLastFunction);
+    listaDesenho.add(desenho);
+    }
+  notificaAlteracaoEstado();
+  return true;
+  }
+
+
+ private int indexOfFunctionOffScreen (String descricao) {
+  for (int i = 0; i < listaDesenhoOculto.size(); i++) {
+   Desenho desenho = (Desenho) listaDesenhoOculto.elementAt(i);
+   if (desenho.toString().equals(descricao))
+    return desenho.getOrdem();
+   }
+  return -1;
+  }
+
+
+ public void desenharTodos () {
+  for (int i = 0; i < listaDesenhoOculto.size(); i++) {
+   insereDesenho((Desenho)listaDesenhoOculto.get(i));
+   }
+  }
+
+ public Vector getListaDesenhoOculto () {
+  return listaDesenhoOculto;
+  }
+ 
+ public int getNumDesenhoOculto () {
+  return listaDesenhoOculto.size();
+  }
+
+ public Desenho getDesenhoOculto (int index) {
+  return (Desenho)listaDesenhoOculto.get(index);
+  }
+
+ public void ocultaTodosGraficos () {
+  listaDesenho.removeAllElements();
+  notificaAlteracaoEstado();
+  }
+
+ public void ocultaDesenho (Desenho desenho) {
+  listaDesenho.remove(desenho);
+  notificaAlteracaoEstado();
+  }
+
+
+ // From: igraf.moduloCentral.visao.plotter.GraphPlotter.removeGrafico(GraphPlotter.java:426)
+ public void removeDesenho (Desenho desenho) {
+//try{String srtA=""; System.out.print(srtA.charAt(3));}catch(Exception e1) {e1.printStackTrace(); }
+System.out.println("igraf/moduloCentral/controle/desenho/DesenhoFuncaoController.java: desenho=" + desenho);
+System.out.println("igraf/moduloCentral/controle/desenho/DesenhoFuncaoController.java: #listaDesenhoOculto=" + listaDesenhoOculto.size() + ",  #listaDesenho=" + listaDesenho.size());
+  listaDesenhoOculto.remove(desenho);
+  listaDesenho.remove(desenho);
+System.out.println("igraf/moduloCentral/controle/desenho/DesenhoFuncaoController.java: #listaDesenhoOculto=" + listaDesenhoOculto.size() + ",  #listaDesenho=" + listaDesenho.size());
+  this.notificaAlteracaoEstado(); 
+  }
+
+ public void removerTodos () {
+  listaDesenhoOculto.removeAllElements();
+  listaDesenho.removeAllElements();
+  notificaAlteracaoEstado();
+  }
+
+ public void notificaAlteracaoEstado () {
+  IgrafTabUpdateEvent iue = new IgrafTabUpdateEvent(this, IgrafTabUpdateEvent.FUNCTION_LIST_CHANGED);
+  iue.notificaDesenhoOculto(getNumDesenhoOculto() > 0);
+  iue.setFunctionList(listaDesenho);
+  enviarEvento(iue);
+  }
+
+ public void reset () {
+  super.reset();
+  listaDesenhoOculto.removeAllElements();
+  }
+
+ }

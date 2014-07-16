@@ -1,0 +1,74 @@
+/*
+ * iGraf : interactive Graphics in the Internet
+ * LInE - http://line.ime.usp.br
+ *
+ * Free interactive solutions to teach and learn
+ * http://www.matematica.br
+ *
+ * @author RP, LOB
+ *
+ * @credits
+ * This source code must be credited to iMath Project. In order to contribute, please
+ * contact the iMath coordinator Leônidas O. Brandão.
+ *
+ * O código fonte deste programa deve ser creditado ao projeto iMática. Para contribuir,
+ * por favor contate o coordenador do projeto iMatica, professor Leônidas O. Brandão.
+ *
+ * @description janela para edição de textos
+ *
+ * @see igraf/moduloJanelasAuxiliares/controle/JanelaEntradaTextoController.java: open this text edition window
+ *
+ */
+
+package igraf.moduloJanelasAuxiliares.visao.tangente;
+
+import igraf.basico.io.ResourceReader;
+import igraf.moduloCentral.eventos.DesenhoTangenteEvent;
+import igraf.moduloJanelasAuxiliares.controle.JanelaTangenteControler;
+
+import java.awt.Choice;
+import java.awt.Frame;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+import difusor.i18N.LanguageUpdatable;
+
+
+public class JanelaTangente extends Frame implements LanguageUpdatable {
+
+ public PainelTangente pt;
+
+ public JanelaTangente (JanelaTangenteControler jtc) {
+  super(ResourceReader.msg("mcTgPane"));
+  //T System.out.println("\nsrc/igraf/moduloJanelasAuxiliares/visao/tangente/JanelaTangente.java: " + jtc);
+  setLocation(200, 100);
+  setResizable(false);
+
+  pt = new PainelTangente(jtc);
+  add(pt);
+  pack();
+
+  addWindowListener(new WindowAdapter() {
+   public void windowClosing(WindowEvent e) {
+    pt.animaTangente(false);
+    setVisible(false);
+    dispose();
+    }
+   });
+  setVisible(true);
+  }
+
+ public Choice getChoice () {
+  return pt.getChoice();
+  }
+
+ public void atualizaLabels (DesenhoTangenteEvent dte) {
+  pt.atualizaLabels(dte);
+  }
+
+ public void updateLabels () {
+  setTitle(ResourceReader.msg("mcTgPane"));
+  pt.updateLabels();
+  }
+
+ }

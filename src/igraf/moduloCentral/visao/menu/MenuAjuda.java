@@ -1,0 +1,131 @@
+/*
+ * iGraf - Interactive Graphics on the Internet
+ * 
+ * Free interactive solutions to teach and learn
+ * 
+ * iMath Project: http://www.matematica.br
+ * LInE           http://line.ime.usp.br
+ * 
+ * @author RP, LOB
+ *
+ * @credits
+ * This source code must be credited to iMath Project. In order to contribute, please
+ * contact the iMath coordinator Leônidas O. Brandão.
+ *
+ * O código fonte deste programa deve ser creditado ao projeto iMática. Para contribuir,
+ * por favor contate o coordenador do projeto iMatica, professor Leônidas O. Brandão.
+ * 
+ * @see igraf/moduloSuperior/visao/PainelBotoes.java: creates JButton
+ * @see igraf/moduloSuperior/controle/PainelBotoesController.java: starting class to send events to special menu controller (from menus): IgrafMenuAjudaController; ... IgrafMenuPoligonoController
+ * @see igraf/moduloSuperior/visao/PainelBotoes.java : here is create 'JButton'
+ * @see igraf/moduloCentral/controle/PainelCentralController.java: controls all events generates in central panel (igraf/moduloCentral/*)
+ * @see igraf/moduloCentral/controle/menu/IgrafMenuGraficoController.java: it starts this class with 'mg = new' para 'MenuGrafico(this, index)'
+ *
+ * This source is free and provided by iMath Project (University of São Paulo - Brazil). In order to contribute, please
+ * contact the iMath coordinator Leônidas O. Brandão.
+ *
+ * O código fonte deste programa é livre e desenvolvido pelo projeto iMática (Universidade de São Paulo). Para contribuir,
+ * por favor contate o coordenador do projeto iMatica, professor Leônidas O. Brandão.
+ *
+ */
+
+package igraf.moduloCentral.visao.menu;
+
+
+import igraf.basico.io.ResourceReader;
+import igraf.moduloCentral.controle.menu.IgrafMenuController;
+
+import java.awt.Rectangle;
+
+
+public class MenuAjuda extends IgrafMenu {
+
+ private static final String STR_MENU_NAME = "menuAjuda";
+
+ // Devido à necessidade de gravação dos menus desabilitados pelo professor
+ // foi criada uma lista numérica para identificá-los de modo unívoco.
+ // Novos menus devem ser acrescentados a esta lista de modo a não substituir
+ // valores previamente utilizados, para que seja mantida a compatibilidade
+ // com arquivos antigos. Todos os itens deste menu começam com '7'.
+ public static final int CONTENT  = 700;
+ public static final int SEARCH   = 701; 
+ public static final int SHORTCUT = 702; 
+ public static final int ABOUT    = 703;
+
+ public static final int commandNumberStar = 700; // 'igraf/moduloExercicio/visao/menuSelector/MenuSelectorFrame.java'
+
+ // Menu itens name
+ // See: igraf/moduloSuperior/visao/PainelBotoes.java: use 'menuItensName' to build all menus
+ private static final String [] menuItensName = {
+   "majCont",
+   "majBusca", SEP,
+   "majAtalhos",
+   "majSobre"
+   };
+
+ // To all Menu(*) return their options name - used in 'igraf/moduloSuperior/visao/PainelBotoes.java'
+ public String [] getMenuItensNames () { return menuItensName; } // root name of each item before 'ResourceReader.msg(...)'
+ public static String [] getMenuItensName () { return menuItensName; }
+ public String [] getMenuItensText () { return listaOpcoes; }
+ public String [] getMenuItensDescription () { return descricao; }
+
+ // Description to tooltips: in 'PainelBotoes' and 'igraf/moduloExercicio/visao/menuSelector/MenuSelectorFrame.java'
+ private static final String [] menuItemsTooltips = {
+   "majJanAjuda",
+   "lamentoNImpl", null,
+   "majListaAtalhos",
+   "majInformes"
+   };
+ public static String [] getMenuItemsTooltips () { return menuItemsTooltips; }
+
+ // Constructor in: igraf/moduloCentral/ModuloCentral.java
+ // It define order: {IgrafMenuGraficoController, IgrafMenuCalculoController, IgrafMenuAnimacaoController, IgrafMenuEdicaoController, IgrafMenuExercicioController, IgrafMenuPoligonoController, IgrafMenuAjudaController }
+ //   0: IgrafMenuGraficoController
+ //   1: IgrafMenuCalculoController
+ //   2: IgrafMenuAnimacaoController
+ //   3: IgrafMenuEdicaoController
+ //   4: IgrafMenuExercicioController
+ //   5: IgrafMenuPoligonoController
+ //   6: IgrafMenuAjudaController
+ public MenuAjuda (IgrafMenuController imc, int index) {
+  super(imc, index);
+  super.setName(STR_MENU_NAME);
+
+  updateLabels(); //04/2013: define at the first time 'String [] listaOpcoes, descricao'
+
+  //leo setListaItens(listaOpcoes, descricao); - updateLabels() agora faz isso...
+  //leo r = new Rectangle(420, -1, 120, listaOpcoes.length*20);
+  //leo setBounds(r);
+  //leo setEnabledMenuItem(ResourceReader.msg("majBusca"), false); -> 'completeAfterButtonsPanel()'
+  //leo setEnabledMenuItem(ResourceReader.msg("majAtalhos"), false); -> 'completeAfterButtonsPanel()'
+  }
+
+ // Called by: igraf/moduloSuperior/visao/PainelBotoes.java
+ public void completeAfterButtonsPanel () {
+  setEnabledMenuItem(ResourceReader.msg("majBusca"), false);
+  setEnabledMenuItem(ResourceReader.msg("majAtalhos"), false);
+  }   
+
+ public void updateLabels () {
+  //T System.out.println("src/igraf/moduloCentral/visao/menu/MenuAjuda.java: updateLabels(...): " + ResourceReader.msg("majCont"));
+  String [] labels = {
+   ResourceReader.msg("majCont"),
+   ResourceReader.msg("majBusca"), SEP,
+   ResourceReader.msg("majAtalhos"),
+   ResourceReader.msg("majSobre")
+   };
+  String [] help = {
+   ResourceReader.msg("majJanAjuda"),
+   ResourceReader.msg("lamentoNImpl"), null,
+   ResourceReader.msg("majListaAtalhos"),
+   ResourceReader.msg("majInformes")
+   };
+  // 04/2013: redefine 'String [] listaOpcoes' and 'String [] descricao'
+  updateLabels(labels, help);  
+  }
+ 
+ public String toString () {
+  return ResourceReader.msg(STR_MENU_NAME);
+  }
+
+ }

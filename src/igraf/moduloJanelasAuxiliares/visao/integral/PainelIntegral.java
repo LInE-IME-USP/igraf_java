@@ -1,0 +1,268 @@
+/*
+ * iGraf - Interactive Graphics on the Internet: http://www.matematica.br/igraf
+ * 
+ * Free interactive solutions to teach and learn
+ * 
+ * iMath Project: http://www.matematica.br
+ * LInE           http://line.ime.usp.br
+ *
+ * @author RP, LOB
+ *
+ * @description 
+ * 
+ * @see
+ *  
+ * @credits
+ * This source is free and provided by iMath Project (University of São Paulo - Brazil). In order to contribute, please
+ * contact the iMath coordinator Leônidas O. Brandão.
+ *
+ * O código fonte deste programa é livre e desenvolvido pelo projeto iMática (Universidade de São Paulo). Para contribuir,
+ * por favor contate o coordenador do projeto iMatica, professor Leônidas O. Brandão. 
+ * 
+ */
+
+
+package igraf.moduloJanelasAuxiliares.visao.integral;
+
+import java.awt.BorderLayout;
+import java.awt.Button;
+import java.awt.Checkbox;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.Label;
+import java.awt.Panel;
+import java.awt.TextField;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.util.StringTokenizer;
+
+import igraf.IGraf;
+import igraf.basico.io.ResourceReader;
+import igraf.basico.util.Utilitarios;
+import igraf.moduloJanelasAuxiliares.controle.JanelaIntegralController;
+import igraf.moduloJanelasAuxiliares.eventos.JanelaIntegralEvent;
+import igraf.moduloJanelasAuxiliares.visao.ChoicePanel;
+import igraf.moduloSuperior.controle.entrada.Analisa;
+
+
+public class PainelIntegral extends Panel implements KeyListener {
+
+ //DEBUG: if IGraf.IS_DEBUG get a complete path of this class
+ public static final String IGCLASSPATH = "";
+
+ private Panel
+   painelAuxiliar1 = new Panel(new GridLayout(0,1,0,4)),
+   painelAuxiliar2;
+
+ private String limiteInf, limiteSup, fSuperior, fInferior;
+ private double intSuperior, de, a, delta = 0.02;
+
+ private TextField inf = new TextField("0", 10),
+         sup = new TextField("1", 10);
+
+ private Button integrar = new Button(ResourceReader.msg("btInteg"));
+ private Checkbox cb;
+
+ private Dimension d = new Dimension(192, 60);
+ private Label labelResultado = new Label(ResourceReader.msg("btResult")),
+         labelIntegral  = new Label();
+
+ private Color corLetra = Color.black;
+
+ protected ChoicePanel cp1, cp2; // requested in 'JanelaIntegral.java'
+
+ private final int
+   ESQUERDA = 37,
+   DIREITA = 39,
+   BAIXO = 40,
+   CIMA = 38;
+
+ private JanelaIntegralController jic;
+
+ public PainelIntegral (JanelaIntegralController jic) {
+  this.jic = jic;
+
+  setBackground(new Color (247, 247, 247));
+  linhaUm();
+  linhaDois();
+  linhaTres();
+  add(painelAuxiliar1);
+  }
+
+ private void linhaUm () {
+  cp1 = new ChoicePanel(ResourceReader.msg("funSup"));
+  painelAuxiliar1.add(cp1);
+  }
+
+ private void linhaDois () {
+  cp2 = new ChoicePanel(ResourceReader.msg("funInf"));
+  painelAuxiliar1.add(cp2);
+  }
+
+ private void linhaTres () {
+  Panel painelAuxiliarInternal = new Panel(new GridLayout(1,2, 5,0)) {
+   public Dimension getPreferredSize() { return new Dimension(185,20); }
+   };
+
+  painelAuxiliar2 = new Panel(new BorderLayout()) {
+   public Dimension getPreferredSize() { return d; }
+   public void paint(Graphics g) {
+    g.setColor(Color.white);
+    g.drawRect(0, 0, getSize().width-1, getSize().height-1);
+    g.setColor(Color.blue);
+    g.drawString(ResourceReader.msg("intInterv"), 10, 16);
+    g.setColor(Color.black);
+    g.drawRect(0, 0, getSize().width-1, getSize().height-1);
+    }
+   public Insets getInsets () {
+    return new Insets(0,5,5,4);
+    }
+   };
+  inf.setForeground(corLetra);
+  sup.setForeground(corLetra);
+  inf.addKeyListener(this);
+  sup.addKeyListener(this);
+
+  painelAuxiliarInternal.add(inf);
+  painelAuxiliarInternal.add(sup);
+  painelAuxiliar2.add(painelAuxiliarInternal, BorderLayout.SOUTH);
+  painelAuxiliar1.add("South", painelAuxiliar2);
+  }
+
+
+ public Insets getInsets () {
+  return new Insets(0,10,0,10);
+  }
+
+ public Dimension getPreferredSize () {
+  return new Dimension(210, 325);
+  }
+
+ public void pintaRegiao (String s) {
+  String[] lista = null;
+  double de = 0, a = 0;
+  int ini = 0, fim = 0;
+  boolean modo = false;
+
+  try {
+   ini = s.indexOf("from:");
+   fim = s.indexOf(" ", ini);
+   de = Double.valueOf(s.substring(ini+5, fim)).doubleValue();
+
+   ini = s.indexOf("to:");
+   fim = s.indexOf(" ", ini);
+   a = Double.valueOf(s.substring(ini+3, fim)).doubleValue();
+
+   ini = s.indexOf("modo:");
+   fim = s.indexOf(" ", ini);
+   modo = Boolean.valueOf(s.substring(ini+5, fim)).booleanValue();
+
+   ini = s.indexOf("list:");
+   lista = refazLista(s.substring(ini+5));
+
+  } catch (Exception e) {
+   System.err.println(IGraf.debugErrorMsg(IGCLASSPATH) + "Error: in panel of integrals: " +
+          "A string de entrada não está de acordo com o padrão esperado\n");
+   e.printStackTrace();
+   }
+
+  pintaRegiao(lista, de, a, modo);
+  }
+
+
+ private String [] refazLista (String s) {
+  StringTokenizer st = new StringTokenizer(s, " " , false);
+  String[] lista = new String[st.countTokens()];
+  int i = 0;
+
+  while (st.hasMoreTokens())
+   lista[i++] = st.nextToken();
+
+  return lista;
+  }
+
+ public void pintaRegiao (String[] lista, double de, double a, boolean b) {
+  if (Math.abs((de - a)) > 0) {
+   limpaRegiao();
+   jic.enviarEvento(new JanelaIntegralEvent(this, lista, de, a));
+   }
+  }
+
+ public void limpaRegiao () {
+  jic.enviarEvento(new JanelaIntegralEvent(this));
+  }
+
+
+ /**
+  * Alterna entre os modos de pintura possíveis para a região de integração
+  * @param state
+  */
+ public void mudaPinturaRegiao (boolean state) {
+  jic.enviarEvento(new JanelaIntegralEvent(this, state));
+  }
+
+ double getFrom () {
+  return getValue(inf);
+  }
+
+ double getTo () {
+  return getValue(sup);
+  }
+
+ private double getValue (TextField tf) {
+  String s = tf.getText();
+  s = Analisa.verificaConstante(s);
+  try {
+   return new Double(s).doubleValue();
+  } catch (NumberFormatException e) { return 0; }
+  }
+
+ // Requested in 'igraf/moduloJanelasAuxiliares/visao/integral/PainelOpcoesIntegracao.java'
+ protected String [] getListaFuncoesSelecionadas () {
+  String a = cp2.getSelectedItem();
+  try {
+   if (a.indexOf('<') > -1)
+    a = "0";
+  } catch (Exception e) {
+   System.err.println(IGraf.debugErrorMsg(IGCLASSPATH) + "Error: in panel of integrals: " + e.toString());
+   }
+
+  String b = cp1.getSelectedItem();
+  if (b == null)
+   b = "0";
+
+  String [] vetStrings = { b , a };
+  return vetStrings;
+  }
+
+
+ // Ouvidor para as setas direcionais
+ public void keyPressed (KeyEvent e) {
+  int keyCode = e.getKeyCode();
+  TextField tf = (TextField)e.getSource();
+  double value = getValue(tf);
+
+  if (keyCode == ESQUERDA || keyCode == BAIXO)
+   tf.setText(Utilitarios.precisao(value -= delta));
+
+  if (keyCode == DIREITA || keyCode == CIMA)
+   tf.setText(Utilitarios.precisao(value += delta));
+  }
+
+
+ public void keyReleased (KeyEvent e) { }
+ public void keyTyped (KeyEvent e) { }
+
+
+ public void updateLabels () {
+  integrar.setLabel(ResourceReader.msg("btInteg"));
+  labelResultado.setText(ResourceReader.msg("btResult"));
+  cp1.setLabel(ResourceReader.msg("funSup"));
+  cp2.setLabel(ResourceReader.msg("funInf"));
+  painelAuxiliar2.repaint();
+  }
+
+ }

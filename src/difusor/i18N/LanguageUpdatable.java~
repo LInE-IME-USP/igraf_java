@@ -1,0 +1,20 @@
+package difusor.i18N;
+
+/**
+ * Interface que confere a uma classe a capacidade de atualizar
+ * seus dados em função da mudança do idioma.
+ *  
+ * @author Reginaldo do Prado
+ *
+ */
+public interface LanguageUpdatable {
+	
+	/**
+	 * Método que deve ser implementado por todas as classe que
+	 * desejarem obter atualizações em função da alteração de
+	 * idioma. Implementação do modelo de internacionalização
+	 * dos programas da família iMA.
+	 *
+	 */
+	abstract void updateLabels();
+}

@@ -1,0 +1,26 @@
+package igraf.moduloExercicio.visao.resposta;
+
+import java.util.Vector;
+
+public class Main {	
+
+    public static void main(String[] args) {
+        Vector answerList  = new Vector();
+        Vector attemptList = new Vector();
+
+        ObjectiveAnswer a; Attempt t;
+        for(int j = 0; j < 10; j++){
+            for (int i = 0; i < 4; i++) {
+                a = new ObjectiveAnswer(i, "resposta", "gabarito", "certo"); // criar respostas
+                answerList.add(a); // colocá-las em listas
+            }
+            answerList.add(new DiscursiveAnswer("Uma resposta beeeeemmmm legal..."));
+            t = new Attempt(answerList, String.valueOf(j+1));// passar as listas para as tentativas
+            attemptList.add(t);// criar a lista de tentativas
+            answerList = new Vector();
+        }
+
+        // criar a janela de visualização
+        AnswerVisualizerFrame avf = new AnswerVisualizerFrame(attemptList);
+    }
+}

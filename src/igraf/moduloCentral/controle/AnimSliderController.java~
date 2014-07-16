@@ -1,0 +1,49 @@
+package igraf.moduloCentral.controle;
+
+import igraf.moduloCentral.ModuloCentral;
+import igraf.moduloCentral.eventos.IgrafTabUpdateEvent;
+import igraf.moduloCentral.visao.AnimSlider;
+
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
+
+import difusor.controle.CommunicationController;
+import difusor.evento.CommunicationEvent;
+
+
+public class AnimSliderController extends CommunicationController implements AdjustmentListener{
+
+	AnimSlider as;
+	
+	public AnimSliderController(ModuloCentral mc) {
+		super(mc);
+	}
+
+	public void setControlledObject(Object obj) {
+		as = (AnimSlider)obj;
+	}
+
+	public void tratarEventoRecebido(CommunicationEvent ie) {
+		if(ie.getCommand().equals(IgrafTabUpdateEvent.GENERAL_UPDATE)){
+			IgrafTabUpdateEvent iue = (IgrafTabUpdateEvent)ie;
+			as.setBublePosition(iue.getSliderValue());
+		}
+		
+		if(ie.getCommand().equals(IgrafTabUpdateEvent.UNDO)){
+			IgrafTabUpdateEvent iue = (IgrafTabUpdateEvent)ie;
+			as.setBublePosition(0);
+		}
+		
+		if(ie.getCommand().equals(IgrafTabUpdateEvent.REDO)){
+			IgrafTabUpdateEvent iue = (IgrafTabUpdateEvent)ie;
+			as.setBublePosition(iue.getSliderValue());
+		}
+				
+	}
+
+	IgrafTabUpdateEvent iue = new IgrafTabUpdateEvent(this, IgrafTabUpdateEvent.SLIDER_VALUE_CHANGED);
+	public void adjustmentValueChanged(AdjustmentEvent e) {		
+		iue.setSliderValue(as.getValue());
+		enviarEvento(iue);
+	}
+}

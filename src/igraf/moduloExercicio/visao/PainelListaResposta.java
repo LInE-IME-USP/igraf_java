@@ -1,0 +1,254 @@
+/*
+ * iGraf - Interactive Graphics on the Internet: http://www.matematica.br/igraf
+ *
+ * Free interactive solutions to teach and learn
+ *
+ * iMath Project: http://www.matematica.br
+ * LInE           http://line.ime.usp.br
+ *
+ * @author RP, LOB
+ *
+ * @description Painel usado como suporte para as áreas de entrada de dados do professor, quando cria
+ * o exercício, e do aluno, quando responde (objetos PainelResposta)
+ *
+ * @see
+ * 
+ * @credits
+ * This source is free and provided by iMath Project (University of São Paulo - Brazil). In order to contribute, please
+ * contact the iMath coordinator Leônidas O. Brandão.
+ *
+ * O código fonte deste programa é livre e desenvolvido pelo projeto iMática (Universidade de São Paulo). Para contribuir,
+ * por favor contate o coordenador do projeto iMatica, professor Leônidas O. Brandão.
+ *
+ */
+
+
+package igraf.moduloExercicio.visao;
+
+
+import igraf.moduloExercicio.eventos.DiagnosticEvent;
+
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.util.Vector;
+
+
+public class PainelListaResposta extends PainelBasico {
+
+ private Vector listaResposta, listaRespostaAluno;
+ private int altura = 0;
+ private final int alturaLinha = 40;
+
+ private static int totalAcertos = 0; // para computar numero de acertos
+
+ private int totalErros = 0;
+
+ // Number of type of answer:
+ private int numberOfAnswerType1 = 0, numberOfAnswerType2 = 0, numberOfAnswerType3 = 0, numberOfAnswerType4 = 0, numberOfAnswerType5 = 0;
+
+
+ public PainelListaResposta (JanelaExercicio janelaExercicio) {
+  //L totalItens++;
+  super.janelaExercicio = janelaExercicio; // defined in 'PainelBasico'
+  setLayout(new GridLayout(0, 1, 0, 2));
+  listaResposta = new Vector();
+  }
+
+
+ // From: igraf/moduloExercicio/controle/JanelaExercicioController.java
+ public void addToNumberOfAnswers (int type) {
+   switch (type) {
+     case 1: numberOfAnswerType1++; break; // RespostaNumericaEvent
+     case 2: numberOfAnswerType2++; break; // RespostaDiscursivaEvent
+     case 3: numberOfAnswerType3++; break; // RespostaIntervaloEvent
+     case 4: numberOfAnswerType4++; break; // RespostaAlgebricaEvent
+     case 5: numberOfAnswerType5++; break; // RespostaPontoEvent
+     }
+   }
+
+ public Dimension getPreferredSize () {
+  return new Dimension(largura, getAltura());
+  }
+
+
+ /**
+  * Recebe 1 para aumentar ou -1 para diminuir a altura do painel
+  * @param num
+  */
+ private void atualizaAltura (int num) {
+  if (Math.abs(num) != 1) {
+   throw new IllegalArgumentException("Valor não permitido para atualizar altura de painel");
+   }
+  altura += alturaLinha * num;
+  }
+
+
+ // Devolve a altura atual do painel
+ public int getAltura () {
+  return listaResposta.size() * alturaLinha;
+  }
+
+
+ /**
+  * Recebe o número inteiro index correspondente ao tipo de painelResposta a ser inserido.
+  * Caso index == 6, o último painelResposta será removido.
+  * @param int index
+  */
+ public void alteraPainelResposta (int index ) {
+  //T System.out.println("src/igraf/moduloExercicio/visao/PainelListaResposta.java: alteraPainelResposta(" + index + ")");
+  if (index == 5) { // index of the last item: "Remove the last inserted item" (exercPSRemoveItem)
+   removePainelResposta();
+   atualizaAltura(-1);
+   return;
+   }
+  inserePainelResposta(index);
+  }
+
+
+ private void removePainelResposta () {
+  try {
+   listaResposta.removeElementAt(listaResposta.size()-1);
+   remove(getComponentCount()-1);
+   } catch (RuntimeException e) {   }
+  }
+
+
+ //D private static int count = 0;
+ private void inserePainelResposta (int num) {
+  PainelResposta painelResp = null;
+  //D System.out.println("src/igraf/moduloExercicio/visao/PainelListaResposta.java: inserePainelResposta(" + num + ")");
+  //D if (count++==1) try { String srtA=""; System.out.print(srtA.charAt(3)); } catch(Exception e) { e.printStackTrace(); }
+  switch (num) {
+    case 1: painelResp = new PainelRespostaNumerica(this.janelaExercicio, listaResposta.size()+1); break;  // "Número"
+    case 2: painelResp = new PainelRespostaPonto(this.janelaExercicio, listaResposta.size()+1); break;  // "Par Ordenado (x, y)"
+    case 3: painelResp = new PainelRespostaIntervalo(this.janelaExercicio, listaResposta.size()+1); break;  // "Intervalo Numérico  [a, b]"
+    case 4: painelResp = new PainelRespostaAlgebrica(this.janelaExercicio, listaResposta.size()+1); break;  //  "Expressão aritmética"
+    }
+  insereEntradaResposta(painelResp);
+  }
+
+
+ public void inserePainelResposta (PainelResposta painelResp) {
+  insereEntradaResposta(painelResp);
+  }
+
+
+ private void insereEntradaResposta (PainelResposta painelResp) {
+  listaResposta.addElement(painelResp);
+  add(painelResp);
+  atualizaAltura(1);
+  }
+
+
+ public Vector getListaResposta () {
+  return listaResposta;
+  }
+
+
+ // From: igraf/moduloExercicio/controle/JanelaExercicioController.java
+ public boolean dadosValidos () {
+  //T System.out.println("src/igraf/moduloExercicio/visao/PainelListaResposta.java: dadosValidos()");
+  PainelResposta painelResposta;
+  boolean isValid;
+  for (int i = 0; i < listaResposta.size(); i++) {
+   painelResposta = (PainelResposta)listaResposta.elementAt(i);
+   isValid = painelResposta.validar();
+   //T System.out.println(" - " + i + ": " + painelResposta.getClass().getName() + ": " + isValid);
+   if (!isValid) // first invalid => is invalid!
+    return false;
+   }
+     
+  return true;
+  }
+
+
+ /**
+  * Compara as respostas do aluno com o gabarito e retorna uma lista de diagnósticos
+  * da forma: "Item x: A resposta (resp) está (ou não) de acordo com o esperado".
+  * @return
+  */
+ public String responder () {
+  totalErros = 0;
+  totalAcertos = 0;
+  PainelResposta pr = null;   
+  listaRespostaAluno = new Vector();
+  StringBuffer sb = new StringBuffer();   
+
+  for (int i = 0; i < listaResposta.size(); i++) {
+   pr = ((PainelResposta)listaResposta.elementAt(i));
+   pr.reset();
+   pr.resetDiagnostico();
+   pr.comparaResposta();
+   sb.append(pr.getDiagnostico() + "\r\n"); 
+   totalErros   += pr.getNumErros();
+   totalAcertos += pr.getNumAcertos();
+
+   // pegar cada resposta e criar um objectiveAnswer
+   addRespostaTentativa(pr.getValorResposta(), pr.correcao());
+
+   // criar um DiscursiveAnswer com o conteúdo do painelComentario
+   }
+  return sb.toString(); // msg de resposta
+  }
+
+
+ private void addRespostaTentativa (String resposta, String status) {
+  listaRespostaAluno.add(resposta+DiagnosticEvent.sep+status);
+  }
+
+
+ public Vector getListaRespostaAluno () {
+  return listaRespostaAluno;
+  }
+
+
+ public int getTotalErros () {
+  return totalErros;
+  }  
+
+
+ public int getTotalAcertos () {   
+  return totalAcertos;
+  }
+
+
+ public void limparCampos () {
+  for (int i = 0; i < listaResposta.size(); i++)
+   ((PainelResposta)listaResposta.elementAt(i)).limparCampos();
+  }
+
+
+ public void setLimits (int min, int max) {
+  Object pr = null;
+  for (int i = 0; i < listaResposta.size(); i++)
+   pr = listaResposta.get(i);
+  if (pr instanceof PainelRespostaAlgebrica) {
+   PainelRespostaAlgebrica pra = (PainelRespostaAlgebrica) pr;
+   pra.setLimits(min, max);
+   }
+  }
+
+ public void reset () {
+  listaResposta = new Vector();
+  removeAll();
+  }
+
+
+ public void setChoiceItens (Vector v) {
+  PainelResposta pr = null;
+  for (int i = 0; i < listaResposta.size(); i++) {
+   if (listaResposta.elementAt(i) instanceof PainelRespostaAlgebrica)
+   ((PainelRespostaAlgebrica)listaResposta.elementAt(i)).setChoiceItens(v);  
+   }
+  }
+
+
+ public void updateLabels () {
+  PainelResposta pr = null;
+  for (int i = 0; i < listaResposta.size(); i++) {
+   pr = ((PainelResposta)listaResposta.elementAt(i));
+   pr.updateLabels();
+   }
+  }
+
+ }

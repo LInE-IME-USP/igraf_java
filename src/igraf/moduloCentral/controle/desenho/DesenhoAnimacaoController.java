@@ -1,0 +1,336 @@
+/*
+ * iGraf - Interactive Graphics on the Internet: http://www.matematica.br/igraf
+ * 
+ * Free interactive solutions to teach and learn
+ * 
+ * iMath Project: http://www.matematica.br
+ * LInE           http://line.ime.usp.br
+ * 
+ * @author RP, LOB
+ * 
+ * @see igraf/moduloSuperior/visao/PainelBotoes.java: creates JButton
+ * @see igraf/moduloSuperior/controle/PainelBotoesController.java: this, starting class to build all menus: IgrafMenuAjudaController; ... IgrafMenuPoligonoController
+ * @see igraf/moduloSuperior/visao/PainelBotoes.java : here is create 'JButton'
+ * @see igraf/moduloCentral/controle/PainelCentralController.java: controls all events generates in central panel (igraf/moduloCentral/*)
+ * @see igraf/moduloCentral/controle/menu/IgrafMenuGraficoController.java: it starts this class with 'mg = new' para 'MenuGrafico(this, index)'
+ * 
+ * @credits
+ * This source is free and provided by iMath Project (University of São Paulo - Brazil). In order to contribute, please
+ * contact the iMath coordinator Leônidas O. Brandão.
+ *
+ * O código fonte deste programa é livre e desenvolvido pelo projeto iMática (Universidade de São Paulo). Para contribuir,
+ * por favor contate o coordenador do projeto iMatica, professor Leônidas O. Brandão.
+ *
+ */
+
+package igraf.moduloCentral.controle.desenho;
+
+import java.util.Iterator;
+import java.util.Vector;
+
+import igraf.IGraf;
+import igraf.basico.io.ResourceReader;
+import igraf.moduloCentral.eventos.IgrafTabUpdateEvent;
+import igraf.moduloCentral.eventos.menu.IgrafMenuAnimacaoEvent;
+import igraf.moduloCentral.visao.desenho.Desenho;
+import igraf.moduloCentral.visao.desenho.DesenhoAnimacao;
+import igraf.moduloCentral.visao.plotter.GraphPlotter;
+import igraf.moduloJanelasAuxiliares.eventos.AtualizaParametroEvent;
+import difusor.evento.CommunicationEvent;
+
+
+public class DesenhoAnimacaoController extends DesenhoController {
+
+ //DEBUG: if IGraf.IS_DEBUG get a complete path of this class
+ public static final String IGCLASSPATH = "igraf/moduloCentral/controle/desenho/DesenhoAnimacaoController.java";
+
+ protected Vector listaAnimacaoOculta  =  new Vector();
+ private boolean animando = true;
+ private int i;
+ 
+ public DesenhoAnimacaoController (GraphPlotter plotter) {
+  super(plotter);
+  }
+ 
+ public boolean insereDesenho (Desenho d) {
+  i = indexOfFunctionOffScreen(d.toString());
+
+  if (i > -1 & ehDesenhoVisivel(d.toString()))
+   return false;
+
+  if (i < 0) { // usuário nunca digitou esta expressão
+   listaAnimacaoOculta.addElement(d);
+   listaDesenho.add(d);
+   }
+  else // expressão está na memória mas não na tela
+  if (!ehDesenhoVisivel(d.getFuncaoAtual())) {
+    d.setColorIndex(i);
+    listaDesenho.add(d);
+    }
+  plotter.iniciaAnimacao(true);
+  notificaAlteracaoEstado();
+  return true;
+  }
+
+ private int indexOfFunctionOffScreen (String descricao) {
+  for (int i = 0; i < listaAnimacaoOculta.size(); i++) {
+   Desenho d = (Desenho)listaAnimacaoOculta.elementAt(i);
+   if ( d.toString().equals(descricao))
+    return d.getOrdem();
+   }
+  return -1;
+  }
+
+static int cont=0;
+
+ // variável para evitar duplicação de eventos
+ public void trataEvento (CommunicationEvent ie) {  
+  // private int k = 0;
+
+  if (ie.getCommand().equals(AtualizaParametroEvent.UPDATE)) {
+   AtualizaParametroEvent ape = (AtualizaParametroEvent) ie;
+   atualizaParametro(ape.getIndex(), ape.getIni(), ape.getFim(), ape.getState());
+   }
+
+  if (ie instanceof IgrafTabUpdateEvent) {
+   double d = ((IgrafTabUpdateEvent)ie).getSliderValue();
+   atualizaTodasAnimacoes(d);
+   }
+
+  if (ie instanceof IgrafMenuAnimacaoEvent) {
+   IgrafMenuAnimacaoEvent imae = (IgrafMenuAnimacaoEvent) ie;
+   String strCommand = imae.getCommand();
+   if (strCommand.equals(IgrafMenuAnimacaoEvent.SLIDER_ADJUSTMENT))
+    atualizaTodasAnimacoes(imae.getSliderValue());
+   else
+   //
+   //TODO: a ser eliminado
+   //
+   // Estaria em: igraf/moduloCentral/visao/desenho/DesenhoAnimacao.java: void mudaEstadoAnimacao()
+   if (strCommand.equals(IgrafMenuAnimacaoEvent.CHANGE_ANIMATION_STATE)) { // = "changeAnimationState"
+    if (IGraf.IS_DEBUG)
+      System.err.println("\n\n" + IGCLASSPATH + ": trataEvento(CommunicationEvent): " + ie.getClass().getName() + " this melhod is suppossed to be turned off!");
+    mudaEstadoAnimacao(imae.getFuncaoOriginal()); //TODO: eliminar...
+    }
+   //
+   else
+   // When the "slider" (scroll bar) is showed, all functions with parameters could be updated to produce animation
+   if (strCommand.equals(ResourceReader.msg("maMostraCDesl"))) {
+    animando = false;
+    }
+   else
+   if (strCommand.equals(ResourceReader.msg("maParaAnima"))) { // start/stop animation
+    animando = !animando;
+    if (imae.getFuncaoOriginal().length() == 0) // IgrafMenuAnimacaoEvent imae
+     mudaEstadoTodos(animando);
+    else
+     mudaEstadoAnimacao(imae.getFuncaoOriginal());
+    } // if (strCommand.equals(ResourceReader.msg("maParaAnima")))
+   else
+   //TODO: falta implementar o 'runnable' para ampliar/reduzir velocidade de animacao!
+   //TODO: retornar as opcoes (maVelAmplia, maVelDiminui) no 'igraf/moduloCentral/visao/menu/MenuAnimacao.java'
+   if (strCommand.equals(ResourceReader.msg("maMostraControle"))) { } // "Show control panel"
+   else
+   if (strCommand.equals(ResourceReader.msg("maVelAmplia"))) { } // "Increase velocity"
+   else
+   if (strCommand.equals(ResourceReader.msg("maVelDiminui"))) { } // "Decrease velocity"
+   }
+
+  } // public void trataEvento(CommunicationEvent ie)
+
+
+ /**
+  * Recebe a expressão origianal de uma animação e altera seu estado entre ativa e suspensa. Uma animação suspensa fica congelada na tela enquanto outras continuam executando.
+  * @param funcaoOriginal
+  */
+ //TODO: passar a funcao (e nao sua expressao String) para evitar que todo momento busque a funcao!!!
+ private void mudaEstadoAnimacao (String funcaoOriginal) {
+  DesenhoAnimacao dshAnimacao;
+  int sizeOf = listaDesenho.size();
+  for (int ii_0=0; ii_0<sizeOf; ii_0++) {
+   dshAnimacao = (DesenhoAnimacao) listaDesenho.elementAt(ii_0);
+   if (dshAnimacao.getFuncaoOriginal().equals(funcaoOriginal)) {
+    dshAnimacao.mudaEstadoAnimacao(); // igraf/moduloCentral/visao/desenho/DesenhoAnimacao.java: animando = !animando;
+    }
+   }
+
+  }
+
+
+ /**
+  * Altera o estado de todas as funcoes com parametros, de iniciado para interrompido e vice-versa.
+  * @param boolean startAnimation
+  */
+ private void mudaEstadoTodos (boolean startAnimation) {
+  //T System.out.println("DesenhoAnimacaoController: mudaEstadoTodos: " + startAnimation);
+  int sizeOf = listaDesenho.size();
+  for (int ii_0=0; ii_0<sizeOf; ii_0++) {
+   DesenhoAnimacao da = (DesenhoAnimacao) listaDesenho.elementAt(ii_0);
+   da.animate(startAnimation);
+   }
+  }
+
+
+ /**
+  * Recebe o valor value que será usado para substituir o parâmetro (a) da animação para
+  * criar o próximo desenho
+  * @param value
+  */
+ private void atualizaTodasAnimacoes (double value) {
+  setValorA(value);
+  plotter.refazDesenho();
+  //notifyScreenChanged();
+  //System.out.println("DAC: " + valorA);
+  }
+
+ public void desenharTodasAnimacoes () {
+  for (int i = 0; i < listaAnimacaoOculta.size(); i++) {
+   insereDesenho((Desenho)listaAnimacaoOculta.get(i));
+   }
+  }
+
+ public Vector getListaAnimacaoOculta () {
+  return listaAnimacaoOculta;
+  }
+ 
+ public int getNumAnimacaoOculta () {
+  return listaAnimacaoOculta.size();
+  }
+ 
+ public Desenho getAnimacaoOculta (int index) {
+  return (Desenho)listaAnimacaoOculta.get(index);
+  }
+ 
+ public void apagaTodasAnimacoes () {
+  listaDesenho.removeAllElements();
+  this.notificaAlteracaoEstado();
+  }
+
+ public void ocultaAnimacao (Desenho d) {
+  listaDesenho.remove(d);
+  this.notificaAlteracaoEstado();
+  } 
+
+ public void removeAnimacao (Desenho d) {
+  listaAnimacaoOculta.remove(d);
+  listaDesenho.remove(d);
+  this.notificaAlteracaoEstado();
+  }
+
+ public void removerAnimacoes () {  
+  listaAnimacaoOculta.removeAllElements();
+  listaDesenho.removeAllElements();
+  this.notificaAlteracaoEstado();
+  }
+ 
+ public void notificaAlteracaoEstado () {
+  IgrafTabUpdateEvent iue = new IgrafTabUpdateEvent(this, IgrafTabUpdateEvent.ANIMATION_LIST_CHANGED);
+  iue.notificaDesenhoOculto(getNumAnimacaoOculta() > 0);
+  iue.setAnimationList(listaDesenho);
+  enviarEvento(iue);
+  }
+ 
+ public void reset () {
+  super.reset();
+  listaAnimacaoOculta.removeAllElements();
+  }
+
+
+ double
+     valorA, valorAMin = -1, valorAMax = 1, 
+     valorB, valorBMin = -1, valorBMax = 1, 
+     valorC, valorCMin = -1, valorCMax = 1,
+     valorK, valorKMin = -1, valorKMax = 1,
+     valorM, valorMMin = -1, valorMMax = 1,
+     valorN, valorNMin = -1, valorNMax = 1;
+
+
+ private void atualizaParametro (int index, double ini, double fim, boolean b) {
+  switch (index) {
+   case 0: valorAMin = ini; valorAMax = fim; changeStateA(b); break;
+   case 1: valorBMin = ini; valorBMax = fim; changeStateB(b); break;
+   case 2: valorCMin = ini; valorCMax = fim; changeStateC(b); break;
+   case 3: valorKMin = ini; valorKMax = fim; changeStateK(b); break;
+   case 4: valorMMin = ini; valorMMax = fim; changeStateM(b); break;
+   case 5: valorNMin = ini; valorNMax = fim; changeStateN(b); break;
+   }  
+  }
+ 
+ double delta = 0.05; int A = 1; 
+ 
+ public void setValorA () {
+  if (valorA > valorAMax) { 
+   valorA = valorAMax;
+   A *= -1;
+   }
+
+  if (valorA < valorAMin) { 
+   valorA = valorAMin;
+   A *= -1;
+   };
+  if (animando)
+  valorA += delta*A;
+  }
+
+ public void setValorA (double val) {
+  valorA = val;
+  }
+
+ public double getValorA () {
+  if (stateA) return valorA;
+  return 1;
+  }
+
+ public double getValorB () {
+  if (stateB)
+   return parte(valorBMax, valorBMin);;
+  return 1;
+  }
+ 
+ public double getValorC () {
+  if (stateC)
+   return parte(valorCMax, valorCMin);
+  return 1;
+  }
+ 
+ public double getValorK () {
+  if (stateK)
+   return parte(valorKMax, valorKMin);
+  return 1;
+  }
+ 
+ public double getValorM () {
+  if (stateM)
+   return parte(valorMMax, valorMMin);
+  return 1;
+  }
+ 
+ public double getValorN () {
+  if (stateN)
+   return parte(valorNMax, valorNMin);
+  return 1;
+  }
+ 
+ private double parte (double min, double max) {
+  double k = (valorA - valorAMin) /(valorAMax - valorAMin);
+  return k * (max - min) + min;
+  }
+
+ private boolean
+   stateA = true, stateB = false, stateC = false, stateK = false, stateM = false, stateN = false;
+
+ private void changeStateA (boolean boolState) { stateA = boolState; }
+ private void changeStateB (boolean boolState) { stateB = boolState; }
+ private void changeStateC (boolean boolState) { stateC = boolState; }
+ private void changeStateK (boolean boolState) { stateK = boolState; }
+ private void changeStateM (boolean boolState) { stateM = boolState; }
+ private void changeStateN (boolean boolState) { stateN = boolState; }
+ 
+ private boolean anim = false;
+ private void suspenderAnimacao () {
+  stateA = anim; stateB = anim; stateC = anim; 
+  stateK = anim; stateM = anim; stateN = anim;
+  anim = !anim;
+  }
+
+ }

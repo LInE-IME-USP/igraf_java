@@ -1,0 +1,110 @@
+/*
+ * iGraf - Interactive Graphics on the Internet: http://www.matematica.br/igraf
+ * 
+ * Free interactive solutions to teach and learn
+ * 
+ * iMath Project: http://www.matematica.br
+ * LInE           http://line.ime.usp.br
+ *
+ * @author RP, LOB
+ *
+ * @description Help integrated to iGraf. Component to explain a menu item: Exercise
+ * 
+ * @see 
+ *  
+ * @credits
+ * This source is free and provided by iMath Project (University of São Paulo - Brazil). In order to contribute, please
+ * contact the iMath coordinator Leônidas O. Brandão.
+ *
+ * O código fonte deste programa é livre e desenvolvido pelo projeto iMática (Universidade de São Paulo). Para contribuir,
+ * por favor contate o coordenador do projeto iMatica, professor Leônidas O. Brandão. 
+ * 
+ */
+
+package igraf.moduloAjuda.modelo;
+
+
+import igraf.basico.io.ResourceReader;
+
+
+public class TextoExercicio extends JPanelBasisTopic {
+
+ public TextoExercicio () {
+  super("manualStTextExerTitle"); // 5   Exercício
+
+  insereParagrafo("manualStTextExer_I_1");
+
+  insereSubTitulo("manualStTextExer_1"); // 5.1   Histórico
+  insereParagrafo("manualStTextExer_1_1");
+
+  insereSubTitulo("manualStTextExer_2"); // 5.2   Responder/Enviar
+  insereParagrafo("manualStTextExer_2_1");
+  insereParagrafo("manualStTextExer_2_2");
+  insereParagrafo("manualStTextExer_2_3");
+  insereParagrafo("manualStTextExer_2_4");
+  insereParagrafo("manualStTextExer_2_5");
+  insereParagrafo("manualStTextExer_2_6");
+
+  insereSubTitulo("manualStTextExer_3"); // 5.3   Criar Exercício
+  insereParagrafo("manualStTextExer_3_1");
+  insereParagrafo("manualStTextExer_3_2");
+  insereParagrafo("manualStTextExer_3_3");
+  insereParagrafo("manualStTextExer_3_4");
+  insereParagrafo("manualStTextExer_3_5");
+  insereParagrafo("manualStTextExer_3_6");
+  }
+
+/*
+  super("5   Exercício");
+
+  insereParagrafo("O iGraf oferece ao professor a possibilidade de criar e registrar exercícios " +
+                        "em um servidor para que seus alunos possam acessar e responder as questões pela " +
+                        "Internet.  É possível ainda responder esses mesmos exercícios com a versão de uso local.");
+
+  insereSubTitulo("5.1   Histórico");
+  insereParagrafo("O histórico é um recurso do iGraf que permite ao usuário rever os passos " +
+      "executados em uma sessão.   Selecione esta opção no menu Exercício e use " +
+      "os botões direcionais para navegar pelos itens da sessão.");
+
+  insereSubTitulo("5.2   Responder/Enviar");
+  insereParagrafo("Abre a janela para a inserção de resposta(s) caso o usuário esteja resolvendo um " +
+            "exercício; essas respostas podem ser objetivas ou dissertativas.");
+  insereParagrafo("Para responder as questões objetivas o usuário deve apenas preencher os campos " +
+            "de resposta com os valores que julgar corretos.");
+  insereParagrafo("É possível que um exercício não tenha qualquer campo a preencher.  Isso ocorre " +
+            "quando a resposta da questão é discursiva ou é simplesmente um gráfico.  Se a resposta " +
+            "for apenas gráfica, faça o desenho normalmente usando os recursos do iGraf.   Caso " +
+            "tenha que mandar comentários e/ou justificativas, preencha a área de texto.");
+  insereParagrafo("Certifique-se de ter inserido as respostas corretas e clique no botão \"Enviar Resposta\".");
+  insereParagrafo("Depois de processadas as respostas são enviadas ao servidor a partir do qual o iGraf " +
+            "está sendo distribuído; esse passo ocorre automaticamente e, portanto, não depende de " +
+            "intervenção do usuário.");
+  insereParagrafo("Essa janela ainda oferece ao aluno uma pequena ajuda e um breve texto de dicas ou " +
+            "comentários do professor sobre a resolução do exercício.  Esses textos podem ser " +
+            "exibidos clicanco-se no menu \"Ajuda\" ou no menu \"Comentários\".");
+
+  insereSubTitulo("5.3   Criar Exercício");
+  insereParagrafo("Abre a janela que será usada pelos professores para a criação de exercícios no iGraf. " +
+            "Através dela será feita a configuração do gabarito, supondo que o professor já tenha " +
+            "definido o enunciado e a(s) resposta(s).  O professor poderá ainda enviar dicas e " +
+            "sugestões de resolução ao aluno digitando-as na área de comentários (no centro da janela).");
+  insereParagrafo("Para incorporar o enunciado ao exercício o professor tem duas opções: a primeira é a " +
+            "inserção do texto diretamente na área de desenho; essa é uma boa opção para enunciados " +
+            "curtos e que não vão disputar espaço com gráficos que podem ser importantes para a " +
+            "compreensão do aluno.  A segunda opção é colocar o enunciado na área de comentários; é " +
+            "mais confortável para textos mais longos, porém o aluno não vê a área de desenho " +
+            "enquanto lê.");
+  insereParagrafo("O professor pode propor exercícios divididos em itens cujas respostas podem ser " +
+            "objetivas ou discursivas.  O tipo de cada resposta deve ser claramente definido " +
+            "no momento da criação da questão, pois isso determinará a forma da janela vista " +
+            "pelo aluno no momento de enviar suas respostas.");
+  insereParagrafo("São consideradas respostas objetivas  aquelas que devem ser dadas na forma de \"Número\", " +
+            "\"Expressão Matemática\", \"Par Ordenado\" ou \"Intervalo Numérico\".");
+  insereParagrafo("Para cada item objetivo da questão, o professor deverá selecionar o tipo da resposta e " +
+            "preencher o campo correspondente com o resultado que espera dos seus alunos.");
+  insereParagrafo("São consideradas respostas discursivas aquelas que devem ser dadas na forma de gráfico " +
+            "ou texto livre.  Provas, demonstrações e justificativas se enquadram nessa categoria. " +
+            "O professor deve se certificar de que a solicitação desse tipo de resposta fique clara " +
+            "ao aluno pela simples leitura do enunciado.  Não há configuração especial para esse caso.");
+ */
+ }

@@ -1,0 +1,116 @@
+/*
+ * iGraf - Interactive Graphics on the Internet: http://www.matematica.br/igraf
+ * 
+ * Free interactive solutions to teach and learn
+ * 
+ * iMath Project: http://www.matematica.br
+ * LInE           http://line.ime.usp.br
+ *
+ * @author RP, LOB
+ *
+ * @description Module to deal with exercises.
+ * 
+ * @see 
+ *  
+ * @credits
+ * This source is free and provided by iMath Project (University of São Paulo - Brazil). In order to contribute, please
+ * contact the iMath coordinator Leônidas O. Brandão.
+ *
+ * O código fonte deste programa é livre e desenvolvido pelo projeto iMática (Universidade de São Paulo). Para contribuir,
+ * por favor contate o coordenador do projeto iMatica, professor Leônidas O. Brandão. 
+ * 
+ */
+
+package igraf.moduloExercicio.eventos;
+
+import igraf.IGraf;
+import igraf.basico.util.Crypto;
+import igraf.moduloCentral.modelo.Acao;
+
+public class RespostaNumericaEvent extends RespostaEvent {
+
+  //DEBUG: if IGraf.IS_DEBUG get a complete path of this class
+  public static final String IGCLASSPATH = "igraf/moduloExercicio/eventos/RespostaNumericaEvent.java";
+
+  private String respostaGabarito;
+  private int numQuest;
+
+  // construtor usado para enviar a resposta do gabarito para a sessão, 
+  // de onde será, posteriormente gravada em arquivo
+  public RespostaNumericaEvent (Object source, String resp) {
+    super(source, resp);
+    setCommand(WRITE_ANSWER);
+    }
+
+  // construtor usado para enviar a resposta previamente registrada no 
+  // gabarito (arquivo) para a janela de avaliação automática
+  public RespostaNumericaEvent (String arg, Object source) {
+    super(source, arg);
+    //LSystem.out.println("RespostaNumericaEvent.RespostaNumericaEvent: arg="+arg);
+
+    decodificaResposta(arg);
+    //L System.out.println("RespostaNumericaEvent.RespostaNumericaEvent: "+respostaGabarito);
+
+    setCommand(READ_EXERCISE);
+    }
+
+  public int getCodigoAcao () {
+    return Acao.respostaNumerica;
+    }
+
+  public int getNumQuest () {
+    return numQuest;
+    }
+
+  public String getRespostaGabarito () {
+    return respostaGabarito;
+    }
+
+  public void decodificaResposta (String strToDecod) {
+    int ini = 0, fim = 0;
+    String strAux = "", ind_item1 = "", ind_item2 = "";
+    try {
+      ini = strToDecod.indexOf("Item:");
+      fim = strToDecod.indexOf(" ", ini);
+      ind_item1 = strToDecod.substring(ini+5, fim).trim();
+      numQuest = Integer.valueOf(ind_item1).intValue();
+      ini = strToDecod.indexOf("val:", fim);
+      strAux = strToDecod.substring(ini+4).trim();
+
+      respostaGabarito = Crypto.hexToString(strAux);
+
+    } catch (Exception e1) {
+
+      if (IGraf.IS_DEBUG) {
+        System.err.println(IGraf.debugErrorMsg(IGCLASSPATH) + "decodificaResposta(" + strToDecod + "): ini=" + ini + ": " + strAux);
+        System.err.println(" - Iis it an old format? Let's try...");
+        e1.printStackTrace();
+        }
+
+      // tentar versao anterior de formato iGraf: 1.8.3 (com 'Q' no lugar de 'item')
+      try { // {601, resposta numérica, Item:1 val:_h2d312e35 }
+        ini = strToDecod.indexOf("Q:");
+        fim = strToDecod.indexOf(" ", ini);
+        ind_item2 = strToDecod.substring(ini+2, fim);
+        numQuest = Integer.valueOf(ind_item2).intValue();
+        ini = strToDecod.indexOf("val:", fim);
+        strAux = strToDecod.substring(ini+4).trim();
+
+        respostaGabarito = Crypto.hexToString(strAux);
+        // System.out.println("respostaGabarito=" + respostaGabarito);
+
+        // Se for leitura de arquivo e este for exercício (contém a linha "# exercise: web") => decodifique a expressão aritmética
+        //if (IGraf.ehExercicioWeb() && !FrameQuestaoResposta.getRespAluno())
+        // resposta = Crypto.hexToString(resposta); // decodifique
+
+      } catch (Exception e2) { 
+        System.err.println("[RNE] Error: decode 'numerical answer' of '" + strToDecod +"': it is not as expected\n"+
+            "            item1='" + ind_item1 + "' (ini,fim)=(" + ini + "," + fim + ") (" + e1 + ")\n"+
+            "            item2='" + ind_item2 + "' (ini,fim)=(" + ini + "," + fim + ") (" + e2 + ")");
+        e2.printStackTrace();
+        return;
+        }
+      }
+    }
+
+  }

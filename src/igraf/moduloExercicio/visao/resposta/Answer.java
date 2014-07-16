@@ -1,0 +1,34 @@
+/*
+ * iGraf - Interactive Graphics on the Internet: http://www.matematica.br/igraf
+ * 
+ * Free interactive solutions to teach and learn
+ * 
+ * iMath Project: http://www.matematica.br
+ * LInE           http://line.ime.usp.br
+ *
+ * @author RP, LOB
+ *
+ * @version Created on 22/05/2011, 12:01:31
+ * 
+ * @description 
+ * 
+ * @see igraf/moduloExercicio/visao/resposta/AnswerVisualizerFrame.java
+ *  
+ * @credits
+ * This source is free and provided by iMath Project (University of São Paulo - Brazil). In order to contribute, please
+ * contact the iMath coordinator Leônidas O. Brandão.
+ *
+ * O código fonte deste programa é livre e desenvolvido pelo projeto iMática (Universidade de São Paulo). Para contribuir,
+ * por favor contate o coordenador do projeto iMatica, professor Leônidas O. Brandão. 
+ * 
+ */
+
+package igraf.moduloExercicio.visao.resposta;
+
+import javax.swing.JPanel;
+
+abstract class Answer extends JPanel {
+
+ public abstract String resposta();
+
+ }

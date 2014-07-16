@@ -1,0 +1,157 @@
+/*
+ * iGraf - Interactive Graphics on the Internet: http://www.matematica.br/igraf
+ * 
+ * Free interactive solutions to teach and learn
+ * 
+ * iMath Project: http://www.matematica.br
+ * LInE           http://line.ime.usp.br
+ *
+ * @author RP, LOB
+ * 
+ * @description Help integrated to iGraf.
+ * 
+ * @see 
+ *  
+ * @credits
+ * This source is free and provided by iMath Project (University of São Paulo - Brazil). In order to contribute, please
+ * contact the iMath coordinator Leônidas O. Brandão.
+ *
+ * O código fonte deste programa é livre e desenvolvido pelo projeto iMática (Universidade de São Paulo). Para contribuir,
+ * por favor contate o coordenador do projeto iMatica, professor Leônidas O. Brandão. 
+ * 
+ */
+
+package igraf.moduloAjuda.visao;
+
+import java.awt.BorderLayout;
+import java.awt.Insets;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.KeyStroke; // to allow the use of Key to page up, down...
+
+import igraf.basico.io.ResourceReader;
+import igraf.moduloAjuda.visao.navegador.ItemNavigator;
+import igraf.moduloAjuda.visao.navegador.LinearNavigator;
+import igraf.moduloAjuda.visao.navegador.PainelConteudo;
+
+
+public class Help extends JFrame {// implements KeyListener { // AdjustmentListener {
+
+ private static final int HELPWIDTH = 798, HELPHEIGHT = 600; // window Help size
+
+ public static final int TOPICSWIDTH = 620, TOPICHEIGHT = 30; // width/height to the topics/paragraphs: 'igraf/moduloAjuda/modelo/JPanelBasisTopic.java' and 'igraf/moduloAjuda/visao/componentesDoTexto/Topico.java' and 'Paragrafo.java'
+
+ public  static final int MARGIN = 26; // to be used in 'igraf.moduloAjuda.visao.componentesDoTexto.Paragrafo' (defined in 'ComponenteDoTexto')
+
+ public static final int PANELMENUITEMWIDTH = 120; // width to the left panel (with split hedge)
+
+ // public static final int MAXSIZEWIDTH = 50; // maximum width to the left navigation panel (access to each menu item explanation)
+ public static final int BUTTONWIDTH = 88, BUTTONHEIGHT = 40; // igraf/moduloAjuda/visao/navegador/LinearNavigator.java
+
+ public static final int MENUITEMWIDTH = 118, MENUITEMHEIGHT = 40; // igraf/moduloAjuda/visao/navegador/NavigatorLabel.java: left side access to each item in menu
+
+ public static final int BASICFONTSIZE = 12; // in 'igraf/moduloAjuda/visao/componentesDoTexto/Topico.java' and 'Paragrafo.java'
+
+ private JScrollPane listScrollPane; // = new JScrollPane();
+ private JSplitPane splitPane;
+
+ private LinearNavigator linear;
+ private ItemNavigator item;
+ private PainelConteudo conteudo;
+
+
+ public Help () {
+
+  super("iGraf: " + ResourceReader.msg("manualTitleWindow")); // "Janela de Ajuda"
+  //T System.out.println("\nHelp.java: starting...");
+  setSize(HELPWIDTH, HELPHEIGHT);
+
+  // Java 4: needs 'this.getContentPane().' to avoid 'java.lang.Error'
+  this.getContentPane().setLayout(new BorderLayout()); //3,3));
+
+  // Build the Help panel                      //  +- Help --------------------------------------------------------------------------+
+  linear = new LinearNavigator();              //  | +- LinearNavigator -----------------------------------------------------------+ |
+  item = new ItemNavigator();                  //  | |                                                                             | |
+  conteudo = new PainelConteudo();             //  | +-----------------------------------------------------------------------------+ |
+                                               //  | +- ItemNavigator item ------+ +- PainelConteudo conteudo ---------------------+ |
+  linear.addNavigatorPanelListener(conteudo);  //  | | +- menu grafico ------+   | |                                               | |
+  linear.addNavigatorPanelListener(item);      //  | | +- menu animacao -----+   | |                                               | |
+  item.addNavigatorPanelListener(conteudo);    //  | | ...                       | |                                               | |
+  item.addNavigatorPanelListener(linear);      //  | | +- sintaxe -----------+   | |                                               | |
+                                               //  | | +- conceitos ---------+   | |                                               | |
+  listScrollPane = new JScrollPane(conteudo);  //  | +---------------------------+ +-----------------------------------------------+ |
+
+  listScrollPane.setViewportBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+
+  // Create a split panel with the two scroll panels in it
+  splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, item, listScrollPane);
+  listScrollPane.setBackground(igraf.basico.util.EsquemaVisual.corFundoParagrafos); // same in 'igraf/moduloAjuda/visao/componentesDoTexto/Paragrafo.java'
+
+  splitPane.setOneTouchExpandable(true);
+  splitPane.setDividerLocation(PANELMENUITEMWIDTH);
+
+  // JFrame jframe = new JFrame(); jframe.add(listScrollPane); jframe.setSize(600,500); jframe.setVisible(true);*/
+
+  this.getContentPane().add("North", linear);
+  this.getContentPane().add("Center", splitPane);
+
+  this.insereWindowListener();
+  //not necessary: this.item.setFirstContent(); // igraf/moduloAjuda/visao/navegador/NavigatorPanel.java
+
+  this.setVisible(true);
+  } // public Help()
+
+
+ private void insereWindowListener () {
+  addWindowListener(new WindowAdapter () {
+   public void windowClosing(WindowEvent e) {
+    fechaJanela();
+    }
+   });
+  }
+
+ private void fechaJanela () {
+  setVisible(false);
+  dispose();
+  }
+
+ 
+ // Método usado para remover o painel lateral da janela principal com o objetivo de ampliar a área de visualização da ajuda
+ // public void removePainelLateral () {  remove(item);  validate();  }
+ 
+ // Método que insere o painel principal lateral esquerdo na janela principal. Esse painel, por padrão é exibido.
+ // Esse método só será chamado quando se o painel foi removido da tela por solicitação do usuário
+ // public void inserePainelLateral () {  add("West", item);  validate();  }
+
+ //
+ public Insets getInsets () {  return new Insets(12,7,7,7);  }
+
+
+ // Used whenever the language is changed
+ public void updateLabels () {
+   // ListaTextoAjuda
+   // igraf/moduloAjuda/modelo/ListaTextoAjuda.java
+   this.setTitle("iGraf: " + ResourceReader.msg("manualTitleWindow"));
+   //Attention to: igraf.moduloAjuda.modelo.controle.HelpController
+   igraf.moduloAjuda.modelo.TextoGrafico.updateLabels();   //
+   igraf.moduloAjuda.modelo.TextoCalculo.updateLabels();   //
+   igraf.moduloAjuda.modelo.TextoAnimacao.updateLabels();  //
+   igraf.moduloAjuda.modelo.TextoEdicoes.updateLabels();   //
+   igraf.moduloAjuda.modelo.TextoExercicio.updateLabels(); //
+   igraf.moduloAjuda.modelo.TextoSintaxe.updateLabels();   //
+   igraf.moduloAjuda.modelo.TextoConceito.updateLabels();  //
+   linear.updateLabels(); // LinearNavigator
+   }
+
+ //DEBUG
+ public static void main (String[] args) {
+  new Help();
+  }
+
+ }

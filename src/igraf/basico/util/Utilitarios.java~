@@ -1,0 +1,108 @@
+/*
+ * iGraf : interactive Graphics in the Internet
+ * LInE - http://line.ime.usp.br
+ *
+ * Free interactive solutions to teach and learn
+ * http://www.matematica.br
+ *
+ * @description Classe que realiza as operações de análise da expressão digitada pelo
+ * usuário visando a torná-la compreensível ao contexto do programa; gera,
+ * ao final do processo o objeto (Polygon) que será desenhado na tela.  </p>
+ * 
+ * @version updated in 16/01/2008; first version of 20/05/2006
+ * 
+ * @see 
+ * 
+ * @author RP, LOB
+ * 
+ */
+
+package igraf.basico.util;
+
+import java.util.StringTokenizer;
+
+import java.awt.Component;
+
+public class Utilitarios {
+
+  /**
+   * Para rastrear errros usando try/catch. Metodo exclusivo para desenvolvimento
+   */
+  public static void rastrearError () {
+    try{ String str=""; System.out.println(str.charAt(3)); } catch (Exception e) { e.printStackTrace(); } 
+    }
+
+  public static void traceStackComponentFathers (Component startC) {
+    Component auxComp = startC;
+    //java.awt.Container  auxComp = startC;
+    int ii_0 = 0;
+    System.out.println("Utilitarios.traceStackComponentFathers: dependence of component");
+    while (auxComp!=null) {
+      System.out.println(" " + ii_0++ + ": " + auxComp.getClass().getName());
+      auxComp = auxComp.getParent(); // getAccessibleParent()
+      }
+    }
+
+  /** 
+   * Recebe um double <b>num</b> e retorna-o com a precisão <b> prec </b>, ou seja, 
+   * a quantidade de dígitos na mantissa de num, ajustada pelo argumento inteiro prec.
+   * Esse método é chamado por DesenhoDinamico.{go() e back()} para fazer com que
+   * a barra de informações mostre os valores de um intervalo de animação com a 
+   * precisão de uma casa decimal.
+   * @param num o valor a ser ajustado
+   * @param prec a quantidade de dígitos na mantissa de 'num'
+   * @return <b>num</b> com a mantissa ajustada
+   */
+  public static double precisao (double num, int prec) {
+    num = num * Math.pow(10, prec);
+    long k = Math.round(num);
+    num = (double) k / Math.pow(10, prec); 
+    return num;
+    }
+
+  /**
+   * Recebe um double 'd' e retorna-o na forma de string com a precisão ajustada
+   * para três dígitos na mantissa.<br>
+   * Esse método é chamado por Eixos.desenhaEscala para que a inscrição dos valores
+   * associados às marcas dos eixos coordenados seja feita de forma controlada.
+   * @param d
+   * @return
+   */
+  public static String precisao (double d)  {
+    d = d * Math.pow(10, 3);
+    long k = Math.round(d);
+    d = (double) k / Math.pow(10, 3); 
+    return String.valueOf(d);
+    }
+
+  /**
+   * Recebe uma string (função) com espaçoes em branco em qualquer quantidade ou posição e
+   * a devolve sem nenhum espaço.
+   * @param funcaoComEspacos
+   * @return
+   */
+  public static String retiraEspacos (String funcaoComEspacos) {
+    StringTokenizer st = new StringTokenizer(funcaoComEspacos, " " , false);
+    String funcaoSemEspacos = "";
+    while (st.hasMoreTokens()) 
+      funcaoSemEspacos += st.nextToken();
+    return funcaoSemEspacos;
+    }
+
+  // Para listar vetor de Strings
+  public static void listaStrings (String local, String nome, String [] lstStr) {
+    if (lstStr==null) {
+       System.out.println("Lista de "+local+" vazia: "+nome+" é null");
+       return;
+       }
+    if (lstStr.length==0) {
+       System.out.println("Lista de "+local+" sem elementos: #"+nome+" é 0");
+       return;
+       }
+    int tam = lstStr.length;
+    System.out.println("Lista de "+local+": #"+nome+"="+tam);
+    for (int i=0; i<tam; i++)
+       System.out.println(i+": "+lstStr[i]);
+    }
+
+  }

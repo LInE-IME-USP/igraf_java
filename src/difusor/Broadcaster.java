@@ -1,0 +1,98 @@
+/*
+ * iGraf - Interactive Graphics on the Internet: http://www.matematica.br/igraf
+ *
+ * Free interactive solutions to teach and learn
+ *
+ * iMath Project: http://www.matematica.br
+ * LInE           http://line.ime.usp.br
+ *
+ * @author RP, LOB
+ *
+ * @description Starting class to build all menus: IgrafMenuAjudaController; ... IgrafMenuPoligonoController
+ * Classe que implementa o modelo de comunicação broadcast baseado em eventos.<br>
+ * O objeto broadcaster tem as características de receptor e de gerador de eventos, pois
+ * recebe eventos a partir dos módulos e os envia a todos os módulos registrados como
+ * ouvintes, inclusive aquele que enviou o evento.  É de responsabilidade de cada módulo
+ * decidir o que fará com cada evento recebido.  Todos os módulos do programa devem se
+ * registrar como ouvintes para receber eventos do objeto desta classe.
+ *
+ * @see difusor/evento/ModuleEventListener.java: is interface that is implemented by 'Broadcaster'
+ * @see difusor/CommunicationFacade.java: disseminarEventoExternamente(CommunicationEvent ie): for (Iterator iter=listaOuvintesExternos.iterator(); iter.hasNext();) { ModuleEventListener iel=(ModuleEventListener) iter.next(); iel.disseminarEvento(ie); }
+ * @see difusor/ModuleEventListener.java: Broadcaster implements ModuleEventListener
+ *
+ * @credits
+ * This source is free and provided by iMath Project (University of São Paulo - Brazil). In order to contribute, please
+ * contact the iMath coordinator Leônidas O. Brandão.
+ *
+ * O código fonte deste programa é livre e desenvolvido pelo projeto iMática (Universidade de São Paulo). Para contribuir,
+ * por favor contate o coordenador do projeto iMatica, professor Leônidas O. Brandão.
+ * 
+ */
+
+package difusor;
+
+import java.util.Iterator;
+import java.util.Vector;
+
+import igraf.IGraf;
+import difusor.evento.CommunicationEvent;
+import difusor.evento.ModuleEventListener;
+
+
+public final class Broadcaster implements ModuleEventListener {
+
+ private Vector listaModulos = new Vector();
+
+ /**
+  * Recebe uma referência a um módulo e o coloca na lista de objetos que
+  * receberão notificação sobre eventos ocorridos no sistema.
+  * @param modulo
+  */
+ public void addModule (CommunicationFacade modulo) {
+  listaModulos.add(modulo);
+  }
+
+
+ // Distribute the event 'e' to a correct module (listener of the events)
+ //  0:igraf.moduloArquivo.ModuloArquivo
+ //  1:igraf.moduloCentral.ModuloCentral
+ //  2:igraf.moduloExercicio.ModuloExercicio
+ //  3:igraf.moduloInferior.ModuloInferior
+ //  4:igraf.moduloJanelasAuxiliares.ModuloJanelasAuxiliares
+ //  5:igraf.moduloSuperior.ModuloSuperior
+ //  6:igraf.moduloAjuda.ModuloAjuda
+ //  7:igraf.IGrafController
+ public void broadcastEvent (CommunicationEvent e) {
+  // 2013/04/13: Must be eliminated - stack confuse, 'difusor...' -> 'igraf...' -> 'difusor...' -> 'difusor...' ...
+  if (IGraf.DEBUG_EVENT_EXT || IGraf.DEBUG_EVENT_INT) System.out.println("src/difusor/Broadcaster.java: broadcastEvent(CommunicationEvent): " + e.getClass().getName() + "");
+
+  for (int ii_0=0; ii_0<listaModulos.size(); ii_0++) { //D for (Iterator iter = listaModulos.iterator(); iter.hasNext();)
+    CommunicationFacade modulo = (CommunicationFacade) listaModulos.elementAt(ii_0); //D iter.next();
+
+    if (IGraf.DEBUG_EVENT_EXT || IGraf.DEBUG_EVENT_INT) System.out.println(" - " + ii_0 + ": " + " CommunicationFacade=" + modulo.getClass().getName());
+
+    modulo.filtrarEventoEntrada(e); // CommunicationFacade.java: abstract void filtrarEventoEntrada(CommunicationEvent ie)
+    }
+
+  // difusor.CommunicationFacade: abstract void filtrarEventoEntrada(CommunicationEvent e)
+  // igraf.moduloArquivo.ModuloArquivo:  public void filtrarEventoEntrada(CommunicationEvent ie):
+  // + disseminarEventoInternamente(ie)
+  //   -> difusor.CommunicationFacade: public void disseminarEventoInternamente(CommunicationEvent ie): 
+  //      + for (i=0; i<listaOuvintesInternos.size(); i++) { CommunicationController iel=(CommunicationController) listaOuvintesInternos.get(i); iel.tratarEventoRecebido(ie); }
+  //        -> difusor.controle.CommunicationController: public abstract void tratarEventoRecebido(CommunicationEvent e)
+  // 
+  //  -> igraf.moduloArquivo.ModuloArquivo: 
+
+  }
+
+
+/**
+ * Recebe um evento gerado em alguma parte do iGraf e o distribui todos os módulos 
+ * (ouvintes de eventos de broadcast) do igraf, inclusive àquele que enviou o evento
+ * TODO: eliminar este metodo, usado apenas para invocar o 'broadcastEvent(CommunicationEvent e)' acima????
+ */
+ public void disseminarEvento (CommunicationEvent e) {  
+  broadcastEvent(e);
+  }
+
+ }

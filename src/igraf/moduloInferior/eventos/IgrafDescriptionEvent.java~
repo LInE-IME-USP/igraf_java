@@ -1,0 +1,23 @@
+package igraf.moduloInferior.eventos;
+
+import igraf.moduloInferior.ModuloInferiorDisseminavelEvent;
+import difusor.evento.CommunicationEvent;
+
+
+public class IgrafDescriptionEvent extends CommunicationEvent 
+implements ModuloInferiorDisseminavelEvent{
+	
+	String description;	
+	public IgrafDescriptionEvent(Object source, String description) {
+		super(source);
+		this.description = description;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+	
+	protected String debug() {
+		return objetivo("notificar ao usuário, pela barra de informações, a função dos objetos da tela do iGraf.");
+	}
+}

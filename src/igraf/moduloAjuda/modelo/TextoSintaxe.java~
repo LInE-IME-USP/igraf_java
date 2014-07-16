@@ -1,0 +1,106 @@
+/*
+ * iGraf - Interactive Graphics on the Internet: http://www.matematica.br/igraf
+ * 
+ * Free interactive solutions to teach and learn
+ * 
+ * iMath Project: http://www.matematica.br
+ * LInE           http://line.ime.usp.br
+ *
+ * @author RP, LOB
+ *
+ * @description Help integrated to iGraf. Component to explain: a sintax of accepted expressions
+ * 
+ * @see 
+ *  
+ * @credits
+ * This source is free and provided by iMath Project (University of São Paulo - Brazil). In order to contribute, please
+ * contact the iMath coordinator Leônidas O. Brandão.
+ *
+ * O código fonte deste programa é livre e desenvolvido pelo projeto iMática (Universidade de São Paulo). Para contribuir,
+ * por favor contate o coordenador do projeto iMatica, professor Leônidas O. Brandão. 
+ * 
+ */
+
+package igraf.moduloAjuda.modelo;
+
+
+import igraf.basico.io.ResourceReader;
+
+
+public class TextoSintaxe extends JPanelBasisTopic {
+
+ public TextoSintaxe () {
+  super("manualStTextSinTitle"); // Sintaxe
+
+  insereParagrafo("manualStTextSin_I_1");
+
+  insereSubTitulo("manualStTextSin_1"); // Notação de expressões
+  insereParagrafo("manualStTextSin_1_1");
+
+  insereSubTitulo("manualStTextSin_2"); // Variáveis
+  insereParagrafo("manualStTextSin_2_1");
+
+  insereSubTitulo("manualStTextSin_3"); // Operadores
+  insereParagrafo("manualStTextSin_3_1");
+  insereParagrafo("manualStTextSin_3_2");
+  insereParagrafo("manualStTextSin_3_3");
+
+  insereSubTitulo("manualStTextSin_4"); // Funções pré-definidas
+  insereParagrafo("manualStTextSin_4_1");
+  insereParagrafo("manualStTextSin_4_2");
+  insereParagrafo("manualStTextSin_4_3");
+  insereParagrafo("manualStTextSin_4_4");
+  insereParagrafo("manualStTextSin_4_5");
+  insereParagrafo("manualStTextSin_4_6");
+
+  insereSubTitulo("manualStTextSin_5"); // Parâmetros
+  insereParagrafo("manualStTextSin_5_1");
+  }
+/*
+  super("Sintaxe");
+
+  insereParagrafo("Abaixo estão listadas as regras que devem ser seguidas no uso do iGraf.");
+
+  insereSubTitulo("Notação de expressões");
+  insereParagrafo("As expressões aceitas pelo iGraf devem usar notação infixa, ou seja, " +
+      "um operador entre dois operandos, por exemplo: x + 6.   O operador de adição " +
+      "está entre dois operandos, o 'x' e o '6'.   Exceção a essa regra é feita para o uso do menos " +
+      "unário, como em -3.   Funções pré-definidas serão aplicadas aos operandos que " +
+      "estiverem entre parênteses, como em tan(x^2 - 9)");
+
+  insereSubTitulo("Variáveis");
+  insereParagrafo("A única variável suportada pela versão atual do iGraf é a letra minúscula 'x'.   " +
+      "Os gráficos exibidos na área de desenho são gráficos de f(x).   Assim, quando o " +
+      "usuário digita na área de edição: \"x + 2\", o gráfico visualizado será o de f(x) = x + 2." +
+      "   Não é necessário digitar \"f(x) =\" ou mesmo \"y =\"");
+
+  insereSubTitulo("Operadores");
+  insereParagrafo("As operações matemáticas básicas no programa usam os operadores (+) para soma, (-) " +
+      "para subtração, (*) para multiplicação, (/) para divisão e (^) para potenciação.   " +
+      "Veja um exemplo de expressão válida: x^2 + 2*x - (1/x).");
+  insereParagrafo("Note que parênteses são permitidos e têm a mesma função que teriam em uma expressão " +
+      "matemática qualquer.  Na expressão do exemplo acima os parênteses são desnecessários, " +
+      "pois o iGraf segue as regras matemáticas padrão para precedência de operadores e, " +
+      "portanto, a divisão será naturalmente executada antes da subtração. ");
+  insereParagrafo("Os parênteses também podem ser colocados dentro de outros parênteses desde que o " +
+      "usuário tenha o cuidado de fechar cada parêntese que abrir.");
+
+  insereSubTitulo("Funções pré-definidas");
+  insereParagrafo("O iGraf pode desenhar gráficos das funções abaixo listadas e de suas combinações.");
+  insereParagrafo("Trigonométricas: sin(x) para seno, cos(x) para cosseno, tan(x) para tangente, bem " +
+      "como as suas inversas asin(x), acos(x) e atan(x).");
+  insereParagrafo("Raiz quadrada: sqrt(x) para raiz quadrada.");
+  insereParagrafo("Logarítmica: ln(x) para logaritmo natural.");
+  insereParagrafo("Exponencial: exp(x) para exponencial.");
+  insereParagrafo("Módulo: abs(x) para módulo.");
+
+  insereSubTitulo("Parâmetros");
+  insereParagrafo("Além das funções e operadores acima, o iGraf suporta o uso de parâmetros de animação.   " +
+      "Esses valores são usados quando se deseja observar o comportamento do gráfico de uma " +
+      "função quando seus coeficientes estão variando em um " +
+      "intervalo.   Assim, é possível digitar na área de edição: a*x^2 + b*x + c, atribuir " +
+      "intervalos de variação para a, b e c e visualizar uma animação na qual se pode analisar " +
+      "a influência de cada coeficiente sobre o formato da curva.");
+ */
+
+ }

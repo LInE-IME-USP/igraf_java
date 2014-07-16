@@ -1,0 +1,170 @@
+/*
+ * iGraf - Interactive Graphics on the Internet: http://www.matematica.br/igraf
+ * 
+ * Free interactive solutions to teach and learn
+ * 
+ * iMath Project: http://www.matematica.br
+ * LInE           http://line.ime.usp.br
+ *
+ * @author RP, LOB
+ *
+ * @description 
+ * 
+ * @see igraf/moduloArquivo/Arquivo.java: where a file is really saved
+ * @see igraf/moduloArquivo/ModuloArquivo.java
+ * @see igraf/moduloArquivo/modelo/ArquivoModel.java
+ *  
+ * @credits
+ * This source is free and provided by iMath Project (University of São Paulo - Brazil). In order to contribute, please
+ * contact the iMath coordinator Leônidas O. Brandão.
+ *
+ * O código fonte deste programa é livre e desenvolvido pelo projeto iMática (Universidade de São Paulo). Para contribuir,
+ * por favor contate o coordenador do projeto iMatica, professor Leônidas O. Brandão. 
+ * 
+ */
+
+package igraf.moduloArquivo.controle;
+
+import javax.swing.JOptionPane;
+
+import igraf.IGraf;
+import igraf.IgrafClosingEvent;
+import igraf.basico.io.ResourceReader;
+import igraf.moduloArquivo.Arquivo;
+import igraf.moduloArquivo.eventos.LoadingIGrafEvent;
+import igraf.moduloArquivo.modelo.ArquivoModel;
+import igraf.moduloCentral.eventos.IgrafSessaoEvent;
+import igraf.moduloCentral.eventos.menu.IgrafMenuGraficoEvent;
+import igraf.moduloExercicio.eventos.DiagnosticEvent;
+import igraf.moduloJanelasAuxiliares.eventos.JanelaHistoricoEvent;
+
+import difusor.CommunicationFacade;
+import difusor.controle.CommunicationController;
+import difusor.evento.CommunicationEvent;
+
+
+public class ArquivoController extends CommunicationController {
+
+ //DEBUG: if IGraf.IS_DEBUG get a complete path of this class
+ public static final String IGCLASSPATH = "igraf/moduloArquivo/controle/ArquivoController.java: ";
+
+ private Arquivo arq;
+ private static ArquivoModel arquivoModel; // igraf/moduloArquivo/modelo/ArquivoModel.java
+ 
+ public ArquivoController (CommunicationFacade module, boolean getEvents) {
+  super(module, getEvents);
+  arq = new Arquivo(this);
+  arquivoModel = arq.getModel();
+  arquivoModel.setController(this);
+  }
+
+ public static String getSessao () {
+  return arquivoModel.getListaSessaoAsString();
+  }
+
+ //TODO: eliminar 'ResourceReader.msg(...)' passando a usar apenas a chave do item de menu (e.g., trocar 'ResourceReader.msg("msgMenuGrfNovaSes")' por '"msgMenuGrfNovaSes"'
+ public void tratarEventoRecebido (CommunicationEvent ie) {
+  String strCommand = ie.getCommand();
+  if (strCommand.equals(DiagnosticEvent.SEND_RESULT)) {
+   enviarEvento(new DiagnosticEvent(this, arquivoModel.getListaSessaoAsString()));
+   return;
+   }
+
+  if (ie instanceof IgrafClosingEvent) {
+   if (solicitaGravacao())
+     System.exit(0); // must be application
+   }
+  else
+  if (ie instanceof LoadingIGrafEvent) { // could be 'LoadingAppletEvent'
+   LoadingIGrafEvent lae = (LoadingIGrafEvent) ie;
+   if (lae.getDados() != null)
+    arquivoModel.refazSessao(lae.getDados());
+   }
+  else
+  if (strCommand.equals(JanelaHistoricoEvent.REDRAW_ALL))
+   arquivoModel.restabelerSessao();
+  else
+  if (strCommand.equals(JanelaHistoricoEvent.STEP_REDRAW))
+   arquivoModel.proximaAcao();
+  else
+  if (strCommand.equals(ResourceReader.msg("arqMenuNovo"))) {
+   if (solicitaGravacao()) { // abort 'new' only if user chose option 'Cancel'
+      IgrafMenuGraficoEvent imge = new IgrafMenuGraficoEvent(
+        this, ResourceReader.msg("msgMenuGrfNovaSes"));
+      enviarEvento(imge);
+      resetArquivo();
+    }
+   }
+  else
+  if (strCommand.equals(ResourceReader.msg("arqMenuAbra"))) { // Open
+   if (solicitaGravacao()) // abort 'load' only if user chose option 'Cancel'
+    arq.loadFile(); 
+   }
+  else
+  if (strCommand.equals(ResourceReader.msg("arqMenuGrave"))) { // Save
+   // Behave as: 'save as', used in all (nom HTML) register option (including exercise)
+   arquivoModel.sessionChanged(!arq.gravarGrafico()); // igraf.moduloArquivo.Arquivo arq
+   }
+  else
+  if (strCommand.equals(ResourceReader.msg("arqMenuComo"))) { // Save as
+   //TODO: desativado!
+   //T System.out.println(IGCLASSPATH + "arqMenuComo");
+   arquivoModel.sessionChanged(!arq.gravarComo("arquivo")); // File
+   System.err.println(IGraf.debugErrorMsg(IGCLASSPATH) + "Error? This option is supossed to be disabled! " + ResourceReader.msg("arqMenuComo"));
+   }
+  else
+  if (strCommand.equals(ResourceReader.msg("arqMenuHTML"))) // Export to HTML page
+   arq.gerarHTML();
+  else
+  if (strCommand.equals(ResourceReader.msg("arqMenuExerc"))) { // Save as exercise
+   System.err.println(IGraf.debugErrorMsg(IGCLASSPATH) + "Error? This option is supossed to be disabled! arqMenuExerc=" + ResourceReader.msg("arqMenuExerc"));
+   //arq.gerarHTML();
+   }
+  else
+  if (strCommand.equals(ResourceReader.msg("arqMenuImprima"))) // Print
+   ; //arq.gerarHTML();
+  else
+  // exibe a janela do histórico
+  if (strCommand.equals(IgrafSessaoEvent.REVIEW_SESSION_DATA)) {
+   arquivoModel.carregarListaAcao(); 
+   }
+  else
+  if (strCommand.equals(IgrafSessaoEvent.UPDATE_SESSION_DATA)) {
+   IgrafSessaoEvent ise = (IgrafSessaoEvent)ie;
+   arquivoModel.insereSessao(ise.getSessao()); 
+   }
+  // copiar imagem e exportar como JPG são tratados na classe igraf.moduloCentral.visao.TabbedViewer
+  } // public void tratarEventoRecebido(CommunicationEvent ie)
+
+
+ /** 
+  * If the current tab has any change, warning user this fact and ask him if he want to register the file before the requested action (open, close).
+  * @return true (if 'Yes' or 'No'); false (if 'Cancel')
+  */
+ private boolean solicitaGravacao () {
+  // se a sessão foi alterada, verifique se o usuário quer gravar
+  if (arquivoModel.sessionChanged()) {
+   int resp = arq.desejaGravarAlteracao();
+ 
+   if (resp == JOptionPane.CANCEL_OPTION) {
+    return false;
+    }
+   if (resp == JOptionPane.YES_OPTION) {
+    if (!arq.gravarGrafico())
+     return false; // caso o usuário cancele a ação 
+    }
+   }
+  // não cancelou a ação, então tem que realizá-la
+  // independentemente de o usuário ter optado por 
+  // gravar ou não as alterações 
+  return true;
+  }
+
+ 
+ 
+ private void resetArquivo () {
+  arq.reset();
+  arquivoModel.reset();
+  }
+
+ } 

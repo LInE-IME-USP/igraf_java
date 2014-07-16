@@ -1,0 +1,795 @@
+# Ações implementadas em Sessao.java
+# ----------------------------------
+
+#
+igraf = iGraf: Interactive Graphics on the Internet
+arquivo = File
+
+# Geral
+RESET = reset
+ATUALIZAR = Update
+
+# Cores padroes
+AZUL = Blue
+PRETO = Black
+MARINHO = Navy
+VERMELHO = Red
+LARANJA = Orange
+ROXO = Purple
+CINZA_ESCURO = Dark Gray
+BORDO = Bordeaux
+MARROM = Maroon
+
+# Desenho
+DESENHO_INDIVIDUAL = draw graphic of function f(x) = 
+DESENHO_MULTIPLO = draw all graphics
+ESCONDER_ULTIMO_GRAFICO = hide last graphic
+ESCONDER_TODOS_GRAFICOS = hide all graphics
+DELETAR_GRAFICO_SELECIONADO = remove graphic of function f(x) =
+DELETAR_TODOS_GRAFICOS = remove all graphics in this tab
+EDITAR_FUNCAO = change function definition
+INSERIR_ABA = inert drawing area
+
+# Poligono
+POLIGONO = draw polygon 
+UNDO_POLIGONO = undo polygon
+REDO_POLIGONO = redo polygon
+
+# Animacao
+ANIMACAO = start/stop animation
+RASTRO_NA_TELA = hide/show animation track on screen 
+AUMENTAR_VELOCIDADE_ANIMACAO =  increase animation steps
+DIMINUIR_VELOCIDADE_ANIMACAO =  decrease animation steps
+
+# Eixos
+EIXOS = hide/show axes
+ESCALA = hide/show scale
+GRADE = hide/show grid 
+INSERE_TEXTO = insert text
+EDITA_TEXTO = edit text
+ATUALIZA_POSICAO_TEXTO = update text position
+APAGA_TEXTO = delete text
+DESLOCAR_ORIGEM = shift origin                  
+                           
+# Calculo
+TRACAR_DERIVADA = plot derivative function graphic of f(x) =
+TRACAR_TANGENTE = plot tangent to point:
+CALCULAR_INTEGRAL = calculate definite integral
+INT_INDEFINIDA = plot anti-derivative of f(x) =
+
+# Zoom
+MAIS_ZOOM = increase zoom
+MENOS_ZOOM = decrease zoom
+ZOOM_PADRAO = zoom default
+
+# Fim da sessao
+FIM = End of Session
+
+# Geral gravacao
+lamentoNImpl = Sorry, this option is not implemented yet!
+msgCancelar = Cancel
+msgSim = Yes
+msgNao = No
+msgCarga = Load iGraf file
+msgVersao = Version
+
+# src/igraf/basico/io/GravadorLeitor.java
+msgGL_ExercicioErrConexAd = If the error persists, the following messages must be informed to the server administrator
+msgGL_ExercicioErrConex   = - There was a connection error. Try to send your exercice again
+msgGL_ExercicioErrConexR  = - There was a connection error, the page responsible for analyze your exercice is not there
+msgGL_ExercicioErrConexR2 = - Send to the server administrator the message: $OBJ$
+
+# to igraf/moduloInferior/visao/InfoPane.java: from igraf/moduloCentral/visao/plotter/GraphPlotter.java;
+sbSelectedFunction = Selected function
+sbSelectedFunctionNull = In order to remover function, first you must click over the function to be removed
+
+# Mensagens auxiliares:
+# igraf/moduloCentral/eventos/GraphicOnScreenChangedEvent.java; igraf/moduloCentral/eventos/EstadoTelaEvent.java; igraf/moduloCentral/eventos/AreaDesenhoEvent.java
+msgInternalChangeADD = notify the system about change in drawing area of iGraf
+# igraf/moduloCentral/eventos/menu/IgrafMenuGraficoEvent.java; igraf/moduloCentral/eventos/menu/IgrafMenuPoligonoEvent.java
+msgInternalChangeClickMenu = Event produced in class $OBJ$ to notify a interaction (click) of user with menu $OBJ$
+# igraf/moduloCentral/eventos/menu/IgrafSubMenuEvent.java
+msgInternalClickSubmenu = notify the system about a user click in a submenu
+# igraf/moduloExercicio/eventos/RespostaEvent.java
+msgInternalIsExerc = notify the system about the existence, or not, of a exercise in iGraf session
+# igraf/moduloJanelasAuxiliares/eventos/JanelaIntegralEvent.java
+msgInternalCalcIntegral = notify the system about change ocurred in integral calculus window
+# src/igraf/moduloJanelasAuxiliares/eventos/JanelaTangenteEvent.java
+msgInternalTang = notify the system about change ocurred in window to visualize tangents
+
+# igraf/IGraf.java
+msgErrInicioArquivo = Error trying to read a file
+msgErrArquivoInv = This file is not in iGraf format
+
+# igraf/Arquivo.java + igraf/moduloCentral/visao/menu/Arquivo.java (apenas o 'msgAbrirArq')
+msgDesejaGravarSes = Do you want to save the present session of iGraf?
+msgGravarSes = Save session of iGraf
+msgAbrirArq = Open an iGraf file
+msgTipoArq = File
+msgExportaPagWeb = Exporta this iGraf construction to Web page
+msgGravarTipoArq = Save $OBJ$ of iGraf
+
+# igraf/moduloCentral/eventos/DesenhoTextoEvent.java
+msgTexto = text
+
+#  igraf/moduloJanelasAuxiliares/visao/JanelaEntradaTexto.java
+msgTam = size
+msgIns = Insert
+msgFonte = Font
+msgOK = OK
+
+# igraf/moduloJanelasAuxiliares/visao/JanelaHistorico.java
+titleWinHistSession = Session's history
+toolTipHSstepFront = Step forward in this session's history
+toolTipHSstepBack = Step back in this session's history
+toolTipHSforward = Go to end this session's history
+toolTipHSbackward = Go to beginning of this session's history
+
+# igraf/moduloJanelasAuxiliares/visao/JanelaEntradaTexto.java
+tiInsTexto = Window to text insertion
+tiPadrao = standard
+tiOutrasCores = Other colors
+tiPosTexto = Text position in (x, y)
+tiPosTexto1 = Text position
+tiPosTexto2 = in (x, y)
+textRemotionOptionPaneTitle = text deletion
+textRemotionOptionPaneQuestion = Do you really want erase this text?
+
+# igraf/moduloCentral/visao/TabbedViewer.java
+msgTab = Tab
+msgTabTip = Click here to move to the tab number $OBJ$
+
+# igraf/moduloSuperior/visao/MenuFile.java -> igraf/moduloCentral/visao/menu/MenuArquivo.java ?
+arqMenuGrave = Save
+arqMenuComo = Save as
+arqMenuExerc = Save as exercise
+arqMenuNovo = New
+arqMenuAbra = Open
+arqMenuHTML = Export to HTML page
+arqMenuImprima = Print
+arqMenuSaia = Exit
+arqMenuCopia = Copy drawing area
+arqMenuExporta = Export as JPEG
+arqMenuImpSuc = Successfully printed
+arqVersao = File version
+
+# igraf/moduloCentral/visao/menu/MenuAjuda.java
+menuAjuda = Help
+menuAjudaDescr = Options related to help and informations
+majCont = Content
+majBusca = Search
+majAtalhos = Shortcuts
+majSobre = About
+majJanAjuda = Show the help window
+majListaAtalhos = Show the shortcut list used by iGraf
+majInformes = Show the informations about iGraf
+
+# igraf/moduloCentral/visao/menu/MenuAnimacao.java
+menuAnim = Animation
+menuAnimDescr = Options related to edition of functions and text and others
+maParaAnima = Start/stop animation
+maMostraControle = Show panel to select functions to animation
+maMostraCDesl = Show scrolling control panel to animation
+maEscondeCDesl = Hide scrolling control panel
+maRastro = Start/stop function tracing
+maRastroNao = Stop function tracing
+maVelAmplia = Increase velocity
+maVelDiminui = Decrease velocity
+maParaAnimaTodos = Stop or restart the animations of all the functions on screen
+maMostraControleIndividual = Show the control panel for individual animation
+maMostraCDeslParado = It shows scrolling control to functions with parameters. It makes simultaneous animation of all functions with parameters.
+maRastrearAnimacao = Initiate the function trace (to functions like "a*x")
+maRastrearAnimacaoNao = Stop the function trace
+maRastrearAnimacaoErro1 = It is necessary the existence of some function with parameter (like, "a*x")
+maVelAmpliaStr = Increase the velocity for animation
+maVelDiminuiStr = Decrease the velocity for animation
+
+# igraf/moduloCentral/visao/menu/MenuCalculo.java
+menuCalculo = Calculus
+menuCalculoDescr = Options related to the Calculus
+mcDerVer = Visualize derivative
+mcTgVer =  Visualize tangent line
+mcIIVer =  Visualize indefinite integral
+mcIICalc = Calculate definite integral
+mcTgPane = Tangent Panel
+mcMsgAnimIni = The animation must be stated in order to use the calculus
+mcMsgDesGrafDer = Draw the derivative graphics for the function under edition. Click on a curve to get it
+mcMsgMostraTg = It shows the panel to study tangents. Type a value into the field \"x = \". See the equation in \"f(x) = \" and the straight line in the drawing area
+mcMsgMostraInt = It draws the graphics of indefinite integral of the function under edition. The integral constant will be supposed equals to zero
+mcMsgMostraPII = It shows the panel to study definite integra. Select two or more functions, type their integration limits into \"a = \" and \"b = \". Click on \"Integrate\"
+
+# igraf/moduloCentral/visao/menu/MenuEdicao.java
+menuEdicao = Edition
+menuEdicaoDescr = Options related to edition (texts, functions,...)
+madZoomPadrao = Zoom: default
+madZoomAmpliar = Zoom: increase
+madZoomDiminuir = Zoom: decrease
+madTextoInserir = Text: insert
+madTextoEditar = Text: edit
+madTextoRemover = Text: remove
+madEixosExibir = Axes: show/hide
+madEixosRemover = Axes: remove
+madEscalaExibir = Scale: show/hide
+madEscalaRemover = Scale: remove
+madGradeExibir = Grid: show
+madGradeRemover = Grid: show/hide
+madLang = Language
+madPort = Portuguese
+madEngl = English
+
+madOpcaoPCPadrao = Show the standard coordinate plane.
+madOpcaoGrafAmpPrec = Increase the graphic precision.
+madOpcaoGrafDimPrec = Decrease the graphic precision.
+madOpcaoTextoJanela = Show the window to edit/insert text. After enter the text, click on the insertion point and press \"insert\".
+madOpcaoTextoEditar = Change the text content.
+madOpcaoTextoRemover = Remove a text.
+madOpcaoEixosInv = Change hide/show the coordinate axes.
+madOpcaoEscalaInv = Change hide/show the  numeric scale of the coordinate axes.
+madOpcaoGradeInv = Change hide/show the grid.
+madOpcaoLang = Change language
+madOpcaoPort = Show labels in portuguese
+madOpcaoEngl = Show labels in english
+
+# igraf/moduloCentral/visao/menu/MenuExercicio.java
+menuExerc = Exercise
+menuExercDescr = Options related to authoring/evaluation of exercise
+mexExercHistorico = History
+mexExercResp = Answer / send
+mexExercCriar = Create exercise
+mexExercEditar = Edit exercise
+mexExercMenuConfig = Configure menus
+mexExercAjudaExibe = Show a window to review the step followed in the iGraf session.
+mexExercAjudaEval =  Open a window to teacher visualize student answers.
+mexExercAjudaResp = Open the window to get the student answer. Select the answer type and fill the correspondent fields.
+mexExercAjudaGab = Open the window to get the model answer. Used in the exercises creationg.
+mexExercAjudaGabEd = Open a window to edit the model answer. Used to change the exercise data.
+mexExercAjudaMenuConfig = Select menus showed to students
+
+# igraf/moduloCentral/visao/menu/MenuExercicio.java, igraf/moduloCentral/controle/menu/IgrafMenuExercicioController.java
+mexExercEval = Visualize answers
+
+# igraf/moduloCentral/visao/menu/MenuGrafico.java
+menuGrf = Graphics
+menuGrfDescr = Options related to graphics of functions
+msgMenuGrfDes            = Draw
+msgMenuGrfDesTodos       = Draw all
+msgMenuGrfEditaExp       = Edit function
+msgMenuGrfExibeListaExp  = Show function
+msgMenuGrfEsconder       = Hide function
+msgMenuGrfEsconderUlt    = Hide last function
+msgMenuGrfEsconderTodos  = Hide all
+msgMenuGrfRemoverGrafico = Remove function
+msgMenuGrfRemoverTodos   = Remove all
+msgMenuGrfNovaAba        = New tab
+msgMenuGrfRemoverAba     = Remove tab
+msgMenuGrfNovaSes        = New session
+msgMenuGrfOcultaListaExp = Hide function
+
+descrMenuGrfDesEdicao         = It draws the corresponding graphic to the funcion under edition
+descrMenuGrfDesTodosOcultos   = It draws all previously hidden graphics
+descrMenuGrfJanFunc           = It opens a windows to change funcions
+descrMenuGrfExibeListaExp     = Exibe a lista das expressões editadas pelo usuário nesta sessão do iGraf
+descrMenuGrfEscondeGrafEdicao = It hides the function graphics under edition. Click on a curve to select it
+descrMenuGrfEscondeUltDes     = It hides the last edited graphics
+descrMenuGrfEscondeTodos      = It hides all the graphics. Hidden graphics could be restored usind \"Draw all\"
+descrMenuGrfRemoverGrafico    = Remove the function selected
+descrMenuGrfRemoverTodos      = It removes all the graphics
+descrMenuGrfNovaAba           = Create a tab with a new drawing area
+descrMenuGrfRemoverAba        = Remove the selected tab
+descrMenuGrfIniNovaSes        = Start a new iGraf session (it erases all the register of the current session)
+
+# igraf/moduloCentral/visao/menu/MenuPoligono.java
+menuPol = Polygon
+menuPolDescr = Options related to drawing polygons
+mepPonto = Point
+mepSegm = Segment
+mepTri = Triangle
+mepRet = Rectangle
+mepRetEsp = Special Rectangle 
+mepPolReg = Regular Polygon
+mepPolQqr = Polygon
+mepPolEsp = Special Polygon 
+mepPintaGrade = Paint Grid
+mepPintaPoli = Fill Polygon
+mepNPintaPoli = Do not Fill Polygon
+
+mepDescPonto = Select Point creation mode
+mepDescSegm = Select Segment creation mode
+mepDescTri = Select Triangle creation mode
+mepDescRet = Select Rectangle creation mode
+mepDescRetEsp = Select Special Rectangle creation mode
+mepDescPolReg = Select Regular Polygon creation mode
+mepDescPolQqr = Select Polygon creation mode
+mepDescPolReg = Select Special Polygon creation mode
+mepDescPintaGrade = Select grid painting mode
+mepDescPintaPoli = Select polygon painting mode
+
+#
+mgErroEA = Sintax error in the expression
+mgErroEAnao = Sintax error in the expression, the function was not inserted
+mgDigEA = Enter a math expression to a function in the editing area
+
+# igraf/moduloExercicio/visao/menuSelector/MenuSelectorFrame.java
+menuCfgTitle = Configure items of menus
+menuCfgTopMessage1 = If you want to avoid an specific menu item, let it unmarked in the list bellow
+menuCfgConfim = Confirm
+
+-----------------------------------------------------------------------------
+
+# igraf/moduloSuperior/controle/entrada/Analisa.java
+msgErrFcVazia = Error: empty function, it is impossible to draw
+msgErrFcTela = Error: in recovering function process at the drawing area
+msgErrFcVaziaEd = Error: empty expression, it is impossible to edit
+msgErrFcSintEd = Error: problem found in expression syntax, it is impossible to edit
+msgErrFcSintaxe = Error: problem found in expression syntax, it is impossible to draw
+
+# igraf/moduloCentral/visao/desenho/DesenhoAnimacao.java
+daErroDominio = Incorrect sintax in the domain definition
+daErroOperador = Function with operator or operand invalid
+
+# igraf/moduloSuperior/controle/entrada/Analisa.java
+msgASerrNaoEsperado = Operator or operand not expected
+msgASerrParenteses = Error in parenthesis: not match
+msgASerrFinal = Expression with an incorrect end
+msgASerrOperInv = Operator or operand not valid in iGraf
+
+# igraf/moduloAjuda/visao/JanelaSobre.java
+msgAFsobre = About the iGraf
+msgAFmsg0  = \ iGraf: system for teaching/learning related to\n functions (graphics, Calculus, ...)\n\n
+msgAFmsg1  = \ http://www.matematica.br/igraf\n\n
+msgAFmsg2  = \ Development: \n
+msgAFmsg3  = \  Reginaldo do Prado\n
+msgAFmsg4  = \ Coordination/development:\n
+msgAFmsg5  = \  Leônidas Oliveira Brandão - DCC - IME\n\n
+msgAFmsg6  = \ Free interactive solutions to teach and learn\n
+msgAFmsg7  = \ Laboratory of Informatics in Education (LInE)\n
+msgAFmsg8  = \  Institute of Mathematics and Statistics (IME)\n   University of São Paulo (USP)\n\n
+msgAFmsg9  = \ Version $VERSAO$
+msgMem     = \ Free Memory
+
+# igraf/moduloJanelasAuxiliares/visao/JanelaEdicaoExpressao.java
+msgJanEFTitulo = Edit function window
+msgJanEFvazio = There is no function to be edited
+msgJanEFexiste = Pick up one function from the list bellow, edit it and press \"OK\"
+msgJanEFcores = Other colors
+
+# igraf/moduloJanelasAuxiliares/visao/tangente/PainelTangente.java
+btFxTg = Set Tangent
+btErTg = Erase Tangents
+cbVarTg = Several Tangents
+cbAnimTg = Tangent Animation
+chSelFun = Select a function
+lbEqReta = Line Equation
+digValX = Type a value for x
+
+# igraf/moduloJanelasAuxiliares/visao/integral/JanelaIntegral.java
+janIntegTit = Definite Integral
+btInteg = Integrate
+btResult = result
+funSup = superior function
+funInf = inferior function
+intInterv = integration interval 
+colCB = Colour integration region
+intCB = Calculate integral
+areCB = Calculate area
+area = Area
+
+# igraf/moduloJanelasAuxiliares/visao/animacao/JanelaAnimacao.java, JanelaParametros.java
+labJanAnimTit = Animation control panel
+labJanParamTit = Parameters
+labParam = Parameters
+labInterv = Intervals
+labConst = Constants available to use
+labOK = OK
+labOKtooltip = click here to dismiss this window
+labJanAnimExpl1 = Select function with parameters to produce animation
+labJanAnimExpl2 = You must activate animation with option
+
+# rotulos dos botoes que acionam os menus
+pbGrafico = Graphics
+pbCalculo = Calculus
+pbAnimacao = Animation
+pbEdicoes = Editions
+pbExercicio = Exercise
+pbAjuda = Help
+
+# TODO nao mais usado - 'igraf/V/paineis/texto/PainelEdicaoTexto.java'
+btEditar = Edit
+btRemover = Remove
+btFechar = Close
+selecionaTodos = Select all
+textoEdicaoVazio = There is not available text to be edited
+
+# igraf/moduloJanelasAuxiliares/controle/JanelaIntegralController.java
+msgEixoX = axe x
+
+# igraf/moduloCentral/modelo/Sessao.java
+sesExercSemCom = No commentary was provided
+
+# RESPOSTA EXERCICIO
+HABILITA_ENVIO_RESPOSTA = archive containing exercise
+RESPOSTA_NUMERICA = numerical answer
+RESPOSTA_ALGEBRICA = algebraic answer
+RESPOSTA_PONTO = point answer
+RESPOSTA_INTERVALO = interval answer
+INSERIR_COMENTARIO = insert comments
+INSERIR_COMENTARIO_ALUNO = insert student comments
+HABILITA_VISAO_RESPOSTA = archive containing student answers
+RESPOSTA_OBJETIVA = objective answer
+RESPOSTA_DISCURSIVA = discursive answer
+DESABILITA_MENU = Disable Menu
+
+# exercicio/
+exercResp = Answer
+exercErroTipoRespInc = the answer kind is incompatibly with the exercise item
+
+# igraf/moduloExercicio/visao/PainelComentario.java
+menuAjudaTooltip = Click here to get a explanation about the use of this area to exchange comments
+exercPainelComentProfNaoComent = The teacher didn't add any hint or comment about this exercise
+exercPainelComentCriar1 = Observations about the exercises creation\n\n- If the answer requered is a text, just click on \"Confirm model answer\"\n- If the exercise is divided by itens with direct answer, select the type of\n  each answer, following the order in which the itens were created. After it, enter the expected\n value to each one the correspondent field\n- Any graphic present at the drawing area, at the moment or the exercise creation,\n will be seen by the student, as well as the steps of this exercise.\n- Make sure you have inserted the correct answer and click on \"Confirm model answer\"
+exercPainelComentCriar2 = - This text area must be used to give hints about the resolution or make any comment to your student
+exercPainelComentResp1 = Observations about the answer submission\n\n- If the requered answer is a text, after your graphic or text is done, please,\n click on \"Answer / send\"\n- If the exercise is divided by itens with direct answer, enter the value that\n you consider correct in each of the correspondent field, then click on \"Answer / send\"
+exercPainelComentResp2 = This text area must be used to send aditional comment related to this exercise to your teacher
+exercPainelComentInsComent = Insert comment
+exercPainelComentInsComentTooltip = Click here to insert your own comments about this exercise
+exercPainelComentRec = Comment received
+exercPainelComentRecTooltip = Click here to see the teacher comments about this exercise
+
+# igraf/moduloExercicio/visao/PainelSeletorTipoResposta.java
+exercPSRespObj = Objective answers
+exercPSInserirCampos = Insert answer items for exercise
+exercPSRespGrafDisc = The answer must be just a graphic or a text (discursive answer)
+exercPSSelTipoResp = Select the type of the answer 
+exercPSNum = Number
+exercPSParOrd = Ordered Pair (x, y)
+exercPSInterv = Numeric Interval [a, b]
+exercPSEA = Math Expression to function
+exercPSRemoveItem = Remove the last inserted item
+exercPSerrAlt = This value is not valid to update panel height
+
+# igraf/moduloExercicio/visao/JanelaDiagnostico.java
+exercJDtitle = Evaluation survey
+exercJDmsg1 = Automatic assessment of iGraf
+exercJDmsg2 = The answer was evaluated in:
+
+# igraf/moduloExercicio/visao/JanelaExercicio.java
+exercFQRcancel = Cancel
+exercFQRcancelTooltip = Click here to cancel this attempt to respond the exercise
+exercFQRLimpa = Clear answers
+exercFQRLimpaTooltip = Click here to erase all answers already registered
+exercFQRCGabarito = Confirm answers
+exercFQRCGabaritoTooltip = Click here to evaluate the answers and eventually send them to the server
+exercFQREnvResp = Evaluate
+exercFQRPRAluno = Student answer panel
+exercFQRPCGabarito = Panel to configure model answer
+
+# igraf/moduloExercicio/visao/PainelResposta.java
+exercRmaisInf = positive infinity
+exercRnumInv = Invalid number
+exercRErroAval = Error in the evaluation attempt
+exercRParabens = Item $OBJ$. Congratulation! The answer \"$OBJ$\" is correct
+exercRNaoAcordo = Item $OBJ$. The answer does not seem similar to the expected answer
+exercRItem = Item
+
+tentTotCert = Correct Answer
+tentParCert = Partially Correct
+tentNaoCert = Incorrect
+
+# igraf/moduloExercicio/visao/PainelRespostaAlgebrica.java (last one also in 'igraf/moduloSuperior/controle/entrada/EntradaExpressaoController.java')
+exercRAErroCampoResp = Please, it is necessary to provide some answer
+exercRAErroAnimNao = Animation parameters are not allowed in this context
+exercRAErroExpInv = Invalid expression:
+
+exercRespDica = Select an algebraic expression (function)
+
+# igraf/moduloExercicio/visao/PainelRespostaIntervalo.java
+exercRIDigLimInt = Enter the interval limits
+exercRILInf = inferior limit
+exercRILSup = superior limit
+exercRIAberto = open
+exercRIFechado = close
+exercRIInterv = Interval
+exercRIIntDir = to right
+exercRIIntEsq = to left
+
+# igraf/moduloExercicio/visao/PainelRespostaNumerica.java [PainelRespostaAlgebrica.java: exercRNerrNN]
+exercRNdigR = Enter a real number
+exercRNerrEmpt = It is empty
+exercRNerrNN = You must enter a number in the exercise number $OBJ$
+exercRNerrDebug1 = Something very strange happened! The exercise item number $OBJ$ is damaged
+
+# igraf/moduloExercicio/visao/PainelRespostaPonto.java
+exercRAcoordX = coordinate x = 
+exercRAcoordY = coordinate y = 
+
+# comands for IgrafEvent comparisons
+setInputExpression = set input expression
+exercRAparOrd = Enter an ordered pair
+
+# TODO nao mais usado - 'exercicio/JanelaFeedback.java'
+msgJFerrVazio = There is no answer item to this exercise
+
+# TODO nao mais usado - 'exercicio/Avaliador.java'
+msgAvalEnviaSuc = The solution was successfully sent
+
+# igraf/moduloExercicio/visao/resposta/AnswerVisualizerFrame.java
+# mensagens da janela de visualização de tentativas do aluno
+janVisTentTitulo = Visualizer to the student's answers
+aluTent = Student answer
+respEsper = Answer model
+status = Status
+try = Try
+
+# igraf/moduloExercicio/visao/resposta/DiscursiveAnswer.java
+msgExercDA = Discursive answer
+
+# painelCentralControler '
+RESET_TABS = reset tab
+
+# -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Manual: from this point there are all text to the manual integrate to iGraf
+#
+# igraf/moduloAjuda/visao/Help.java
+manualTitleWindow = Window help
+helpTitleWindow = Window help
+
+#igraf/moduloAjuda/visao/navegador/LinearNavigator.java
+manualTopPback = Back
+manualTopPforw = Forward
+manualTopPstar = Start
+manualTopPprint = Print
+
+# -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# igraf/moduloAjuda/modelo/TextoGrafico.java
+manualStTextGraTitle = \ 1   Graphics
+manualStTextGra_I_1 = Menu de comandos associados ao traçado e edição de gráficos na área de desenho.
+manualStTextGra_1 = \ 1.1   Draw
+manualStTextGra_1_1 = Imprime na área de desenho o gráfico referente a expressão que está na área de edição. Clicar nesta opção ou teclar <enter> têm o mesmo efeito.
+
+manualStTextGra_2 = \ 1.2   Draw all
+manualStTextGra_2_1 = Desenha todos os gráficos previamente editados pelo usuário na sessão atual do iGraf e que, por algum motivo, foram tornados ocultos 
+
+manualStTextGra_3 = \ 1.3   Edit expression
+manualStTextGra_3_1 = A ferramenta de edição de expressões serve para modificar gráficos de função, animações ou polígonos que estão na área de desenho.
+manualStTextGra_3_2 = Ao abrir a janela de edição, selecione a expressão que deseja editar e, no campo de texto, faça as alterações que julgar necessárias.\
+ A nova expressão só será aceita se for válida e você verá o resultado imediatamente na área de desenho.
+manualStTextGra_3_3 = É possível editar também a cor do gráfico.  Na lista de cores, selecione a opção \"Outras Cores\" e verá uma nova janela onde poderá escolher\
+ praticamente qualquer cor para o gráfico usando o sistema aditivo de cores RGB (Red - Green - Blue).
+manualStTextGra_3_4 = Para confirmar a edição, clique no botão \"Ok\". Clicar no \'x\' do canto superior direito da janela tem o mesmo efeito.
+manualStTextGra_3_5 = Saiba mais sobre o sistema aditivo de cores em \"http://en.wikipedia.org/wiki/RGB\". Veja uma interessante lista de cores em \"http://en.wikipedia.org/wiki/List_of_colors\"
+
+manualStTextGra_4 = \ 1.4   Show expression
+manualStTextGra_4_1 = Alterna entre exibir ou não, na área de desenho, as expressões das curvas visíveis
+
+manualStTextGra_5 = \ 1.5   Hide
+manualStTextGra_5_1 = Esconde o gráfico correspondente à expressão que está na área de edição deixando os outros inalterados.
+
+manualStTextGra_6 = \ 1.6   Hide last graphic
+manualStTextGra_6_1 = Esconde o último gráfico desenhado na sessão atual. É importante notar que o gráfico apagado faz parte da sessão e, portanto, pode ser recuperado.
+
+manualStTextGra_7 = \ 1.7   Hide all
+manualStTextGra_7_1 = Apaga todos os gráficos da tela mas mantém a lista de expressões na memória de tal modo que os gráficos podem ser redesenhados clicando-se na opção Desenhar Todos.
+
+manualStTextGra_8 = \ 1.8   Remove graphic
+manualStTextGra_8_1 = Remove o último gráfico selecionado
+
+manualStTextGra_9 = \ 1.9   Remove all
+manualStTextGra_9_1 = Remove todos os gráficos na presente sessão. Os gráficos que foram apagados só poderão ser visualizados \
+ novamente com o uso do Histórico, a ferramenta de inspeção de sessão do iGraf acessada através do menu Exercício.
+
+manualStTextGra_10 = \ 1.10   New tab
+manualStTextGra_10_1 = Insere na sessão atual do iGraf uma nova aba. Cada aba tem funcionamento independente.
+
+manualStTextGra_11 = \ 1.11   Remove tab
+manualStTextGra_11_1 = Remove a aba que estiver selecionada.  Esta ação não pode ser desfeita.
+
+manualStTextGra_12 = \ 1.12   New session
+manualStTextGra_12_1 = Inicia uma nova sessão do iGraf apagando todos os registros da sessão atual. Tem o mesmo efeito que clicar no menu \"Arquivo\" e selecionar a opção \"Novo\".
+
+# -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# igraf/moduloAjuda/modelo/TextoCalculo.java
+manualStTextCalcTitle = \ 2   Calculus
+manualStTextCalc_I_1 = Menu de ferramentas associadas ao Cálculo Diferencial e Integral
+
+manualStTextCalc_1 = \ 2.1   Visualize derivative
+manualStTextCalc_1_1 = Permite ao usuário traçar o gráfico da função derivada f'(x) para a função f(x) cuja expressão se encontra na área de edição.\
+ Caso não haja uma expressão na área de edição, digite uma ou selecione uma curva clicando sobre a mesma.
+#'
+
+manualStTextCalc_2 = \ 2.2   Visualize tangent line
+manualStTextCalc_2_1 = Exibe uma janela na qual é possível selecionar uma função f(x) na lista de funções editadas pelo usuário.\
+ Uma vez selecionada tal função, o usuário poderá digitar valores reais para x e visualizar a reta tangente a f(x) no ponto (x, f(x)).\
+ Clique no campo de entrada de valores de x e pressione uma das teclas direcionais (\"up\" ou \"down\") no teclado do seu computador para ajustar dinamicamente o valor de x.
+manualStTextCalc_2_2 = É possível selecionar, caso exista, uma função diferente de f(x), digamos g(x), e realizar a mesma operação que foi feita para f(x).\
+ A tangente a f(x) é desenhada e calculada de forma independente daquela que está associada a g(x), isso permite a análise de várias tangentes a várias funções simultaneamente.
+manualStTextCalc_2_3 = O traçado da reta tangente é sempre feito automaticamente, ou seja, assim  que o usuário modifica o valor de x o gráfico é desenhado.\
+ Esse comportamento, no entanto, permite apenas a visualização de uma reta tangente a cada curva por vez.  Se o usuário desejar analisar o comportamento de\
+ várias retas tangentes a pontos distintos de uma mesma curva, deverá marcar a opção \"Várias Tangentes\". Assim que tiver selecionada uma tangente de interesse,\
+ deverá clicar em \"Fixar Tangente\".
+manualStTextCalc_2_4 = O iGraf oferece ainda uma opção de visualização das tangentes a uma função através de uma animação.\
+ Por padrão, os limites dessa animação são os valores extremos vísiveis do eixo x. Para visualizar tal animação, basta marcar a opção \"Animação Tangente\".
+
+manualStTextCalc_3 = \  2.3   Visualize indefinite integral
+manualStTextCalc_3_1 = Desenha o gráfico da antiderivada F(x) da função f(x) que está na área de edição. Por padrão, o ponto de corte de F(x) no eixo das ordenadas é zero.\
+ Uma característica importante dessa curva é que ela é calculada numericamente.  Assim, embora o usuário possa visualizar seu gráfico é, na versão atual do programa,\
+ impossível recuperar a expressão matemática que o gera.
+
+manualStTextCalc_4 = \  2.4   Calculate definite integral
+manualStTextCalc_4_1 = Exibe uma janela na qual é possível selecionar na lista de funções editadas aquelas que serão usadas para delimitar verticalmente a região de integração.
+manualStTextCalc_4_2 = O usuário deve definir o intervalo de integração digitando os valores diretamente nos campos de texto em \"Intervalo de Integração\", caso não o faça,\
+ será usado o intervalo padrão [0..1].
+
+# -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# igraf/moduloAjuda/modelo/TextoAnimacao.java
+manualStTextAnimTitle = \ 3   Animation
+manualStTextAnim_I_1 = No iGraf, uma animação para a função f(x) no intervalo [m, n] é o desenho contínuo de vários gráficos de f(a), sendo 'a' o parâmetro de animação, ou seja,\
+ 'a' assume valores de m a n em passos de 0.1 e a cada valor de 'a' um gráfico é exibido. 
+manualStTextAnim_I_2 = Para iniciar uma animação basta digitar na área de edição uma expressão que contenha um parâmetro de animação como a.x^2 ou c.x + m.\
+  A primeira expressão começa a executar a animação imediatamente após o comando para desenhar. Por padrão, o parâmetro 'a' varia no intervalo [-1, 1].\
+  A segunda expressão, no entanto, só funcionará quando o usuário habilitar o uso dos parâmetros 'c' e 'm'; esses parâmetros, por padrão têm valor fixo igual a 1.
+manualStTextAnim_I_3 = Os parâmetros de animação usados pelo iGraf são:  a, b, c, k, m e n. Clique com o botão direito do mouse na área de desenho para alterar o valor de cada parâmetro individualmente
+
+manualStTextAnim_1 = \ 3.1   Star/stop animation
+manualStTextAnim_1_1 = Pára ou reinicia todas as animações editadas até o momento. As animações que estiverem ocultas também obedecerão a esse comando.
+manualStTextAnim_1_2 = Toda animação, por padrão, será executada por tempo indefinido. Cabe ao usuário interferir nesse comportamento através dessa opção, parando ou reiniciando o movimento.
+
+manualStTextAnim_2 = \ 3.2   Show control panel
+manualStTextAnim_2_1 = Quando estão ocorrendo várias animações na tela o visual fica muito \"carregado\" e pode ser desejável parar algumas delas... ou, até mesmo, parar todas.\
+ O iGraf oferece um painel de controle através do qual é possível selecionar as animações que podem ou não ser executadas em um dado momento.\
+ Esta opção exibe, ou oculta, esse painel. 
+
+manualStTextAnim_3 = \ 3.3   Show scrolling control panel
+manualStTextAnim_3_1 = É possível, ao usuário, fazer com que uma animação seja executada passo a passo. Para isso, basta parar a animação e selecionar esta opção.\
+ Será exibido um controle deslizante que permitirá a interação com o desenho dinamicamente.
+manualStTextAnim_3_2 = Esse controle permite ao usuário interagir com o desenho usando o mouse (clicando no botão deslizante), clicando nas setas direcionais\
+ (à direita e à esquerda) ou ainda, inserindo valores diretamente no campo de texto à direita.
+manualStTextAnim_3_3 = É importante destacar que essa opção só funciona se a animação estiver parada.
+
+manualStTextAnim_4 = \ 3.4   Start/stop function tracing
+manualStTextAnim_4_1 = Permite ao usuário escolher entre visualizar todos os gráficos gerados durante a animação ou apenas o último.\
+ Por padrão, fica na tela apenas o último gráfico.  
+
+manualStTextAnim_5 = \ 3.5   Aumentar e Diminuir velocidade
+manualStTextAnim_5_1 = Opções que permitem ao usuário variar a velocidade de execução da animação.
+
+# -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# igraf/moduloAjuda/modelo/TextoEdicoes.java
+manualStTextEditTitle = \ 4   Edition
+manualStTextEdit_I_1 = Menu que permite ao usuário fazer opções de configuração da área onde são desenhados os gráficos e textos
+
+manualStTextEdit_1 = \ 4.1   Zoom: default
+manualStTextEdit_1_1 = Restaura a escala do plano cartesiano ao valor padrão.
+
+manualStTextEdit_2 = \ 4.2   Zoom: increase
+manualStTextEdit_2_1 = Botões que permitem ao usuário aumentar ou diminuir a \"aproximação\" do gráfico modificando a escala do plano cartesiano e o \"tamanho\" do gráfico.
+
+manualStTextEdit_3 = \ 4.3   Zoom: decrease
+manualStTextEdit_3_1 = Ao deixar \"mouse\" sobre esta opção será reduzida a escala de apresentação do plano cartesiano.
+
+manualStTextEdit_4 = \ 4.4   Text: insert
+manualStTextEdit_4_1 = Exibe uma janela na qual o usuário pode digitar um texto, escolher o tamanho e a cor da fonte para, em seguida, inserí-lo na área de desenho.\
+ Para efetivar a inserção, selecione as coordenadas do ponto do plano cartesiano onde pretende que o texto seja escrito e clique em \"Inserir\"
+
+manualStTextEdit_5 = \ 4.5   Text: editar
+manualStTextEdit_5_1 = Opções que exibem uma janela na qual o usuário pode selecionar um dos textos que porventura estejam na área de desenho e modificá-lo ou removê-lo.\
+ Para realizar uma das duas ações, marque a caixa de seleção que se encontra na frente do texto e clique no botão cujo rótulo corresponda à ação desejada.
+manualStTextEdit_5_2 = As duas opções abrem a mesma janela e só são separadas no menu por clareza.
+
+manualStTextEdit_6 = \ 4.6   Text: remove
+manualStTextEdit_6_1 = O último texto selecionado será removido.
+
+manualStTextEdit_7 = \ 4.7   Exes: remove
+manualStTextEdit_7_1 = Permite ao usuário alternar entre deixar o eixo cartesiano visível ou não.
+
+manualStTextEdit_8 = \ 4.8   Scale: remove
+manualStTextEdit_8_1 = Permite ao usuário alternar entre deixar a escala numérica visível ou não.
+
+manualStTextEdit_9 = \ 4.9   Grid: remove
+manualStTextEdit_9_1 = Permite ao usuário alternar entre a exibição dos eixos cartesianos ou de uma grade.
+
+manualStTextEdit_10 = \ 4.10   Language
+manualStTextEdit_10_1 = Permite ao usuário trocar a lingua de apresentação do iGraf.
+
+# -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# igraf/moduloAjuda/modelo/TextoExercicio.java
+manualStTextExerTitle = \  5   Exercise
+
+manualStTextExer_I_1 = O iGraf oferece ao professor a possibilidade de criar e registrar exercícios em um servidor para que seus alunos possam acessar e responder\
+ as questões pela Internet. É possível ainda responder esses mesmos exercícios com a versão de uso local.
+
+manualStTextExer_1 = \  5.1   History
+manualStTextExer_1_1 = O histórico é um recurso do iGraf que permite ao usuário rever os passos executados em uma sessão. Selecione esta opção no menu Exercício e\
+ use os botões direcionais para navegar pelos itens da sessão.
+
+manualStTextExer_2 = \  5.2   Answer/send
+manualStTextExer_2_1 = Abre a janela para a inserção de resposta(s) caso o usuário esteja resolvendo um exercício; essas respostas podem ser objetivas ou dissertativas.
+manualStTextExer_2_2 = Para responder as questões objetivas o usuário deve apenas preencher os campos de resposta com os valores que julgar corretos.
+manualStTextExer_2_3 = É possível que um exercício não tenha qualquer campo a preencher.  Isso ocorre quando a resposta da questão é discursiva ou é simplesmente um gráfico.\
+ Se a resposta for apenas gráfica, faça o desenho normalmente usando os recursos do iGraf. Caso tenha que mandar comentários e/ou justificativas, preencha a área de texto.
+manualStTextExer_2_4 = Certifique-se de ter inserido as respostas corretas e clique no botão \"Enviar Resposta\".
+manualStTextExer_2_5 = Depois de processadas as respostas são enviadas ao servidor a partir do qual o iGraf está sendo distribuído; esse passo ocorre automaticamente e,\
+ portanto, não depende de intervenção do usuário.
+manualStTextExer_2_6 = Essa janela ainda oferece ao aluno uma pequena ajuda e um breve texto de dicas ou comentários do professor sobre a resolução do exercício.\
+ Esses textos podem ser exibidos clicanco-se no menu \"Ajuda\" ou no menu \"Comentários\".
+
+manualStTextExer_3 = \  5.3   Create an exercise
+manualStTextExer_3_1 = Abre a janela que será usada pelos professores para a criação de exercícios no iGraf. Através dela será feita a configuração do gabarito,\
+ supondo que o professor já tenha definido o enunciado e a(s) resposta(s).  O professor poderá ainda enviar dicas e sugestões de resolução ao aluno digitando-as\
+ na área de comentários (no centro da janela).
+manualStTextExer_3_2 = Para incorporar o enunciado ao exercício o professor tem duas opções: a primeira é a inserção do texto diretamente na área de desenho;\
+ essa é uma boa opção para enunciados curtos e que não vão disputar espaço com gráficos que podem ser importantes para a compreensão do aluno.\
+ A segunda opção é colocar o enunciado na área de comentários; é mais confortável para textos mais longos, porém o aluno não vê a área de desenho enquanto lê.
+manualStTextExer_3_3 = O professor pode propor exercícios divididos em itens cujas respostas podem ser objetivas ou discursivas. O tipo de cada resposta deve ser\
+ claramente definido no momento da criação da questão, pois isso determinará a forma da janela vista pelo aluno no momento de enviar suas respostas.
+manualStTextExer_3_4 = São consideradas respostas objetivas  aquelas que devem ser dadas na forma de \"Número\", \"Expressão Matemática\", \"Par Ordenado\" ou \"Intervalo Numérico\".
+manualStTextExer_3_5 = Para cada item objetivo da questão, o professor deverá selecionar o tipo da resposta e preencher o campo correspondente com o resultado que espera dos seus alunos.
+manualStTextExer_3_6 = São consideradas respostas discursivas aquelas que devem ser dadas na forma de gráfico ou texto livre.\
+ Provas, demonstrações e justificativas se enquadram nessa categoria. O professor deve se certificar de que a solicitação desse tipo de resposta fique clara ao aluno pela simples leitura do enunciado.\
+ Não há configuração especial para esse caso.
+
+# -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# igraf/moduloAjuda/modelo/TextoSintaxe.java
+manualStTextSinTitle = \ Sintax
+manualStTextSin_I_1 = To simplify the iGraf usege, it is only necessary to enter the mathematical expression that represents the function, for example you can just type \"x + 2\" to \
+ get the graphic of the function \"f(x) = x+2\". Similarly, typing \"a * x + b\", iGraf will draw the function of degree 1, that can be varied its \
+ parameters \"a\" and \"b\" to get an animation. Additional explanation to this can be seen into the \"Animation\" options.\n\
+ To get access to the list of all parameters for animation, when the \"mouse\" is on the drawing area, right click it.\n\
+ Listed below are the basic rules of iGraf usage.
+
+manualStTextSin_1 = \ Notation for expressions
+manualStTextSin_1_1 = As expressões aceitas pelo iGraf devem usar notação infixa, ou seja, um operador entre dois operandos, por exemplo: x + 6.\
+ O operador de adição está entre dois operandos, o 'x' e o '6'. Exceção a essa regra é feita para o uso do menos unário, como em -3.\
+ Funções pré-definidas serão aplicadas aos operandos que estiverem entre parênteses, como em tan(x^2 - 9)
+
+manualStTextSin_2 = \ Variables
+manualStTextSin_2_1 = A única variável suportada pela versão atual do iGraf é a letra minúscula 'x'. Os gráficos exibidos na área de desenho são gráficos de f(x).\
+ Assim, quando o usuário digita na área de edição: \"x + 2\", o gráfico visualizado será o de \"f(x) = x + 2\". Não é necessário digitar \"f(x) =\" ou mesmo \"y =\"
+
+manualStTextSin_3 = \ Operators
+manualStTextSin_3_1 = As operações matemáticas básicas no programa usam os operadores (+) para soma, (-) para subtração, (*) para multiplicação, (/) para divisão e (^)\
+ para potenciação. Veja um exemplo de expressão válida: x^2 + 2*x - (1/x).
+manualStTextSin_3_2 = Note que parênteses são permitidos e têm a mesma função que teriam em uma expressão matemática qualquer.  Na expressão do exemplo acima os\
+ parênteses são desnecessários, pois o iGraf segue as regras matemáticas padrão para precedência de operadores e, portanto, a divisão será naturalmente executada antes da subtração. 
+manualStTextSin_3_3 = Os parênteses também podem ser colocados dentro de outros parênteses desde que o usuário tenha o cuidado de fechar cada parêntese que abrir.
+
+manualStTextSin_4 = \ Pre-definied function
+manualStTextSin_4_1 = O iGraf pode desenhar gráficos das funções abaixo listadas e de suas combinações.
+manualStTextSin_4_2 = Trigonométricas: sin(x) para seno, cos(x) para cosseno, tan(x) para tangente, bem como as suas inversas asin(x), acos(x) e atan(x).
+manualStTextSin_4_3 = Raiz quadrada: sqrt(x) para raiz quadrada.
+manualStTextSin_4_4 = Logarítmica: ln(x) para logaritmo natural.
+manualStTextSin_4_5 = Exponencial: exp(x) para exponencial.
+manualStTextSin_4_6 = Módulo: abs(x) para módulo.
+
+manualStTextSin_5 = \ Parameters
+manualStTextSin_5_1 = Além das funções e operadores acima, o iGraf suporta o uso de parâmetros de animação. Esses valores são usados quando se deseja observar\
+ o comportamento do gráfico de uma função quando seus coeficientes estão variando em um intervalo. Assim, é possível digitar na área de edição: a*x^2 + b*x + c,\
+ atribuir intervalos de variação para a, b e c e visualizar uma animação na qual se pode analisar a influência de cada coeficiente sobre o formato da curva.
+
+# -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# igraf/moduloAjuda/modelo/TextoConceito.java
+manualStTextConceptsTitle = \ Concepts
+manualStTextConcepts_I_1 =  Listed below are the basic features implemented in iGraf.
+
+manualStTextConcepts_1 = \  Animation
+manualStTextConcepts_1_1 = Uma animação é uma seqüência de desenhos de gráficos sendo executada rapidamente. Cada gráfico é exibido por uma fração de segundo e apagado para que,\
+ em seguida, seja desenhado outro gráfico ligeiramente diferente causando a impressão de movimento.
+
+manualStTextConcepts_2 = \ Automatic evaluation
+manualStTextConcepts_2_1 = É a avaliação realizada por um programa de computador. Esse programa, que é executado pelo servidor, é capaz de receber, ler e interpretar\
+ a resposta do usuário comparando-a com valores pré-definidos e emitir um parecer sobre sua corretude.
+
+manualStTextConcepts_3 = \ Graphics
+manualStTextConcepts_3_1 = E o método mais comum de visualização de funções. O gráfico de uma função f consiste de todos os pontos(x,y) do plano coordenado tais\
+ que y = f(x) e x está no domínio de f.
+
+manualStTextConcepts_4 = \ History
+manualStTextConcepts_4_1 = É uma ferramenta implementada no iGraf que permite ao usuário rever e analisar os passos que foram realizados para se atingir uma determinada\
+ configuração da área de desenho. Através do histórico também é possível analisar passagens da sessão que não são exibidas graficamente como, por exemplo, a(s) resposta(s) a um exercício.
+
+manualStTextConcepts_5 = \ Server
+manualStTextConcepts_5_1 = O computador a partir no qual o iGraf é executado e tornado disponível pela Internet. Nessa máquina são registrados os exercícios aos quais\
+ os usuários terão acesso e é executada também a parte do programa que cuida da avaliação automática.
+
+manualStTextConcepts_6 = \ Session
+manualStTextConcepts_6_1 = Uma sessão é um registro textual de todas as ações realizadas pelo usuário. A sessão pode ser gravada em arquivo se estiver em uso a versão\
+ aplicativo (para uso local) do iGraf ou enviada ao servidor se o programa estiver em uso pela Internet.

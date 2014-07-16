@@ -1,0 +1,94 @@
+/*
+ * iGraf - Interactive Graphics on the Internet: http://www.matematica.br/igraf
+ *
+ * Free interactive solutions to teach and learn
+ *
+ * iMath Project: http://www.matematica.br
+ * LInE           http://line.ime.usp.br
+ *
+ * @author RP, LOB
+ *
+ * @description 
+ * 
+ * @see 
+ *
+ * @credits
+ * This source is free and provided by iMath Project (University of São Paulo - Brazil). In order to contribute, please
+ * contact the iMath coordinator Leônidas O. Brandão.
+ *
+ * O código fonte deste programa é livre e desenvolvido pelo projeto iMática (Universidade de São Paulo). Para contribuir,
+ * por favor contate o coordenador do projeto iMatica, professor Leônidas O. Brandão.
+ * 
+ */
+
+package difusor;
+
+
+import java.util.Locale;
+import java.util.ResourceBundle;
+import java.util.Vector;
+
+public class ResourceReader {
+
+ private static ResourceBundle rb;
+ public static String lingua = "", pais = "";
+ public static int PORTUGUESE = 0, ENGLISH = 1;
+
+ // Evitar uma msg de erro por uma string faltante aparecer muitas vezes na tela
+ private static Vector vecErros = new Vector();
+
+ /**
+  * Construtor default que utiliza o "locale" padrão...
+  * no nosso caso pt_BR
+  */
+ public ResourceReader () {
+  rb = ResourceBundle.getBundle("resources/StringsTable_pt_BR");
+  }
+
+ public ResourceReader (String table) {
+  rb = ResourceBundle.getBundle(table);
+  }
+
+ /**
+  * Construtor alternativo utilizado para testar a ferramenta de 
+  * internacionalização padrão do Java... e funciona bem!
+  * @param i
+  */
+ public static void setLanguage (int language) {
+  Locale l = null;
+  
+  if(language == PORTUGUESE)
+   l = new Locale("pt", "BR");
+  
+  if(language == ENGLISH)
+   l = new Locale("en", "US");
+  
+  rb = ResourceBundle.getBundle("resources/StringsTable", l);
+  }
+
+
+ public static String getString (String value) {
+  try {
+   return rb.getString(value);
+   } catch (java.util.MissingResourceException mre) { // java.util.MissingResourceException
+   System.err.println("Erro: falta a mensagem '"+value+"' em 'util/StringsTable*.properties'!");
+   if (!vecErros.contains(value)) {
+    mre.printStackTrace();
+    vecErros.addElement(value);
+    return "Falta mensagem: "+value;
+    }
+   return "";
+   }
+  catch (Exception e) { // java.util.MissingResourceException
+   System.err.println("Erro: na mensagem '"+value+"': "+e);
+   return "Falta mensagem: "+value;
+   }
+  }
+
+
+ //D public static void mainD (String[] args) {
+ //D  new ResourceReader();
+ //D  System.out.println(ResourceReader.getString("ARQUIVO"));
+ //D  }
+
+ }

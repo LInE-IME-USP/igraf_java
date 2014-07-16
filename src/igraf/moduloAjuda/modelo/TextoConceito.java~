@@ -1,0 +1,95 @@
+/*
+ * iGraf - Interactive Graphics on the Internet: http://www.matematica.br/igraf
+ * 
+ * Free interactive solutions to teach and learn
+ * 
+ * iMath Project: http://www.matematica.br
+ * LInE           http://line.ime.usp.br
+ *
+ * @author RP, LOB
+ *
+ * @description Help integrated to iGraf. Component to explain a menu item:
+ * 
+ * @see 
+ *  
+ * @credits
+ * This source is free and provided by iMath Project (University of São Paulo - Brazil). In order to contribute, please
+ * contact the iMath coordinator Leônidas O. Brandão.
+ *
+ * O código fonte deste programa é livre e desenvolvido pelo projeto iMática (Universidade de São Paulo). Para contribuir,
+ * por favor contate o coordenador do projeto iMatica, professor Leônidas O. Brandão. 
+ * 
+ */
+
+
+package igraf.moduloAjuda.modelo;
+
+
+import igraf.basico.io.ResourceReader;
+
+
+public class TextoConceito extends JPanelBasisTopic {
+
+ public TextoConceito () {
+  super("manualStTextConceptsTitle"); // Conceitos
+
+  insereParagrafo("manualStTextConcepts_I_1");
+  insereParagrafo("manualStTextConcepts_I_2");
+
+  insereSubTitulo("manualStTextConcepts_1"); // Animação
+  insereParagrafo("manualStTextConcepts_1_1");
+
+  insereSubTitulo("manualStTextConcepts_2"); // Avaliação Automática
+  insereParagrafo("manualStTextConcepts_2_1");
+
+  insereSubTitulo("manualStTextConcepts_3"); // Gráfico
+  insereParagrafo("manualStTextConcepts_3_1");
+
+  insereSubTitulo("manualStTextConcepts_4"); // Histórico
+  insereParagrafo("manualStTextConcepts_4_1");
+
+  insereSubTitulo("manualStTextConcepts_5"); // Servidor
+  insereParagrafo("manualStTextConcepts_5_1");
+
+  insereSubTitulo("manualStTextConcepts_6"); // Sessão
+  insereParagrafo("manualStTextConcepts_6_1");
+  }
+
+/*
+  insereParagrafo("manualStTextConcepts_I_1");
+
+  insereParagrafo("Veja abaixo uma lista dos conceitos básicos utilizados pelo iGraf");
+
+  insereSubTitulo("Animação");
+  insereParagrafo("Uma animação é uma seqüência de desenhos de gráficos sendo executada " +
+      "rapidamente.   Cada gráfico é exibido por uma fração de segundo e apagado " +
+      "para que, em seguida, seja desenhado outro gráfico ligeiramente diferente " +
+      "causando a impressão de movimento.");
+
+  insereSubTitulo("Avaliação Automática");
+  insereParagrafo("É a avaliação realizada por um programa de computador.   Esse programa, " +
+      "que é executado pelo servidor, é capaz de receber, ler e interpretar a resposta " +
+      "do usuário comparando-a com valores pré-definidos e emitir um parecer sobre sua corretude.");
+
+  insereSubTitulo("Gráfico");
+  insereParagrafo("E o método mais comum de visualização de funções.   O gráfico de uma função " +
+      "f consiste de todos os pontos(x,y) do plano coordenado tais que y = f(x) e x " +
+      "está no domínio de f.");
+
+  insereSubTitulo("Histórico");
+  insereParagrafo("É uma ferramenta implementada no iGraf que permite ao usuário rever e analisar " +
+      "os passos que foram realizados para se atingir uma determinada configuração da " +
+      "área de desenho.   Através do histórico também é possível analisar passagens da " +
+      "sessão que não são exibidas graficamente como, por exemplo, a(s) resposta(s) a um exercício.");
+
+  insereSubTitulo("Servidor");
+  insereParagrafo("O computador a partir no qual o iGraf é executado e tornado disponível pela Internet.   " +
+      "Nessa máquina são registrados os exercícios aos quais os usuários terão acesso e é " +
+      "executada também a parte do programa que cuida da avaliação automática.");
+
+  insereSubTitulo("Sessão");
+  insereParagrafo("Uma sessão é um registro textual de todas as ações realizadas pelo usuário.   A sessão " +
+      "pode ser gravada em arquivo se estiver em uso a versão aplicativo (para uso local) do iGraf ou " +
+      "enviada ao servidor se o programa estiver em uso pela Internet.");
+ */
+ }
